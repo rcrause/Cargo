@@ -8,6 +8,7 @@ namespace CargoExample
     {
         public void Configuration(IAppBuilder app)
         {
+            ConfigureCargo(app);
             ConfigureAuth(app);
         }
     }

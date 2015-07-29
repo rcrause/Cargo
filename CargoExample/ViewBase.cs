@@ -22,7 +22,7 @@ namespace CargoExample
 
         public override void ExecutePageHierarchy()
         {
-            _cargoEngine = DependencyResolver.Current.GetService<CargoEngine>();
+            _cargoEngine = Startup.CargoEngine;
             _contentContext = new ContentContext
             {
                 Locale = this.Culture,
