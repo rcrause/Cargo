@@ -73,7 +73,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CargoEngine.cs" />
+    <Compile Include="CargoExtensions.cs" />
     <Compile Include="CargoFileDataSource.cs" />
+    <Compile Include="CargoModule.cs" />
+    <Compile Include="CargoNancyBootstrapper.cs" />
     <Compile Include="ContentCollection.cs" />
     <Compile Include="ContentContext.cs" />
     <Compile Include="DefaultCargoConfiguration.cs" />
