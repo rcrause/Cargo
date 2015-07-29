@@ -12,14 +12,14 @@ namespace Cargo
         public ICargoDataSource DataSource { get; private set; }
 
         public CargoEngine()
+            :this(CargoConfiguration.Default)
         {
-            _configuration = CargoConfiguration.Default;
-            DataSource = _configuration.DataSource;
         }
 
         public CargoEngine(CargoConfiguration configuration)
         {
             _configuration = configuration;
+            DataSource = _configuration.DataSource;
         }
 
         public ContentCollection GetContent(ContentContext contentContext)
