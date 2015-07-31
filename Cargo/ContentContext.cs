@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 
 namespace Cargo
 {
-    public class ContentContext
+    public class ContentContext : IContentContext
     {
-        public string Locality { get; set; }
+        public virtual bool EditingEnabled { get; set; }
 
-        public string Locale { get; set; }
+        public virtual string Locale { get; set; }
 
-        public bool EditingEnabled { get; set; }
-        
-        public IDictionary<string, object> Properties { get; set; }
+        public virtual string Locality { get; set; }
     }
 }

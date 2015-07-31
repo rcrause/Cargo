@@ -22,7 +22,8 @@ namespace Cargo
         /// Returns all <see cref="ContentItem"/>s for a locality (i.e. page), or an empty <see cref="IEnumerable{ContentItem}"/> if
         /// none exist.
         /// </summary>
-        /// <param name="locality">The name of the locality for which to return <see cref="ContentItem"/>s.</param>
+        /// <param name="locality">The name of the locality for which to return <see cref="ContentItem"/>s. When
+        /// called with <c>null</c> will return global content</param>
         /// <returns></returns>
         IEnumerable<ContentItem> GetByLocality(string locality);
 

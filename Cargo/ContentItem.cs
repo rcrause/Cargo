@@ -37,6 +37,11 @@ namespace Cargo
         public virtual string Condition { get; set; }
 
         /// <summary>
+        /// The type of the content
+        /// </summary>
+        public virtual ContentType ContentType { get; set; }
+
+        /// <summary>
         /// The content for this <see cref="ContentItem"/>.
         /// </summary>
         public virtual string Content { get; set; }

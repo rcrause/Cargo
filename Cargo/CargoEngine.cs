@@ -8,8 +8,9 @@ namespace Cargo
 {
     public class CargoEngine
     {
-        private CargoConfiguration _configuration;
-        public ICargoDataSource DataSource { get; private set; }
+        public CargoConfiguration Configuration { get; set; }
+
+        private ICargoDataSource DataSource { get { return Configuration.DataSource; } }
 
         public CargoEngine()
             :this(CargoConfiguration.Default)
@@ -18,15 +19,17 @@ namespace Cargo
 
         public CargoEngine(CargoConfiguration configuration)
         {
-            _configuration = configuration;
-            DataSource = _configuration.DataSource;
+            Configuration = configuration;
         }
 
-        public ContentCollection GetContent(ContentContext contentContext)
+        public ContentCollection GetContent(IContentContext contentContext)
         {
-            string locality = contentContext.Locality;
-            var content = DataSource.GetByLocality(locality);
+            //get content for this locality
+            var content = DataSource.GetByLocality(contentContext.Locality);
+
+            //create an immutable content collection for use by the view
             var collection = new ContentCollection(content, contentContext);
+            
             return collection;
         }
     }

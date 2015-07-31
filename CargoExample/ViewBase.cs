@@ -10,13 +10,13 @@ namespace CargoExample
 {
     public abstract class ViewBase<T> : WebViewPage<T>
     {
-        private ContentContext _contentContext;
+        private IContentContext _contentContext;
         private ContentCollection _cargoContent;
         private CargoEngine _cargoEngine;
 
         public CargoEngine CargoEngine { get { return _cargoEngine; } }
 
-        public ContentContext CargoContext { get { return _contentContext; } }
+        public IContentContext CargoContext { get { return _contentContext; } }
 
         public ContentCollection Cargo { get { return _cargoContent; } }
 
@@ -27,7 +27,6 @@ namespace CargoExample
             {
                 Locale = this.Culture,
                 Locality = this.Request.RawUrl,
-                Properties = new Dictionary<string, object>(),
                 EditingEnabled = true //Request.IsAuthenticated
             };
 
@@ -40,11 +39,11 @@ namespace CargoExample
         {
             if (CargoContext.EditingEnabled)
             {
-                return new HtmlString(Cargo.GetLocalizedStringToken(key, originalContent));
+                return new HtmlString(Cargo.GetTokenizedContent(key, originalContent));
             }
             else
             {
-                return new HtmlString(Cargo.GetLocalizedString(key, originalContent));
+                return new HtmlString(Cargo.GetContent(key, originalContent));
             }
         }
 
@@ -52,11 +51,11 @@ namespace CargoExample
         {
             if (CargoContext.EditingEnabled)
             {
-                return new HtmlString(Cargo.GetLocalizedStringToken(originalContent));
+                return new HtmlString(Cargo.GetTokenizedContent(originalContent));
             }
             else
             {
-                return new HtmlString(Cargo.GetLocalizedString(originalContent));
+                return new HtmlString(Cargo.GetContent(originalContent));
             }
         }
     }

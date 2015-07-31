@@ -12,55 +12,46 @@ namespace Cargo
         private SHA1Managed _sha = new SHA1Managed();
         private Encoding _utf8 = Encoding.UTF8;
 
-        public ContentCollection(IEnumerable<ContentItem> content, ContentContext contentContext)
+        public ContentCollection(IEnumerable<ContentItem> content, IContentContext contentContext)
         {
             ContentContext = contentContext;
             Content = content.ToLookup(x => x.Key);
         }
         
-        public ContentContext ContentContext { get; private set; }
+        public IContentContext ContentContext { get; private set; }
 
         public ILookup<string, ContentItem> Content { get; private set; }
 
-        public string GetLocalizedStringToken(string key, string originalContent)
+        public string GetTokenizedContent(string key, string defaultContent)
         {
-            var content = GetLocalizedString(key, originalContent);
-            return GetToken(key, content);
+            var content = GetContent(key, defaultContent);
+            return Tokenize(key, content);
         }
 
-        public string GetLocalizedStringToken(string originalContent)
+        public string GetTokenizedContent(string defaultContent)
         {
-            return GetLocalizedStringToken(ComputeHash(originalContent), originalContent);
+            return GetTokenizedContent(ComputeHash(defaultContent), defaultContent);
         }
 
-        public string GetLocalizedString(string key, string originalContent)
+        public string GetContent(string key, string defaultContent)
         {
             var contentItem = GetContentItem(key);
             if (contentItem != null) return contentItem.Content;
-            else return originalContent;
+            else return defaultContent;
         }
 
-        public string GetLocalizedString(string originalContent)
+        public string GetContent(string defaultContent)
         {
-            return GetLocalizedString(ComputeHash(originalContent), originalContent);
+            return GetContent(ComputeHash(defaultContent), defaultContent);
         }
 
         private ContentItem GetContentItem(string key)
         {
-            if (Content.Contains(key))
-            {
-                IEnumerable<ContentItem> contentItems = Content[key];
-                //TODO: evaluate conditions
-                ContentItem mostRelevant = contentItems.First();
-                return mostRelevant;
-            }
-            else
-            {
-                return null;
-            }
+            IEnumerable<ContentItem> itemsWithKey = Content[key];
+            return ContentContext.Filter(itemsWithKey);
         }
 
-        private string GetToken(string key, string content)
+        private string Tokenize(string key, string content)
         {
             if (content.Contains('\\')) content = content.Replace("\\", "\\\\");
             if (content.Contains('^')) content = content.Replace("^", "\\^");
