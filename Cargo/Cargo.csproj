@@ -79,6 +79,12 @@
     <Compile Include="CargoNancyBootstrapper.cs" />
     <Compile Include="ContentCollection.cs" />
     <Compile Include="ContentContext.cs" />
+    <Compile Include="Filtering\CompiledFilter.cs" />
+    <Compile Include="Filtering\DefaultFilterCompiler.cs" />
+    <Compile Include="Filtering\FilterCompilation.cs" />
+    <Compile Include="Filtering\IFilterCompiler.cs" />
+    <Compile Include="IContentContext.cs" />
+    <Compile Include="ContentType.cs" />
     <Compile Include="DefaultCargoConfiguration.cs" />
     <Compile Include="CargoConfiguration.cs" />
     <Compile Include="ContentItem.cs" />
