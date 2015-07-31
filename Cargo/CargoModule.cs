@@ -14,16 +14,19 @@ namespace Cargo
 
         public CargoModule(CargoEngine cargoEngine)
         {
+            //all routes start with this
+            string prefix = cargoEngine.Configuration.CargoRoutePrefix;
+            if (prefix != "/" && prefix.EndsWith("/")) prefix = prefix.Substring(0, prefix.Length - 1);
+
+            //get some things from resource
             _cargoJs = GetResourceAsString("Cargo.cargo.js");
             _cargoCss = GetResourceAsString("Cargo.cargo.css");
 
-            Get["/__cargo/"] = _ =>
-            {
-                return "Hello World";
-            };
 
-            Get["/__cargo/js"] = _ => { return _cargoJs; };
-            Get["/__cargo/css"] = _ => { return _cargoCss; };
+            //here are our handlers
+
+            Get[prefix + "/js"] = _ => _cargoJs;
+            Get[prefix + "/css"] = _ => _cargoCss;
         }
 
         string GetResourceAsString(string resourceName)
