@@ -12,5 +12,6 @@ namespace Cargo
         public static CargoConfiguration Default { get { return _default.Value; } }
 
         public abstract ICargoDataSource DataSource { get; }
+        public string CargoRoutePrefix { get; set; } = "/cargo";
     }
 }
