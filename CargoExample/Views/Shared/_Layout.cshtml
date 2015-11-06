@@ -9,11 +9,11 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
+    @*Cargo CSS*@
+    <link href="~/cargo/css" rel="stylesheet" />
+
 </head>
 <body>
-    @*Cargo scripts*@
-    <script src="~/cargo/js"></script>
-    <link href="~/cargo/css" rel="stylesheet" />
 
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
@@ -46,5 +46,8 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+
+    @*Cargo script*@
+    <script src="~/cargo/js"></script>
 </body>
 </html>
