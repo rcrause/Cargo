@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,36 +10,34 @@ namespace Cargo
 {
     public class CargoModule : Nancy.NancyModule
     {
-        string _cargoJs;
-        string _cargoCss;
+        ResourceHelper _resourceHelper = new ResourceHelper();
 
         public CargoModule(CargoEngine cargoEngine)
         {
             //all routes start with this
             string prefix = cargoEngine.Configuration.CargoRoutePrefix;
             if (prefix != "/" && prefix.EndsWith("/")) prefix = prefix.Substring(0, prefix.Length - 1);
-
-            //get some things from resource
-            _cargoJs = GetResourceAsString("Cargo.cargo.js");
-            _cargoCss = GetResourceAsString("Cargo.cargo.css");
-
-
+            
             //here are our handlers
-
-            Get[prefix + "/js"] = _ => _cargoJs;
-            Get[prefix + "/css"] = _ => _cargoCss;
+            Get[prefix + "/js"] = _ => FileFromResource("cargo.js");
+            Get[prefix + "/css"] = _ => FileFromResource("cargo.js");
         }
 
-        string GetResourceAsString(string resourceName)
+
+        private string FileFromResource(string resource)
         {
-            var assembly = typeof(CargoModule).Assembly;
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
+#if DEBUG
+            var asm = typeof(ResourceHelper).Assembly;
+            var codeBase = asm.CodeBase.Replace("file:///", "").Replace('/', '\\');
+            int placeOfDir = codeBase.IndexOf("\\Cargo\\");
+            if (placeOfDir > 0)
             {
-                using (var tr = new StreamReader(stream))
-                {
-                    return tr.ReadToEnd();
-                }
+                string file = codeBase.Substring(0, placeOfDir) + "\\Cargo\\Cargo\\" + resource;
+                if (File.Exists(file))
+                    return File.ReadAllText(file);
             }
+#endif
+            return _resourceHelper[resource];
         }
     }
 }

@@ -53,9 +53,9 @@ namespace Cargo
 
         private string Tokenize(string key, string content)
         {
-            if (content.Contains('\\')) content = content.Replace("\\", "\\\\");
-            if (content.Contains('^')) content = content.Replace("^", "\\^");
-            return string.Format("~{0}#{1}^", key, content);
+            //TODO:figure out how to not have to do this:
+            if (content.Contains('~')) content = content.Replace("~", "");
+            return string.Format("~{0}#{1}~", key, content);
         }
 
         private string ComputeHash(string originalContent)

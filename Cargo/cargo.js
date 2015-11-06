@@ -1,8 +1,15 @@
 ﻿(function (window) {
 
+    //
+    // Globals
+    //
+    var content = [];
+    var contentByElement = new WeakMap();
+    var rxFullMatch = /^\s*~([^#]+)#([^~]*)~\s*$/;
+    var rxPartialMatch = /~([^#]+)#([^~]*)~/g;
 
     //
-    //helper functions
+    // Helper functions
     //
     function isInDOM(element) {
         return element === document || element && isInDOM(element.parentNode);
@@ -62,6 +69,31 @@
     // Core methods
     //
 
+    function nodeAdded(node) {
+        var contentItem = {
+            element: node,
+            content: [],
+            attributes: []
+        };
+
+        var html = node.innerHTML;
+        
+        var fullMatch = html.match(rxFullMatch);
+        if (fullMatch) {
+
+        } else {
+            var partialMatches = html.match(partialMatches);
+            if (partialMatches.length) {
+
+            }
+        }
+    }
+
+    function nodeRemoved(node) {
+
+    }
+
+
     function watchDOM() {
 
         function processMutation(mutation) {
@@ -82,6 +114,9 @@
                             removed.push(node);
                         }
                     }
+
+                    for (var i = 0; i < added.length; i++) nodeAdded(added[i]);
+                    for (var i = 0; i < removed.length; i++) nodeRemoved(removed[i]);
 
                     break;
                 case "attributes":
