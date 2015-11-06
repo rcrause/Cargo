@@ -14,11 +14,5 @@ namespace Cargo
         {
             return app.Use(typeof(CargoPipeline), cargoEngine);
         }
-
-        internal static ContentItem Filter(this IContentContext contentContext, IEnumerable<ContentItem> items)
-        {
-            //TODO: actually filter
-            return items.FirstOrDefault();
-        }
     }
 }

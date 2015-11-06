@@ -68,7 +68,6 @@
     //
     // Core methods
     //
-
     function nodeAdded(node) {
         var contentItem = {
             element: node,

@@ -563,7 +563,19 @@ namespace Cargo
             return Get<ContentItem>(idAsString);
         }
 
-        IEnumerable<ContentItem> ICargoDataSource.GetByLocality(string locality)
+        IEnumerable<ContentItem> ICargoDataSource.GetContentForLocality(string locality)
+        {
+            if (locality == null) throw new ArgumentNullException(nameof(locality));
+
+            return GetContentInternal(locality);
+        }
+
+        IEnumerable<ContentItem> ICargoDataSource.GetGlobalContent()
+        {
+            return GetContentInternal(null);
+        }
+
+        private IEnumerable<ContentItem> GetContentInternal(string locality)
         {
             if (_items != null)
             {
@@ -588,7 +600,7 @@ namespace Cargo
 
             return Enumerable.Empty<ContentItem>();
         }
-
+        
         IEnumerable<ContentItem> ICargoDataSource.GetByKey(string locality, string key)
         {
             if (_items != null)

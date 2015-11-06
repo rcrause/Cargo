@@ -48,7 +48,7 @@ namespace Cargo
         private ContentItem GetContentItem(string key)
         {
             IEnumerable<ContentItem> itemsWithKey = Content[key];
-            return ContentContext.Filter(itemsWithKey);
+            return itemsWithKey.FirstOrDefault();
         }
 
         private string Tokenize(string key, string content)

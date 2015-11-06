@@ -20,10 +20,9 @@ namespace Cargo
             
             //here are our handlers
             Get[prefix + "/js"] = _ => FileFromResource("cargo.js");
-            Get[prefix + "/css"] = _ => FileFromResource("cargo.js");
+            Get[prefix + "/css"] = _ => FileFromResource("cargo.css");
         }
-
-
+        
         private string FileFromResource(string resource)
         {
 #if DEBUG
