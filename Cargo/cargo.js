@@ -52,10 +52,34 @@
 
     //
     // Globals
-    var content = [];
+    var content = {};
     var contentByElement = new WeakMap();
     var rxFullMatch = /^\s*~([^#]+)#([^~]*)~\s*$/;
     var rxPartialMatch = /~([^#]+)#([^~]*)~/g;
+    var domWatcher;
+    var elementWatcher;
+
+    //
+    // Types
+    var ContentItem = function ContentItem(key, content) {
+        this.key = key;
+        this.content = content;
+        this.processChange = function processChange(element) {
+            var newContent = element.innerHTML;
+            if (this.content != newContent) {
+                var otherItems = document.querySelectorAll('[data-cargo-key="' + this.key + '"]');
+
+                for (var i = 0; i < otherItems.length; i++) {
+                    var otherItem = otherItems[i];
+                    if (otherItem !== element) {
+                        otherItem.innerHTML = newContent;
+                    }
+                }
+
+                console.log("content changed for " + this.key);
+            }
+        }
+    }
 
     //
     // Helper functions
@@ -123,16 +147,37 @@
         //3. the node is empty
 
         function processNodeInternal(node) {
-            function processTextNode(textNode) {
-                function registerNode(node, match) {
-                    var key = match[1];
-                    var content = htmlDecode(match[2]);
-                    node.innerHTML = content;
-                    node.classList.add("cargo-has-content");
-                    node.setAttribute("data-cargo-key", key);
-                    contentByElement.set(node, { key: key });
+            function contentItemFor(key, content_) {
+                if (key in content) {
+                    var contentItem = content[key];
+                    contentItem.content = content_;
+                    return contentItem;
+                } else {
+                    var contentItem = new ContentItem(key, content_);
+                    content[key] = contentItem;
+                    return contentItem;
                 }
+            }
 
+            function registerNode(node, match) {
+                var key = match[1];
+                var content = htmlDecode(match[2]);
+                node.innerHTML = content;
+                node.classList.add("cargo-has-content");
+                node.setAttribute("data-cargo-key", key);
+                contentByElement.set(node, contentItemFor(key, content));
+                elementWatcher.observe(node, { childList: true, attributes: false, subtree: true, characterData: true });
+            }
+
+            function reRegisterNode(node) {
+                //this node needs to be re-processed
+                var key = node.getAttribute("data-cargo-key");
+                var content = node.innerHTML;
+                contentByElement.set(node, contentItemFor(key, content));
+                elementWatcher.observe(node, { childList: true, attributes: false, subtree: true, characterData: true });
+            }
+
+            function processTextNode(textNode) {
                 var text = textNode.textContent;
                 var node = textNode.parentNode;
                 var matches = regexSplit(text, rxPartialMatch);
@@ -165,16 +210,24 @@
                 }
             }
 
+
             //process the node depending on what it is
             switch (node.nodeType) {
                 case Node.ELEMENT_NODE:
-                    if (node.hasChildNodes()) {
-                        //do each child in turn
-                        var childNodes = [];
-                        var fc = node.firstChild;
-                        while (fc) { childNodes.push(fc); fc = fc.nextSibling; }
+                    //don't process script or style nodes
+                    if (!/head|link|meta|script|style/i.test(node.tagName)) {
+                        if (node.classList.contains("cargo-has-content") && node.hasAttribute("data-cargo-key")) {
+                            reRegisterNode(node);
+                        } else {
+                            if (node.hasChildNodes()) {
+                                //do each child in turn
+                                var childNodes = [];
+                                var fc = node.firstChild;
+                                while (fc) { childNodes.push(fc); fc = fc.nextSibling; }
 
-                        childNodes.forEach(processNodeInternal);
+                                childNodes.forEach(processNodeInternal);
+                            }
+                        }
                     }
                     break;
                 case Node.TEXT_NODE:
@@ -226,11 +279,39 @@
             }
         };
 
-        var domObserver = new MutationObserver(domCallback);
-        domObserver.observe(document.body, { childList: true, attributes: false, subtree: true });
+        domWatcher = new MutationObserver(domCallback);
+        domWatcher.observe(document.body, { childList: true, attributes: false, subtree: true });
+    }
+
+    function watchElements() {
+
+        function processElementMutation(mutation) {
+            function findContentElement(target) {
+                if (contentByElement.has(target)) return target;
+                else if (target == document) return null;
+                else return findContentElement(target.parentNode);
+            }
+
+            var contentElement = findContentElement(mutation.target);
+            var contentItem = contentByElement.get(contentElement);
+            if (contentItem != null) {
+                contentItem.processChange(contentElement);
+            }
+        }
+
+        function elementCallback(mutations) {
+            if (mutations && mutations.length) {
+                for (var i = 0; i < mutations.length; i++) {
+                    processElementMutation(mutations[i]);
+                }
+            }
+        }
+
+        elementWatcher = new MutationObserver(elementCallback);
     }
 
     //kick off processing of the current DOM and any changes to come
+    watchElements();
     processCurrentDOM();
     watchDOM();
 
