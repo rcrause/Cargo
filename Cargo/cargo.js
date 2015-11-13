@@ -64,6 +64,7 @@
     var ContentItem = function ContentItem(key, content) {
         this.key = key;
         this.content = content;
+        this.originalContent = content;
         this.processChange = function processChange(element) {
             var newContent = element.innerHTML;
             if (this.content != newContent) {
@@ -76,6 +77,7 @@
                     }
                 }
 
+                this.content = newContent;
                 console.log("content changed for " + this.key);
             }
         }
