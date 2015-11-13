@@ -1,13 +1,11 @@
 ﻿@{
     ViewBag.Title = @Content("Home Page");
 }
-
 <div class="jumbotron">
     <h1>@Content("maintitle", "ASP.NET")</h1>
     <p class="lead">@Content("ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.")</p>
     <p><a href="@Content("http://asp.net")" class="btn btn-primary btn-lg">@Content("Learn more &raquo;")</a></p>
 </div>
-
 <div class="row">
     <div class="col-md-4">
         <h2>@Content("Getting started")</h2>
@@ -30,5 +28,41 @@
         <p>@Content("This text is content") This is text not content</p>
         <p>This is text not content @Content("This text is content A") This is text not content @Content("This text is content A") This is text not content</p>
         <p>Not Content@{<text>@Content("Content")</text>}Not Content</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <h3>Dom manip tests</h3>
+        <script>
+            function addSomethingWithoutContent() {
+                var e = document.getElementById("newElementsBoxOne");
+                var d = document.createElement("div");
+                d.textContent = "This is not a content node";
+                e.appendChild(d);
+            }
+            function addSomethingWithContent() {
+                var e = document.getElementById("newElementsBoxOne");
+                var d = document.createElement("div");
+                d.textContent = '@Content("this is a content node")';
+                e.appendChild(d);
+            }
+            var detached = null;
+            function detachTheNode() {
+                if (detached) {
+                    newElementsBoxOne.appendChild(detached);
+                    detached = null;
+                } else {
+                    detached = document.getElementById("detachme");
+                    detached.parentNode.removeChild(detached);
+                }
+            }
+        </script>
+        <button class="btn btn-default" onclick="addSomethingWithoutContent()">Add a dom node without content</button>
+        <button class="btn btn-default" onclick="addSomethingWithContent()">Add a dom NEW node full of content</button>
+        <button class="btn btn-default" onclick="detachTheNode()">Detach/attach a node</button>
+        <div id="newElementsBoxOne" style="padding:10px;margin-top:10px;min-height:100px;border:1px solid #CCC;box-shadow: 2px 2px 8px rgba(0,0,0,0.2)">
+            <div id="detachme">@Content("This node may just be detached")</div>
+        </div>
     </div>
 </div>
