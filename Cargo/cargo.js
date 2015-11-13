@@ -234,4 +234,7 @@
     processCurrentDOM();
     watchDOM();
 
+    //uncloak
+    document.getElementsByTagName("html")[0].classList.remove("cargo-cloak");
+
 })(this);

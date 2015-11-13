@@ -17,4 +17,7 @@
     var cs = document.currentScript;
     loadScript(cs.src.replace(/js$/, "cargo.js"));
     loadCss(cs.src.replace(/js$/, "cargo.css"));
+
+    //debugger;
+    document.getElementsByTagName("html")[0].className += " cargo-cloak";
 })();
