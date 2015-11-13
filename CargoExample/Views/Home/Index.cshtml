@@ -25,7 +25,10 @@
     </div>
     <div class="col-md-4">
         <h2>@Content("Web Hosting")</h2>
-        <p>@Content("You can easily find a web hosting company that offers the right mix of features and price for your applications.")</p>
-        <p><a class="btn btn-default" href="@Content("http://go.microsoft.com/fwlink/?LinkId=301867")">@Content("Learn more &raquo;")</a></p>
+        <p>This text isn't content @Content("This text is content") This text also is not content</p>
+        <p>This is text not content @Content("This text is content")</p>
+        <p>@Content("This text is content") This is text not content</p>
+        <p>This is text not content @Content("This text is content A") This is text not content @Content("This text is content A") This is text not content</p>
+        <p>Not Content@{<text>@Content("Content")</text>}Not Content</p>
     </div>
 </div>
