@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,12 @@ namespace Cargo
         private JsonSerializer _serializer = new JsonSerializer();
         private FileSystemWatcher _fsw;
         private DateTime _lastModifiedTime;
+
+        private Lazy<bool> _isInWebApplication = new Lazy<bool>(FigureOutIfInWebApplication);
+        private Lazy<string> _appDataLocation = new Lazy<string>(GetAppDataFolderLocation);
+
+        private bool IsInWebApplication { get { return _isInWebApplication.Value; } }
+        private string AppDataFolder { get { return _appDataLocation.Value; } }
 
         public string Filename
         {
@@ -83,6 +90,14 @@ namespace Cargo
 
         private void SetFilenameInternal(string filename)
         {
+            if(!Path.IsPathRooted(filename))
+            {
+                if(IsInWebApplication && AppDataFolder != null)
+                {
+                    filename = Path.Combine(AppDataFolder, filename);
+                }
+            }
+
             if (File.Exists(filename))
             {
                 var fileAttributes = File.GetAttributes(filename);
@@ -91,12 +106,17 @@ namespace Cargo
                     throw new ArgumentException("filename cannot be a directory", "filename");
                 }
             }
+            else
+            {
+                //touch the file
+                File.Create(filename).Close();
+            }
 
-            string directoryName = Path.GetDirectoryName(filename);
-            if (directoryName == "") directoryName = Directory.GetCurrentDirectory();
+            FileInfo fi = new FileInfo(filename);
 
-            string onlyFileName = Path.GetFileName(filename);
-            _lastModifiedTime = File.GetLastWriteTimeUtc(filename);
+            string directoryName = fi.DirectoryName;
+            string onlyFileName = fi.Name;
+            _lastModifiedTime = fi.LastWriteTimeUtc;
 
             //disable the old watcher
             if (_fsw != null) _fsw.EnableRaisingEvents = false;
@@ -126,24 +146,12 @@ namespace Cargo
                 if (_fsw != null) _fsw.EnableRaisingEvents = true;
             }
 
-            _filename = filename;
+            _filename = fi.FullName;
         }
 
         void FileWatcher_Modified(object sender, FileSystemEventArgs e)
         {
             Reload(false);
-        }
-
-        private static void Touch(string filename)
-        {
-            if (!File.Exists(filename))
-            {
-                File.Create(filename).Dispose();
-            }
-            else
-            {
-                File.OpenWrite(filename).Dispose();
-            }
         }
 
         private void Reload(bool force, bool @lock = true, bool notify = true)
@@ -651,6 +659,32 @@ namespace Cargo
             {
                 Remove(id);
             }
+        }
+
+
+        private static bool FigureOutIfInWebApplication()
+        {
+            try {
+                var systemweb = Assembly.Load("System.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
+                string appDomainAppId = systemweb.GetType("System.Web.HttpRuntime")
+                    .GetProperty("AppDomainAppId", BindingFlags.Static | BindingFlags.Public)
+                    .GetGetMethod()
+                    .Invoke(null, new object[0]) as string;
+                return appDomainAppId != null;
+            }
+            catch { return false; }
+        }
+
+        private static string GetAppDataFolderLocation()
+        {
+            try
+            {
+                var systemweb = Assembly.Load("System.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
+                return systemweb.GetType("System.Web.Hosting.HostingEnvironment")
+                    .GetMethod("MapPath", BindingFlags.Static | BindingFlags.Public)
+                    .Invoke(null, new object[] { "~/App_Data" }) as string;
+            }
+            catch { return null; }
         }
     }
 }
