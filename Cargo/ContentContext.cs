@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Cargo
 {
+    /// <summary>
+    /// A basic implementation for <see cref="IContentContext"/>.
+    /// </summary>
     public class ContentContext : IContentContext
     {
         public virtual bool EditingEnabled { get; set; }

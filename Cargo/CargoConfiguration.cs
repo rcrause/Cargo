@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Cargo
 {
+    /// <summary>
+    /// Contains the configuration for a <see cref="CargoEngine"/>.
+    /// </summary>
     public abstract class CargoConfiguration
     {
         private static readonly Lazy<DefaultCargoConfiguration> _default = new Lazy<DefaultCargoConfiguration>();

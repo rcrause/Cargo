@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Cargo
 {
+    /// <summary>
+    /// Some functionality for getting items from resource.
+    /// </summary>
     internal class ResourceHelper
     {
         private Dictionary<string, string> _filesFromResource;

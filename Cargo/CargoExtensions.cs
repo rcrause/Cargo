@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Cargo
 {
+    /// <summary>
+    /// Various extension methods for Cargo.
+    /// </summary>
     public static class CargoExtensions
     {
         public static IAppBuilder UseCargo(this IAppBuilder app, CargoEngine cargoEngine)

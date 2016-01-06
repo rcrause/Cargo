@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Cargo
 {
+    /// <summary>
+    /// Represents a collection of content for a specific <see cref="IContentContext"/>.
+    /// </summary>
     public class ContentCollection
     {
         private SHA1Managed _sha = new SHA1Managed();

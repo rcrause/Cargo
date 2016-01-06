@@ -9,6 +9,9 @@ using Nancy.Conventions;
 
 namespace Cargo
 {
+    /// <summary>
+    /// Bootstrapper for the Cargo Nancy server side admin interface functionality.
+    /// </summary>
     class CargoNancyBootstrapper : DefaultNancyBootstrapper
     {
         private CargoEngine _cargoEngine;

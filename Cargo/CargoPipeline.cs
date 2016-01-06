@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Cargo
 {
+    /// <summary>
+    /// A pipeline for use with OWIN type architecture. Loads the Cargo Nancy server side admin interface
+    /// </summary>
     internal class CargoPipeline
     {
         private CargoEngine _cargoEngine;

@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 
 namespace Cargo
 {
+    /// <summary>
+    /// An implementation of <see cref="ICargoDataSource"/> that reads from and writes to a normal JSON file.
+    /// </summary>
     public class CargoFileDataSource : IDisposable, ICargoDataSource
     {
         private string _filename;

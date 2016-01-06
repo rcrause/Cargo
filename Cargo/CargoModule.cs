@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Cargo
 {
+    /// <summary>
+    /// The main Cargo nancy module. Contains the serverside code for the admin interface.
+    /// </summary>
     public class CargoModule : Nancy.NancyModule
     {
         private static ResourceHelper _resourceHelper = new ResourceHelper();
