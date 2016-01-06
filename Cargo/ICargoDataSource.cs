@@ -16,7 +16,7 @@ namespace Cargo
         /// Returns the <see cref="ContentItem"/> with a matching <see cref="ContentItem.Id"/>, or <c>null</c> if a match is not found.
         /// </summary>
         /// <param name="id">the value of the <see cref="ContentItem.Id"/> for the <see cref="ContentItem"/> to be returned.</param>
-        ContentItem GetById(object id);
+        ContentItem GetById(string id);
 
         /// <summary>
         /// Returns all <see cref="ContentItem"/>s for a locality (i.e. page), or an empty <see cref="IEnumerable{ContentItem}"/> if
@@ -51,6 +51,6 @@ namespace Cargo
         /// Removes <see cref="ContentItem"/>s from the underlying data source.
         /// </summary>
         /// <param name="contentItemIds">The Id's <see cref="ContentItem"/>s to remove from the database.</param>
-        void Remove(IEnumerable<object> contentItemIds);
+        void Remove(IEnumerable<string> contentItemIds);
     }
 }

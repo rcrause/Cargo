@@ -409,6 +409,8 @@ namespace Cargo
 
         private void Remove(string key)
         {
+            if (string.IsNullOrEmpty(key)) return;
+
             JProperty removed;
             if (_items != null)
             {
@@ -557,13 +559,12 @@ namespace Cargo
             Dispose(true);
         }
 
-        ContentItem ICargoDataSource.GetById(object id)
+        ContentItem ICargoDataSource.GetById(string id)
         {
             if (id == null) throw new ArgumentNullException("id");
-            string idAsString = Convert.ToString(id);
-            if (string.IsNullOrEmpty(idAsString)) throw new ArgumentException("Could not convert id to string", "id");
+            if (id == "") throw new ArgumentException("id cannot be blank", "id");
 
-            return Get<ContentItem>(idAsString);
+            return Get<ContentItem>(id);
         }
 
         IEnumerable<ContentItem> ICargoDataSource.GetContentForLocality(string locality)
@@ -642,15 +643,13 @@ namespace Cargo
             }
         }
 
-        void ICargoDataSource.Remove(IEnumerable<object> contentItemIds)
+        void ICargoDataSource.Remove(IEnumerable<string> contentItemIds)
         {
             if (contentItemIds == null) throw new ArgumentNullException("contentItem");
 
-            foreach (var id in contentItemIds)
+            foreach (string id in contentItemIds)
             {
-                string idAsString = Convert.ToString(id);
-                if (string.IsNullOrEmpty(idAsString)) throw new InvalidOperationException("Could not convert Id to string");
-                Remove(idAsString);
+                Remove(id);
             }
         }
     }
