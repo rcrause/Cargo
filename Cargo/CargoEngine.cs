@@ -28,8 +28,8 @@ namespace Cargo
 
         public ContentCollection GetContent(IContentContext contentContext)
         {
-            //get content for this locality
-            var content = DataSource.GetContentForLocality(contentContext.Locality);
+            //get content for this location
+            var content = DataSource.GetContent(contentContext.Location);
 
             //create an immutable content collection for use by the view
             var collection = new ContentCollection(content, contentContext);

@@ -13,9 +13,9 @@ namespace Cargo
     public interface IContentContext
     {
         /// <summary>
-        /// The locality of the content context. Typically this is the view file name
+        /// The location of the content context. Typically this is the view file name
         /// </summary>
-        string Locality { get; }
+        string Location { get; }
 
         /// <summary>
         /// The current locale.

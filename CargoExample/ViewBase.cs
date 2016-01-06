@@ -26,7 +26,7 @@ namespace CargoExample
             _contentContext = new ContentContext
             {
                 Locale = this.Culture,
-                Locality = this.Request.RawUrl,
+                Location = this.Request.RawUrl,
                 EditingEnabled = true //Request.IsAuthenticated
             };
 

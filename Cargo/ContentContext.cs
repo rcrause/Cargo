@@ -15,6 +15,6 @@ namespace Cargo
 
         public virtual string Locale { get; set; }
 
-        public virtual string Locality { get; set; }
+        public virtual string Location { get; set; }
     }
 }

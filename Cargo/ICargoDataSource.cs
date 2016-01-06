@@ -19,15 +19,15 @@ namespace Cargo
         ContentItem GetById(string id);
 
         /// <summary>
-        /// Returns all <see cref="ContentItem"/>s for a locality (i.e. page), or an empty <see cref="IEnumerable{ContentItem}"/> if
+        /// Returns all <see cref="ContentItem"/>s for a location (i.e. page), or an empty <see cref="IEnumerable{ContentItem}"/> if
         /// none exist.
         /// </summary>
-        /// <param name="locality">The name of the locality for which to return <see cref="ContentItem"/>s.
+        /// <param name="location">The name of the location for which to return <see cref="ContentItem"/>s.
         /// </param>
-        IEnumerable<ContentItem> GetContentForLocality(string locality);
+        IEnumerable<ContentItem> GetContent(string location);
 
         /// <summary>
-        /// Returns all <see cref="ContentItem"/>s not bound to any locality.
+        /// Returns all <see cref="ContentItem"/>s not bound to any location.
         /// </summary>
         /// <returns></returns>
         IEnumerable<ContentItem> GetGlobalContent();
@@ -36,9 +36,9 @@ namespace Cargo
         /// Returns all <see cref="ContentItem"/>s with matching <see cref="ContentItem.Key"/>s, or an empty <see cref="IEnumerable{ContentItem}"/> if
         /// none exist.
         /// </summary>
-        /// <param name="locality">The name of the locality for which to return <see cref="ContentItem"/>s.</param>
+        /// <param name="location">The name of the location for which to return <see cref="ContentItem"/>s.</param>
         /// <param name="key">the value of the <see cref="ContentItem.Key"/> for the <see cref="ContentItem"/>s to be returned.</param>
-        IEnumerable<ContentItem> GetByKey(string locality, string key);
+        IEnumerable<ContentItem> GetByKey(string location, string key);
 
         /// <summary>
         /// Adds or updates <see cref="ContentItem"/>s in the underlying data source. If the <see cref="ContentItem"/> is new

@@ -19,9 +19,9 @@ namespace Cargo
         public virtual object Id { get; set; }
 
         /// <summary>
-        /// The locality (i.e. page) of this content item.
+        /// The location (i.e. page) of this content item.
         /// </summary>
-        public virtual string Locality { get; set; }
+        public virtual string Location { get; set; }
 
         /// <summary>
         /// The key for this data item. The key identifies each individual <see cref="ContentItem"/>, but there may be multiple content items

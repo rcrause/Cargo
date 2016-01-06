@@ -567,11 +567,11 @@ namespace Cargo
             return Get<ContentItem>(id);
         }
 
-        IEnumerable<ContentItem> ICargoDataSource.GetContentForLocality(string locality)
+        IEnumerable<ContentItem> ICargoDataSource.GetContent(string location)
         {
-            if (locality == null) throw new ArgumentNullException(nameof(locality));
+            if (location == null) throw new ArgumentNullException(nameof(location));
 
-            return GetContentInternal(locality);
+            return GetContentInternal(location);
         }
 
         IEnumerable<ContentItem> ICargoDataSource.GetGlobalContent()
@@ -579,7 +579,7 @@ namespace Cargo
             return GetContentInternal(null);
         }
 
-        private IEnumerable<ContentItem> GetContentInternal(string locality)
+        private IEnumerable<ContentItem> GetContentInternal(string location)
         {
             if (_items != null)
             {
@@ -590,7 +590,7 @@ namespace Cargo
                     if (_items != null)
                     {
                         var result = _items.PropertyValues()
-                        .Where(x => (string)((JValue)((JObject)x).Property("Locality").Value).Value == locality)
+                        .Where(x => (string)((JValue)((JObject)x).Property("Location").Value).Value == location)
                         .Select(x => x.ToObject<ContentItem>(_serializer))
                         .ToArray();
                         return (IEnumerable<ContentItem>)result;
@@ -605,7 +605,7 @@ namespace Cargo
             return Enumerable.Empty<ContentItem>();
         }
         
-        IEnumerable<ContentItem> ICargoDataSource.GetByKey(string locality, string key)
+        IEnumerable<ContentItem> ICargoDataSource.GetByKey(string location, string key)
         {
             if (_items != null)
             {
@@ -616,7 +616,7 @@ namespace Cargo
                     if (_items != null)
                     {
                         var result = _items.PropertyValues()
-                            .Where(x => (string)((JValue)((JObject)x).Property("Locality").Value).Value == locality && (string)((JValue)((JObject)x).Property("Key").Value).Value == key)
+                            .Where(x => (string)((JValue)((JObject)x).Property("Location").Value).Value == location && (string)((JValue)((JObject)x).Property("Key").Value).Value == key)
                             .Select(x => x.ToObject<ContentItem>(_serializer))
                             .ToArray();
                         return (IEnumerable<ContentItem>)result;
