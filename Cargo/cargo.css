@@ -1,4 +1,61 @@
-﻿.cargo-cloak {
+﻿@-moz-keyframes spin {
+    from {
+        -moz-transform: rotate(0);
+        -ms-transform: rotate(0);
+        -o-transform: rotate(0);
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+
+    to {
+        -moz-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    from {
+        -moz-transform: rotate(0);
+        -ms-transform: rotate(0);
+        -o-transform: rotate(0);
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+
+    to {
+        -moz-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        -moz-transform: rotate(0);
+        -ms-transform: rotate(0);
+        -o-transform: rotate(0);
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+
+    to {
+        -moz-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+
+
+
+.cargo-cloak {
     display: none;
 }
 
@@ -11,4 +68,65 @@ body.cargo-editing {
 
     .cargo-editing .cargo-has-content:hover {
         background: rgba(128, 0, 128, 0.25);
+    }
+
+#cargo_toolbutton {
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    -ms-word-wrap: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -moz-font-feature-settings: 'liga';
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+    font-family: 'Material Icons';
+    text-align: center;
+}
+
+    #cargo_toolbutton a, #cargo_toolbutton a:visited, #cargo_toolbutton a:active {
+        text-decoration: none;
+        color: rgba(255,255,255,0.5);
+    }
+
+        #cargo_toolbutton a:hover {
+            text-decoration: none;
+            color: white;
+            -moz-transition: color ease 0.1s;
+            -o-transition: color ease 0.1s;
+            -webkit-transition: color ease 0.1s;
+            transition: color ease 0.1s;
+        }
+
+    #cargo_toolbutton > a {
+        display: block;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        position: fixed;
+        bottom: 50px;
+        right: 50px;
+        background-color: rgb(16,108,200);
+        box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+        cursor: pointer;
+        font-size: 32px;
+        line-height: 48px;
+    }
+
+        #cargo_toolbutton > a.saving {
+            animation-duration: 0.5s;
+            animation-name: spin;
+            animation-iteration-count: infinite;
+        }
+
+    #cargo_toolbutton > ul {
+        display: block;
+        position: relative;
     }

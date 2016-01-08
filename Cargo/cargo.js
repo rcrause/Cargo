@@ -58,6 +58,10 @@
     var rxPartialMatch = /~([^#]+)#([^~]*)~/g;
     var domWatcher;
     var elementWatcher;
+    var toolbutton;
+    var editing = false;
+    var saving = false;
+    var html = document.body.parentNode;
 
     //
     // Types
@@ -312,10 +316,84 @@
         elementWatcher = new MutationObserver(elementCallback);
     }
 
+    //UI stuff
+    function startEditMode() {
+        if (!editing) {
+            html.classList.add("cargo-editing");
+            editing = true;
+        }
+    }
+
+    function exitEditMode() {
+        if (editing) {
+            html.classList.remove("cargo-editing");
+            editing = false;
+        }
+    }
+
+    function save() {
+        var promise = new Promise(function (resolve, reject) {
+            saving = true;
+            setTimeout(resolve, 1000);
+        });
+
+        promise.then(function () { saving = false; }, function () { saving = false; });
+
+        return promise;
+    }
+
+    function addButtons() {
+
+        if (!toolbutton) {
+
+            //add the google material font
+            var link = document.createElement("link");
+            link.href = "https://fonts.googleapis.com/icon?family=Material+Icons";
+            link.rel = "stylesheet";
+            document.head.appendChild(link);
+
+            //add the tool button
+            toolbutton = document.createElement("div"); document.body.appendChild(toolbutton);
+            toolbutton.id = "cargo_toolbutton";
+
+            //the main button
+            var mainButton = document.createElement("a"); toolbutton.appendChild(mainButton);
+            mainButton.addEventListener("click", function () {
+                if (!editing && !saving) {
+                    //start editing
+                    startEditMode();
+                    mainButton.textContent = "save";
+                } else if (editing && !saving) {
+                    //save
+                    exitEditMode();
+                    mainButton.textContent = "cached";
+                    mainButton.classList.add("saving");
+                    save().then(function () {
+                        mainButton.classList.remove("saving");
+                        mainButton.textContent = "mode_edit";
+                    });
+                }
+            });
+            mainButton.textContent = "mode_edit";
+
+            var toolbar = document.createElement("ul"); toolbutton.appendChild(toolbar);
+
+            var toolbuttons = [{ text: "icon", hint: "hint", action: function () { } }];
+
+            toolbuttons.forEach(function (b) {
+                var li = document.createElement("li"); toolbar.appendChild(li);
+                var a = document.createElement("a"); li.appendChild(a);
+            });
+        }
+    }
+
     //kick off processing of the current DOM and any changes to come
     watchElements();
     processCurrentDOM();
     watchDOM();
+
+    if (document.body != null) addButtons();
+    else document.addEventListener("load", addButtons);
 
     //uncloak
     document.getElementsByTagName("html")[0].classList.remove("cargo-cloak");
