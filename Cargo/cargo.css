@@ -166,32 +166,32 @@ body.cargo-editing {
         margin-right: 48px;
         z-index: 1000;
         opacity: 0;
-        -moz-transition: opacity ease 0.1s;
-        -o-transition: opacity ease 0.1s;
-        -webkit-transition: opacity ease 0.1s;
-        transition: opacity ease 0.1s;
+        -moz-transition: opacity ease 0.2s;
+        -o-transition: opacity ease 0.2s;
+        -webkit-transition: opacity ease 0.2s;
+        transition: opacity ease 0.2s;
     }
 
-        #cargo_toolbutton:hover > ul, #cargo_toolbutton > ul:hover {
-            opacity: 1;
-        }
+.cargo-editing #cargo_toolbutton:hover > ul, .cargo-editing #cargo_toolbutton > ul:hover {
+    opacity: 1;
+}
 
-        #cargo_toolbutton > ul > li {
-            display: inline-block;
-            width: 32px;
-            height: 32px;
-            line-height: 32px;
-            background: green;
-            border-radius: 50%;
-            margin-right: -32px;
-            cursor: pointer;
-            box-shadow: 0 1px 3px 0 rgba(0,0,0,.26);
-            -moz-transition: margin-right ease 0.1s;
-            -o-transition: margin-right ease 0.1s;
-            -webkit-transition: margin-right ease 0.1s;
-            transition: margin-right ease 0.1s;
-        }
+#cargo_toolbutton > ul > li {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    background-color: rgb(16,108,200);
+    border-radius: 50%;
+    margin-right: -32px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.26);
+    -moz-transition: margin-right ease 0.2s;
+    -o-transition: margin-right ease 0.2s;
+    -webkit-transition: margin-right ease 0.2s;
+    transition: margin-right ease 0.2s;
+}
 
-        #cargo_toolbutton:hover > ul > li, #cargo_toolbutton > ul:hover > li {
-            margin-right: 10px;
-        }
+.cargo-editing #cargo_toolbutton:hover > ul > li, .cargo-editing #cargo_toolbutton > ul:hover > li {
+    margin-right: 10px;
+}
