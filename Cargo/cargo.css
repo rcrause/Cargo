@@ -64,13 +64,34 @@ body.cargo-editing {
 
 .cargo-editing .cargo-has-content {
     outline: 1px dashed rgb(128, 0, 128);
+    cursor: pointer;
 }
+
+    .cargo-editing .cargo-has-content.cargo-modified {
+        outline: 1px dashed rgb(128, 0, 128);
+        box-shadow: 0 0 8px rgba(255, 0, 255, 1.0);
+    }
+
+    .cargo-editing .cargo-has-content.cargo-itemediting {
+        outline: 1px solid rgb(128, 0, 128);
+        box-shadow: 0 0 8px rgba(128, 0, 128, 1.0);
+        cursor: text;
+    }
 
     .cargo-editing .cargo-has-content:hover {
         background: rgba(128, 0, 128, 0.25);
     }
 
+    .cargo-editing .cargo-has-content.cargo-itemediting:hover {
+        background: inherit;
+    }
+
 #cargo_toolbutton {
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+    width: 48px;
+    height: 48px;
     font-weight: normal;
     font-style: normal;
     font-size: 24px;
@@ -110,23 +131,67 @@ body.cargo-editing {
         width: 48px;
         height: 48px;
         border-radius: 50%;
-        position: fixed;
-        bottom: 50px;
-        right: 50px;
+        position: relative;
         background-color: rgb(16,108,200);
         box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
         cursor: pointer;
         font-size: 32px;
         line-height: 48px;
+        z-index: 1001;
     }
 
-        #cargo_toolbutton > a.saving {
+        #cargo_toolbutton > a.cargo-saving {
+            -moz-animation-duration: 0.5s;
+            -o-animation-duration: 0.5s;
+            -webkit-animation-duration: 0.5s;
             animation-duration: 0.5s;
+            -moz-animation-name: spin;
+            -o-animation-name: spin;
+            -webkit-animation-name: spin;
             animation-name: spin;
+            -moz-animation-iteration-count: infinite;
+            -o-animation-iteration-count: infinite;
+            -webkit-animation-iteration-count: infinite;
             animation-iteration-count: infinite;
+            cursor: not-allowed;
         }
 
     #cargo_toolbutton > ul {
-        display: block;
-        position: relative;
+        display: inline;
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 0 0;
+        padding: 8px 0 8px 0;
+        margin-right: 48px;
+        z-index: 1000;
+        opacity: 0;
+        -moz-transition: opacity ease 0.1s;
+        -o-transition: opacity ease 0.1s;
+        -webkit-transition: opacity ease 0.1s;
+        transition: opacity ease 0.1s;
     }
+
+        #cargo_toolbutton:hover > ul, #cargo_toolbutton > ul:hover {
+            opacity: 1;
+        }
+
+        #cargo_toolbutton > ul > li {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            background: green;
+            border-radius: 50%;
+            margin-right: -32px;
+            cursor: pointer;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,.26);
+            -moz-transition: margin-right ease 0.1s;
+            -o-transition: margin-right ease 0.1s;
+            -webkit-transition: margin-right ease 0.1s;
+            transition: margin-right ease 0.1s;
+        }
+
+        #cargo_toolbutton:hover > ul > li, #cargo_toolbutton > ul:hover > li {
+            margin-right: 10px;
+        }
