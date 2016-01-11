@@ -2,6 +2,13 @@
 
     // #region Polyfills
 
+    //trim
+    if (!String.prototype.trim) {
+        String.prototype.trim = function () {
+            return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+        };
+    }
+
     //textContent
     if (Object.defineProperty &&
         Object.getOwnPropertyDescriptor &&
@@ -101,6 +108,7 @@
 
     ContentItem.prototype.processChange = function processChange(element) {
         var newContent = element.innerHTML;
+
         if (this._content != newContent) {
             var otherItems = this._elements;
             var modified = newContent != this._originalContent;
@@ -115,6 +123,7 @@
             var oldContent = this._content;
             this._content = newContent;
             this._emitReadOnly("contentEdited", newContent, oldContent);
+            console.log("edited -> \"" + newContent + "\"");
         }
     }
 
@@ -134,7 +143,13 @@
                     var old = this._content;
                     this._content = v;
                     this._emitReadOnly("contentChanged", v, old);
+                    console.log("changed -> \"" + v + "\"");
                 }
+
+                //make sure all the elements are in line
+                this._elements.forEach(function (e) {
+                    if (e.innerHTML != v) e.innerHTML = v;
+                });
             }
         },
         enumerable: true,
@@ -165,6 +180,10 @@
     // Helper functions
     function isInDOM(element) {
         return document.contains(element);
+    }
+
+    function trimHtml(html) {
+        return html.replace(/^(?:&nbsp;|&#8194;|&ensp;|&#8195;|&emsp;|&#8196;|&#8197;|&#8198;|&#8199;|&#8200;|&#8201;|&thinsp;|&#8202;|[\s\uFEFF\xA0])+|(?:&nbsp;|&#8194;|&ensp;|&#8195;|&emsp;|&#8196;|&#8197;|&#8198;|&#8199;|&#8200;|&#8201;|&thinsp;|&#8202;|[\s\uFEFF\xA0])+$/i, "").trim();
     }
 
     function arrayfy(thing) {
@@ -426,13 +445,19 @@
             function findContentElement(target) {
                 if (contentByElement.has(target)) return target;
                 else if (target == document) return null;
-                else return findContentElement(target.parentNode);
+                else if (target.parentNode) return findContentElement(target.parentNode);
+                else return null;
             }
 
+            if (!mutation.target) debugger;
+
             var contentElement = findContentElement(mutation.target);
-            var contentItem = contentByElement.get(contentElement);
-            if (contentItem != null) {
-                contentItem.processChange(contentElement);
+
+            if (contentElement && contentElement.contentEditable) {
+                var contentItem = contentByElement.get(contentElement);
+                if (contentItem != null) {
+                    contentItem.processChange(contentElement);
+                }
             }
         }
 
@@ -480,15 +505,23 @@
             target.contentEditable = true;
             target.focus();
 
-            var targets = getAllElementsForContentItem(contentItem);
-            targets.forEach(function (i) { i.classList.add("cargo-itemediting"); });
+            contentItem.elements.forEach(function (i) { i.classList.add("cargo-itemediting"); });
         });
 
         contentEvents.on("blur", function (event, contentItem) {
             if (event.target.contentEditable) {
                 event.target.contentEditable = false;
-                var targets = getAllElementsForContentItem(contentItem);
-                targets.forEach(function (i) { i.classList.remove("cargo-itemediting"); });
+
+                var content = contentItem.content;
+                var trimmed = trimHtml(content);
+
+                if (!trimmed) {
+                    contentItem.content = "[empty]";
+                } else if (trimmed != content) {
+                    contentItem.content = trimmed;
+                }
+
+                contentItem.elements.forEach(function (i) { i.classList.remove("cargo-itemediting"); });
             }
         });
     }
@@ -506,7 +539,12 @@
     function addButtons() {
 
         var toolbuttons = [{
-            text: "cached",
+            text: "list",
+            hint: "Show a list of all content on the page",
+            click: function (event) {
+            }
+        }, {
+            text: "settings_backup_restore",
             hint: "Reset all changes made since the last save",
             click: function (event) {
                 confirm("Are you sure you want to revert ALL CHANGES?").then(function () {
@@ -516,11 +554,6 @@
                     }
                 });
             }
-        }, {
-            text: "home",
-            hint: "This is another button",
-            click: function (event) {
-            }
         }];
 
         var quickbuttons = [{
@@ -528,7 +561,7 @@
             hint: "Reset this content item to its original value",
             click: function (event, element, contentItem) {
             }
-        }]
+        }];
 
 
         if (!toolbutton) {
@@ -573,7 +606,7 @@
                 a.addEventListener("click", function (e) { b.click(e); })
             });
 
-            var quickbar = document.createElement("ul"); document.body.appendChild(quickbar);
+            quickbar = document.createElement("ul"); document.body.appendChild(quickbar);
             quickbar.id = "cargo_quickbar";
             quickbar.style.display = "none";
 
