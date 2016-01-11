@@ -48,6 +48,20 @@
     /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
     if ("document" in self) { if (!("classList" in document.createElement("_"))) { (function (j) { "use strict"; if (!("Element" in j)) { return } var a = "classList", f = "prototype", m = j.Element[f], b = Object, k = String[f].trim || function () { return this.replace(/^\s+|\s+$/g, "") }, c = Array[f].indexOf || function (q) { var p = 0, o = this.length; for (; p < o; p++) { if (p in this && this[p] === q) { return p } } return -1 }, n = function (o, p) { this.name = o; this.code = DOMException[o]; this.message = p }, g = function (p, o) { if (o === "") { throw new n("SYNTAX_ERR", "An invalid or illegal string was specified") } if (/\s/.test(o)) { throw new n("INVALID_CHARACTER_ERR", "String contains an invalid character") } return c.call(p, o) }, d = function (s) { var r = k.call(s.getAttribute("class") || ""), q = r ? r.split(/\s+/) : [], p = 0, o = q.length; for (; p < o; p++) { this.push(q[p]) } this._updateClassName = function () { s.setAttribute("class", this.toString()) } }, e = d[f] = [], i = function () { return new d(this) }; n[f] = Error[f]; e.item = function (o) { return this[o] || null }; e.contains = function (o) { o += ""; return g(this, o) !== -1 }; e.add = function () { var s = arguments, r = 0, p = s.length, q, o = false; do { q = s[r] + ""; if (g(this, q) === -1) { this.push(q); o = true } } while (++r < p); if (o) { this._updateClassName() } }; e.remove = function () { var t = arguments, s = 0, p = t.length, r, o = false, q; do { r = t[s] + ""; q = g(this, r); while (q !== -1) { this.splice(q, 1); o = true; q = g(this, r) } } while (++s < p); if (o) { this._updateClassName() } }; e.toggle = function (p, q) { p += ""; var o = this.contains(p), r = o ? q !== true && "remove" : q !== false && "add"; if (r) { this[r](p) } if (q === true || q === false) { return q } else { return !o } }; e.toString = function () { return this.join(" ") }; if (b.defineProperty) { var l = { get: i, enumerable: true, configurable: true }; try { b.defineProperty(m, a, l) } catch (h) { if (h.number === -2146823252) { l.enumerable = false; b.defineProperty(m, a, l) } } } else { if (b[f].__defineGetter__) { m.__defineGetter__(a, i) } } }(self)) } else { (function () { var b = document.createElement("_"); b.classList.add("c1", "c2"); if (!b.classList.contains("c2")) { var c = function (e) { var d = DOMTokenList.prototype[e]; DOMTokenList.prototype[e] = function (h) { var g, f = arguments.length; for (g = 0; g < f; g++) { h = arguments[g]; d.call(this, h) } } }; c("add"); c("remove") } b.classList.toggle("c3", false); if (b.classList.contains("c3")) { var a = DOMTokenList.prototype.toggle; DOMTokenList.prototype.toggle = function (d, e) { if (1 in arguments && !this.contains(d) === !e) { return e } else { return a.call(this, d) } } } b = null }()) } };
 
+    //matches
+    function matches(elm, selector) {
+        if (elm.matches) return elm.matches(selector);
+        else {
+            var matches = (elm.document || elm.ownerDocument).querySelectorAll(selector),
+                i = matches.length;
+            while (--i >= 0 && matches.item(i) !== elm);
+            return i > -1;
+        }
+    }
+
+    //Emitter
+    !function () { function t(t) { return t ? e(t) : void 0 } function e(e) { for (var s in t.prototype) e[s] = t.prototype[s]; return e } this.Emitter = t, t.prototype.on = t.prototype.addEventListener = function (t, e) { return this._callbacks = this._callbacks || {}, (this._callbacks["$" + t] = this._callbacks["$" + t] || []).push(e), this }, t.prototype.once = function (t, e) { function s() { this.off(t, s), e.apply(this, arguments) } return s.fn = e, this.on(t, s), this }, t.prototype.off = t.prototype.removeListener = t.prototype.removeAllListeners = t.prototype.removeEventListener = function (t, e) { if (this._callbacks = this._callbacks || {}, 0 == arguments.length) return this._callbacks = {}, this; var s = this._callbacks["$" + t]; if (!s) return this; if (1 == arguments.length) return delete this._callbacks["$" + t], this; for (var r, i = 0; i < s.length; i++) if (r = s[i], r === e || r.fn === e) { s.splice(i, 1); break } return this }, t.prototype.emit = function (t) { this._callbacks = this._callbacks || {}; var e = [].slice.call(arguments, 1), s = this._callbacks["$" + t]; if (s) { s = s.slice(0); for (var r = 0, i = s.length; i > r; ++r) s[r].apply(this, e) } return this }, t.prototype.listeners = function (t) { return this._callbacks = this._callbacks || {}, this._callbacks["$" + t] || [] }, t.prototype.hasListeners = function (t) { return !!this.listeners(t).length } }();
+
     // #endregion
 
     //
@@ -59,38 +73,110 @@
     var domWatcher;
     var elementWatcher;
     var toolbutton;
+    var quickbar;
     var editing = false;
     var saving = false;
     var html = document.body.parentNode;
+    var contentEvents = new Emitter;
+    var lastHoveredElement = null;
 
     //
-    // Types
+    // ContentItem Type
     var ContentItem = function ContentItem(key, content) {
         this.key = key;
-        this.content = content;
-        this.originalContent = content;
-        this.processChange = function processChange(element) {
-            var newContent = element.innerHTML;
-            if (this.content != newContent) {
-                var otherItems = document.querySelectorAll('[data-cargo-key="' + this.key + '"]');
-
-                for (var i = 0; i < otherItems.length; i++) {
-                    var otherItem = otherItems[i];
-                    if (otherItem !== element) {
-                        otherItem.innerHTML = newContent;
-                    }
-                }
-
-                this.content = newContent;
-                console.log("content changed for " + this.key);
+        this._content = content;
+        this._originalContent = content;
+        this._elements = new Set();
+        this._emitReadOnly = function (a, b, c, d) {
+            this._readonly = true;
+            try {
+                this.emit(a, b, c, d);
+                this._readonly = false;
+            } catch (e) {
+                this._readonly = false;
+                throw e;
             }
         }
     }
+
+    ContentItem.prototype.processChange = function processChange(element) {
+        var newContent = element.innerHTML;
+        if (this._content != newContent) {
+            var otherItems = this._elements;
+            var modified = newContent != this._originalContent;
+
+            otherItems.forEach(function (otherItem) {
+                if (otherItem !== element) {
+                    otherItem.innerHTML = newContent;
+                }
+                otherItem.classList.toggle("cargo-modified", modified);
+            });
+
+            var oldContent = this._content;
+            this._content = newContent;
+            this._emitReadOnly("contentEdited", newContent, oldContent);
+        }
+    }
+
+    Object.defineProperty(ContentItem.prototype, "modified", {
+        get: function () { return this._content != this._originalContent },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(ContentItem.prototype, "content", {
+        get: function () { return this._content },
+        set: function (v) {
+            if (this._readonly) {
+                throw "this content item may not be modified at this time.";
+            } else {
+                if (this._content != v) {
+                    var old = this._content;
+                    this._content = v;
+                    this._emitReadOnly("contentChanged", v, old);
+                }
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(ContentItem.prototype, "originalContent", {
+        get: function () { return this._originalContent },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(ContentItem.prototype, "readonly", {
+        get: function () { return this._readonly },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(ContentItem.prototype, "elements", {
+        get: function () { return this._elements },
+        enumerable: true,
+        configurable: true
+    });
+
+    Emitter(ContentItem.prototype);
 
     //
     // Helper functions
     function isInDOM(element) {
         return document.contains(element);
+    }
+
+    function arrayfy(thing) {
+        if (typeof thing == "array") return thing;
+        else {
+            var arr = [];
+            for (var i = 0; i < thing.length; i++) {
+                arr.push(thing[i]);
+            }
+
+            return arr;
+        }
     }
 
     function getOffset(element) {
@@ -110,9 +196,9 @@
         }
     }
 
-    function setOffset(element, top, left) {
-        element.style.top = top + "px";
-        element.style.left = left + "px";
+    function setOffset(element, offset) {
+        element.style.top = offset.top + "px";
+        element.style.left = offset.left + "px";
     }
 
     function htmlDecode(encoded) {
@@ -139,6 +225,15 @@
         return matches;
     }
 
+    function confirm(message) {
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                if (window.confirm(message)) resolve();
+                else reject();
+            }, 1);
+        });
+    }
+
     //
     // Core functions
     function processNode(node) {
@@ -153,33 +248,57 @@
         //3. the node is empty
 
         function processNodeInternal(node) {
-            function contentItemFor(key, content_) {
+            function contentItemFor(key, node) {
+                var contentItem;
+
                 if (key in content) {
+                    //the content item exists. Get the content item
+                    //and replace the HTML for the node.
                     var contentItem = content[key];
-                    contentItem.content = content_;
-                    return contentItem;
+                    node.innerHTML = contentItem.content;
                 } else {
-                    var contentItem = new ContentItem(key, content_);
+                    //the content item does not exist. Create the node using
+                    //the content of the node as the content.
+                    var contentItem = new ContentItem(key, node.innerHTML);
                     content[key] = contentItem;
-                    return contentItem;
                 }
+
+                //add the node to the content item and set the associative array of elements.
+                contentItem.elements.add(node);
+                contentByElement.set(node, contentItem);
+
+                return contentItem;
+            }
+
+            function registerEvents(element, contentItem, events) {
+                events.forEach(function (event) {
+                    element.addEventListener(event, function (e) {
+                        if (editing) {
+                            contentEvents.emit(event, e, contentItem);
+                        }
+                    });
+                });
             }
 
             function registerNode(node, match) {
                 var key = match[1];
                 var content = htmlDecode(match[2]);
                 node.innerHTML = content;
+
+                var contentItem = contentItemFor(key, node);
+
                 node.classList.add("cargo-has-content");
                 node.setAttribute("data-cargo-key", key);
-                contentByElement.set(node, contentItemFor(key, content));
+                registerEvents(node, contentItem, ["mouseenter", "mouseleave", "click", "focus", "blur"]);
                 elementWatcher.observe(node, { childList: true, attributes: false, subtree: true, characterData: true });
             }
 
             function reRegisterNode(node) {
-                //this node needs to be re-processed
+                //this node needs to be re-processed for some reason
                 var key = node.getAttribute("data-cargo-key");
-                var content = node.innerHTML;
-                contentByElement.set(node, contentItemFor(key, content));
+                var contentItem = contentItemFor(key, node);
+
+                registerEvents(node, contentItem, ["mouseenter", "mouseleave", "click", "focus", "blur"]);
                 elementWatcher.observe(node, { childList: true, attributes: false, subtree: true, characterData: true });
             }
 
@@ -223,6 +342,10 @@
                     //don't process script or style nodes
                     if (!/head|link|meta|script|style/i.test(node.tagName)) {
                         if (node.classList.contains("cargo-has-content") && node.hasAttribute("data-cargo-key")) {
+
+                            //this is for the case where HTML randomly gets parsed and attached
+                            //or for some other case where a node is attached that has the right
+                            //attributes but for some reason isn't registered.
                             reRegisterNode(node);
                         } else {
                             if (node.hasChildNodes()) {
@@ -242,21 +365,29 @@
             }
         }
 
-        function isContainedInAContentNode(node) {
-            if (!node) return false;
-            else if (contentByElement.has(node)) return true;
-            else if (node === document) return false;
-            else return isContainedInAContentNode(node.parentNode);
-        }
-
         //exit if node is blank
         if (!node) return;
 
-        //exit if node is a child of a content node
+        //exit if node is a child of a content node (or a content node itself)
         if (isContainedInAContentNode(node)) return;
 
         //process the node
         processNodeInternal(node);
+    }
+
+    function isContainedInAContentNode(node) {
+        if (!node) return false;
+        else if (contentByElement.has(node)) return contentByElement.get(node);
+        else if (node === document) return false;
+        else return isContainedInAContentNode(node.parentNode);
+    }
+
+    function getAllElementsForContentItemWithKey(key) {
+        return arrayfy(document.querySelectorAll('[data-cargo-key="' + key + '"]'));
+    }
+
+    function getAllElementsForContentItem(contentItem) {
+        return contentItem && contentItem.key && getAllElementsForContentItemWithKey(contentItem.key);
     }
 
     function processCurrentDOM() {
@@ -316,7 +447,8 @@
         elementWatcher = new MutationObserver(elementCallback);
     }
 
-    //UI stuff
+    //
+    //Editing UI stuff
     function startEditMode() {
         if (!editing) {
             html.classList.add("cargo-editing");
@@ -342,7 +474,62 @@
         return promise;
     }
 
+    function listenForClicks() {
+        contentEvents.on("click", function (event, contentItem) {
+            var target = event.target;
+            target.contentEditable = true;
+            target.focus();
+
+            var targets = getAllElementsForContentItem(contentItem);
+            targets.forEach(function (i) { i.classList.add("cargo-itemediting"); });
+        });
+
+        contentEvents.on("blur", function (event, contentItem) {
+            if (event.target.contentEditable) {
+                event.target.contentEditable = false;
+                var targets = getAllElementsForContentItem(contentItem);
+                targets.forEach(function (i) { i.classList.remove("cargo-itemediting"); });
+            }
+        });
+    }
+
+    function listenForHovers() {
+        contentEvents.on("mouseenter", function (event, contentItem) {
+            if (lastHoveredElement != event.target) {
+                lastHoveredElement = event.target;
+                var offset = getOffset(lastHoveredElement);
+                setOffset(quickbar, offset);
+            }
+        });
+    }
+
     function addButtons() {
+
+        var toolbuttons = [{
+            text: "cached",
+            hint: "Reset all changes made since the last save",
+            click: function (event) {
+                confirm("Are you sure you want to revert ALL CHANGES?").then(function () {
+                    for (var key in content) {
+                        var contentItem = content[key];
+                        contentItem.reset();
+                    }
+                });
+            }
+        }, {
+            text: "home",
+            hint: "This is another button",
+            click: function (event) {
+            }
+        }];
+
+        var quickbuttons = [{
+            text: "cached",
+            hint: "Reset this content item to its original value",
+            click: function (event, element, contentItem) {
+            }
+        }]
+
 
         if (!toolbutton) {
 
@@ -367,9 +554,9 @@
                     //save
                     exitEditMode();
                     mainButton.textContent = "cached";
-                    mainButton.classList.add("saving");
+                    mainButton.classList.add("cargo-saving");
                     save().then(function () {
-                        mainButton.classList.remove("saving");
+                        mainButton.classList.remove("cargo-saving");
                         mainButton.textContent = "mode_edit";
                     });
                 }
@@ -378,12 +565,33 @@
 
             var toolbar = document.createElement("ul"); toolbutton.appendChild(toolbar);
 
-            var toolbuttons = [{ text: "icon", hint: "hint", action: function () { } }];
-
             toolbuttons.forEach(function (b) {
                 var li = document.createElement("li"); toolbar.appendChild(li);
+                li.title = b.hint;
                 var a = document.createElement("a"); li.appendChild(a);
+                a.innerText = b.text;
+                a.addEventListener("click", function (e) { b.click(e); })
             });
+
+            var quickbar = document.createElement("ul"); document.body.appendChild(quickbar);
+            quickbar.id = "cargo_quickbar";
+            quickbar.style.display = "none";
+
+            quickbuttons.forEach(function (b) {
+                var li = document.createElement("li"); quickbar.appendChild(li);
+                li.title = b.hint;
+                var a = document.createElement("a"); li.appendChild(a);
+                a.innerText = b.text;
+                a.addEventListener("click", function (e) {
+                    if (lastHoveredElement) {
+                        var contentItem = contentByElement.get(lastHoveredElement);
+                        if (contentItem) {
+                            b.click(e, lastHoveredElement, contentItem);
+                        }
+                    }
+                });
+            });
+
         }
     }
 
@@ -391,6 +599,8 @@
     watchElements();
     processCurrentDOM();
     watchDOM();
+    listenForClicks();
+    listenForHovers();
 
     if (document.body != null) addButtons();
     else document.addEventListener("load", addButtons);
