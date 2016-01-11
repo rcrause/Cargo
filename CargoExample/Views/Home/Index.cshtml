@@ -41,12 +41,14 @@
                 d.textContent = "This is not a content node";
                 e.appendChild(d);
             }
+
             function addSomethingWithContent() {
                 var e = document.getElementById("newElementsBoxOne");
                 var d = document.createElement("div");
                 d.textContent = '@Content("this is a content node")';
                 e.appendChild(d);
             }
+
             var detached = null;
             function detachTheNode() {
                 if (detached) {
@@ -63,6 +65,7 @@
         <button class="btn btn-default" onclick="detachTheNode()">Detach/attach a node</button>
         <div id="newElementsBoxOne" style="padding:10px;margin-top:10px;min-height:100px;border:1px solid #CCC;box-shadow: 2px 2px 8px rgba(0,0,0,0.2)">
             <div id="detachme">@Content("This node may just be detached")</div>
+            <div>@Content("This node may just be detached")</div>
         </div>
     </div>
 </div>
