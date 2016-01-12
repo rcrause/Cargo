@@ -86,12 +86,7 @@ body.cargo-editing {
         background: inherit;
     }
 
-#cargo_toolbutton {
-    position: fixed;
-    bottom: 50px;
-    right: 50px;
-    width: 48px;
-    height: 48px;
+.material-icons {
     font-weight: normal;
     font-style: normal;
     font-size: 24px;
@@ -109,6 +104,14 @@ body.cargo-editing {
     -webkit-font-feature-settings: 'liga';
     font-feature-settings: 'liga';
     font-family: 'Material Icons';
+}
+
+#cargo_toolbutton {
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+    width: 48px;
+    height: 48px;
     text-align: center;
 }
 
@@ -195,3 +198,52 @@ body.cargo-editing {
 .cargo-editing #cargo_toolbutton:hover > ul > li, .cargo-editing #cargo_toolbutton > ul:hover > li {
     margin-right: 10px;
 }
+
+#cargo_quickbar {
+    display: none;
+}
+
+.cargo-editing #cargo_quickbar {
+    display: inline;
+    position: absolute;
+    z-index: 1010;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    -moz-transition: opacity ease 0.2s;
+    -o-transition: opacity ease 0.2s;
+    -webkit-transition: opacity ease 0.2s;
+    transition: opacity ease 0.2s;
+}
+
+    .cargo-editing #cargo_quickbar.cargo-visible {
+        opacity: 1;
+    }
+
+    .cargo-editing #cargo_quickbar:hover {
+        opacity: 1;
+    }
+
+    .cargo-editing #cargo_quickbar li {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background: silver;
+        margin: 0;
+        padding: 0;
+    }
+
+    .cargo-editing #cargo_quickbar a, #cargo_quickbar a:visited, #cargo_quickbar a:active {
+        text-decoration: none;
+        color: rgba(255,255,255,0.5);
+        cursor: pointer;
+    }
+
+        .cargo-editing #cargo_quickbar a:hover {
+            text-decoration: none;
+            color: white;
+            -moz-transition: color ease 0.1s;
+            -o-transition: color ease 0.1s;
+            -webkit-transition: color ease 0.1s;
+            transition: color ease 0.1s;
+        }

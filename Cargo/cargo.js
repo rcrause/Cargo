@@ -90,7 +90,7 @@
     //
     // ContentItem Type
     var ContentItem = function ContentItem(key, content) {
-        this.key = key;
+        this._key = key;
         this._content = content;
         this._originalContent = content;
         this._elements = new Set();
@@ -124,6 +124,12 @@
             this._content = newContent;
             this._emitReadOnly("contentEdited", newContent, oldContent);
             console.log("edited -> \"" + newContent + "\"");
+        }
+    };
+
+    ContentItem.prototype.reset = function reset() {
+        if (this._content != this._originalContent) {
+            this.content = this._originalContent;
         }
     }
 
@@ -170,6 +176,12 @@
 
     Object.defineProperty(ContentItem.prototype, "elements", {
         get: function () { return this._elements },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(ContentItem.prototype, "key", {
+        get: function () { return this._key },
         enumerable: true,
         configurable: true
     });
@@ -246,10 +258,7 @@
 
     function confirm(message) {
         return new Promise(function (resolve, reject) {
-            setTimeout(function () {
-                if (window.confirm(message)) resolve();
-                else reject();
-            }, 1);
+            if (window.confirm(message)) resolve();
         });
     }
 
@@ -530,9 +539,16 @@
         contentEvents.on("mouseenter", function (event, contentItem) {
             if (lastHoveredElement != event.target) {
                 lastHoveredElement = event.target;
+                quickbar.classList.add("cargo-visible");
                 var offset = getOffset(lastHoveredElement);
+                offset.top -= 24;
                 setOffset(quickbar, offset);
             }
+        });
+
+        contentEvents.on("mouseleave", function (event, contentItem) {
+            lastHoveredElement = null;
+            quickbar.classList.remove("cargo-visible");
         });
     }
 
@@ -561,6 +577,11 @@
             hint: "Reset this content item to its original value",
             click: function (event, element, contentItem) {
             }
+        }, {
+            text: "info",
+            hint: "Show information about this content item",
+            click: function (event, element, contentItem) {
+            }
         }];
 
 
@@ -575,6 +596,7 @@
             //add the tool button
             toolbutton = document.createElement("div"); document.body.appendChild(toolbutton);
             toolbutton.id = "cargo_toolbutton";
+            toolbutton.classList.add("material-icons");
 
             //the main button
             var mainButton = document.createElement("a"); toolbutton.appendChild(mainButton);
@@ -608,7 +630,7 @@
 
             quickbar = document.createElement("ul"); document.body.appendChild(quickbar);
             quickbar.id = "cargo_quickbar";
-            quickbar.style.display = "none";
+            quickbar.classList.add("material-icons");
 
             quickbuttons.forEach(function (b) {
                 var li = document.createElement("li"); quickbar.appendChild(li);
