@@ -153,8 +153,10 @@
                 }
 
                 //make sure all the elements are in line
+                var modified = v != this._originalContent;
                 this._elements.forEach(function (e) {
                     if (e.innerHTML != v) e.innerHTML = v;
+                    e.classList.toggle("cargo-modified", modified);
                 });
             }
         },
