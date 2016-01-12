@@ -124,7 +124,6 @@
             var oldContent = this._content;
             this._content = newContent;
             this._emitReadOnly("contentEdited", newContent, oldContent);
-            console.log("edited -> \"" + newContent + "\"");
         }
     };
 
@@ -150,7 +149,6 @@
                     var old = this._content;
                     this._content = v;
                     this._emitReadOnly("contentChanged", v, old);
-                    console.log("changed -> \"" + v + "\"");
                 }
 
                 //make sure all the elements are in line
