@@ -577,6 +577,7 @@
             text: "cached",
             hint: "Reset this content item to its original value",
             click: function (event, element, contentItem) {
+                contentItem.reset();
             }
         }, {
             text: "info",
