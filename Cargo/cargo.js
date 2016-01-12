@@ -458,8 +458,6 @@
                 else return null;
             }
 
-            if (!mutation.target) debugger;
-
             var contentElement = findContentElement(mutation.target);
 
             if (contentElement && contentElement.contentEditable) {
