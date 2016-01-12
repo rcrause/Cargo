@@ -540,15 +540,15 @@
         contentEvents.on("mouseenter", function (event, contentItem) {
             if (lastHoveredElement != event.target) {
                 lastHoveredElement = event.target;
-                quickbar.classList.add("cargo-visible");
                 var offset = getOffset(lastHoveredElement);
                 offset.top -= 24;
                 setOffset(quickbar, offset);
             }
+
+            quickbar.classList.add("cargo-visible");
         });
 
         contentEvents.on("mouseleave", function (event, contentItem) {
-            lastHoveredElement = null;
             quickbar.classList.remove("cargo-visible");
         });
     }
