@@ -579,11 +579,6 @@
             click: function (event, element, contentItem) {
                 contentItem.reset();
             }
-        }, {
-            text: "info",
-            hint: "Show information about this content item",
-            click: function (event, element, contentItem) {
-            }
         }];
 
 
