@@ -81,6 +81,7 @@
     var elementWatcher;
     var toolbutton;
     var quickbar;
+    var panel;
     var editing = false;
     var saving = false;
     var html = document.body.parentNode;
@@ -321,6 +322,7 @@
                 node.setAttribute("data-cargo-key", key);
                 registerEvents(node, contentItem, ["mouseenter", "mouseleave", "click", "focus", "blur"]);
                 elementWatcher.observe(node, { childList: true, attributes: false, subtree: true, characterData: true });
+                contentEvents.emit("contentAdded", contentItem, node, true);
             }
 
             function reRegisterNode(node) {
@@ -330,6 +332,7 @@
 
                 registerEvents(node, contentItem, ["mouseenter", "mouseleave", "click", "focus", "blur"]);
                 elementWatcher.observe(node, { childList: true, attributes: false, subtree: true, characterData: true });
+                contentEvents.emit("contentAdded", contentItem, node, false);
             }
 
             function processTextNode(textNode) {
@@ -559,6 +562,7 @@
             text: "list",
             hint: "Show a list of all content on the page",
             click: function (event) {
+                panel.classList.toggle("cargo-visible");
             }
         }, {
             text: "settings_backup_restore",
@@ -595,7 +599,7 @@
             toolbutton.id = "cargo_toolbutton";
             toolbutton.classList.add("material-icons");
 
-            //the main button
+            //the main button (toolbutton)
             var mainButton = document.createElement("a"); toolbutton.appendChild(mainButton);
             mainButton.addEventListener("click", function () {
                 if (!editing && !saving) {
@@ -615,8 +619,8 @@
             });
             mainButton.textContent = "mode_edit";
 
+            //create toolbar buttons (toolbutton)
             var toolbar = document.createElement("ul"); toolbutton.appendChild(toolbar);
-
             toolbuttons.forEach(function (b) {
                 var li = document.createElement("li"); toolbar.appendChild(li);
                 li.title = b.hint;
@@ -625,10 +629,13 @@
                 a.addEventListener("click", function (e) { b.click(e); })
             });
 
+
+            //create the quickbar
             quickbar = document.createElement("ul"); document.body.appendChild(quickbar);
             quickbar.id = "cargo_quickbar";
             quickbar.classList.add("material-icons");
 
+            //create the quickbuttons (quickbar)
             quickbuttons.forEach(function (b) {
                 var li = document.createElement("li"); quickbar.appendChild(li);
                 li.title = b.hint;
@@ -644,6 +651,36 @@
                 });
             });
 
+
+            //create the panel
+            panel = document.createElement("div"); document.body.appendChild(panel);
+            panel.id = "cargo_panel";
+
+            //create the list (panel)
+            var contentList = document.createElement("ul"); panel.appendChild(contentList);
+            function addContentItemToPanel(contentItem) {
+                var alreadyThere;
+                contentItem.elements.forEach(function (e) { if (contentList.contains(e)) alreadyThere = true; });
+                if (!alreadyThere && contentList.querySelectorAll("[data-cargo-key=" + contentItem.key + "]").length) alreadyThere = true;
+
+                if (!alreadyThere) {
+                    //taking advantage of the fact that the DOM watched will make this thing editable directly
+                    var li = document.createElement("li");
+                    var span = document.createElement("span"); li.appendChild(span);
+                    span.innerHTML = contentItem.content;
+                    span.setAttribute("data-cargo-key", contentItem.key);
+                    span.classList.add("cargo-has-content");
+                    contentList.appendChild(li);
+                }
+            }
+            //add all current content to the list (panel)
+            for (var key in content) {
+                var contentItem = content[key];
+
+                addContentItemToPanel(contentItem);
+            }
+            //if more come add them too
+            contentEvents.on("contentAdded", addContentItemToPanel);
         }
     }
 
