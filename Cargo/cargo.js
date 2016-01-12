@@ -94,28 +94,82 @@
     //
     // ContentItem Type
     var ContentItem = function ContentItem(key, content) {
-        this._key = key;
-        this._content = content;
-        this._originalContent = content;
-        this._elements = new Set();
-        this._emitReadOnly = function (a, b, c, d) {
-            this._readonly = true;
+        this[ContentItem._key] = key;
+        this[ContentItem._content] = content;
+        this[ContentItem._originalContent] = content;
+        this[ContentItem._elements] = new Set();
+        this[ContentItem._emitReadOnly] = function (a, b, c, d) {
+            this[ContentItem._readonly] = true;
             try {
                 this.emit(a, b, c, d);
-                this._readonly = false;
+                this[ContentItem._readonly] = false;
             } catch (e) {
-                this._readonly = false;
+                this[ContentItem._readonly] = false;
                 throw e;
             }
         }
+
+        Object.defineProperty(this, "modified", {
+            get: function () { return this[ContentItem._content] != this[ContentItem._originalContent] },
+            enumerable: false
+        });
+
+        Object.defineProperty(this, "content", {
+            get: function () { return this[ContentItem._content] },
+            set: function (v) {
+                if (this[ContentItem._readonly]) {
+                    throw "this content item may not be modified at this time.";
+                } else {
+                    if (this[ContentItem._content] != v) {
+                        var old = this[ContentItem._content];
+                        this[ContentItem._content] = v;
+                        this[ContentItem._emitReadOnly]("contentChanged", v, old);
+                    }
+
+                    //make sure all the elements are in line
+                    var modified = v != this[ContentItem._originalContent];
+                    this[ContentItem._elements].forEach(function (e) {
+                        if (e.innerHTML != v) e.innerHTML = v;
+                        e.classList.toggle("cargo-modified", modified);
+                    });
+                }
+            },
+            enumerable: true
+        });
+
+        Object.defineProperty(this, "originalContent", {
+            get: function () { return this[ContentItem._originalContent]; },
+            enumerable: true
+        });
+
+        Object.defineProperty(this, "readonly", {
+            get: function () { return this[ContentItem._readonly]; },
+            enumerable: false
+        });
+
+        Object.defineProperty(this, "elements", {
+            get: function () { return this[ContentItem._elements]; },
+            enumerable: false
+        });
+
+        Object.defineProperty(this, "key", {
+            get: function () { return this[ContentItem._key]; },
+            enumerable: true
+        });
     }
+    ContentItem._key = Symbol();
+    ContentItem._content = Symbol();
+    ContentItem._originalContent = Symbol();
+    ContentItem._elements = Symbol();
+    ContentItem._emitReadOnly = Symbol();
+    ContentItem._readonly = Symbol();
 
     ContentItem.prototype.processChange = function processChange(element) {
         var newContent = element.innerHTML;
 
-        if (this._content != newContent) {
-            var otherItems = this._elements;
-            var modified = newContent != this._originalContent;
+        if (this[ContentItem._content] != newContent) {
+            var otherItems = this[ContentItem._elements];
+            var modified = newContent != this[ContentItem._originalContent];
 
             otherItems.forEach(function (otherItem) {
                 if (otherItem !== element) {
@@ -124,71 +178,17 @@
                 otherItem.classList.toggle("cargo-modified", modified);
             });
 
-            var oldContent = this._content;
-            this._content = newContent;
-            this._emitReadOnly("contentEdited", newContent, oldContent);
+            var oldContent = this[ContentItem._content];
+            this[ContentItem._content] = newContent;
+            this[ContentItem._emitReadOnly]("contentEdited", newContent, oldContent);
         }
     };
 
     ContentItem.prototype.reset = function reset() {
-        if (this._content != this._originalContent) {
-            this.content = this._originalContent;
+        if (this[ContentItem._content] != this[ContentItem._originalContent]) {
+            this.content = this[ContentItem._originalContent];
         }
     }
-
-    Object.defineProperty(ContentItem.prototype, "modified", {
-        get: function () { return this._content != this._originalContent },
-        enumerable: true,
-        configurable: true
-    });
-
-    Object.defineProperty(ContentItem.prototype, "content", {
-        get: function () { return this._content },
-        set: function (v) {
-            if (this._readonly) {
-                throw "this content item may not be modified at this time.";
-            } else {
-                if (this._content != v) {
-                    var old = this._content;
-                    this._content = v;
-                    this._emitReadOnly("contentChanged", v, old);
-                }
-
-                //make sure all the elements are in line
-                var modified = v != this._originalContent;
-                this._elements.forEach(function (e) {
-                    if (e.innerHTML != v) e.innerHTML = v;
-                    e.classList.toggle("cargo-modified", modified);
-                });
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-
-    Object.defineProperty(ContentItem.prototype, "originalContent", {
-        get: function () { return this._originalContent },
-        enumerable: true,
-        configurable: true
-    });
-
-    Object.defineProperty(ContentItem.prototype, "readonly", {
-        get: function () { return this._readonly },
-        enumerable: true,
-        configurable: true
-    });
-
-    Object.defineProperty(ContentItem.prototype, "elements", {
-        get: function () { return this._elements },
-        enumerable: true,
-        configurable: true
-    });
-
-    Object.defineProperty(ContentItem.prototype, "key", {
-        get: function () { return this._key },
-        enumerable: true,
-        configurable: true
-    });
 
     Emitter(ContentItem.prototype);
 
@@ -502,8 +502,10 @@
     }
 
     function save() {
+
         var promise = new Promise(function (resolve, reject) {
             saving = true;
+            console.log(JSON.stringify(content, null, '  '));
             setTimeout(resolve, 1000);
         });
 
