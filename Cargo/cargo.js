@@ -515,6 +515,7 @@
             target.focus();
 
             contentItem.elements.forEach(function (i) { i.classList.add("cargo-itemediting"); });
+            event.preventDefault();
         });
 
         contentEvents.on("blur", function (event, contentItem) {
