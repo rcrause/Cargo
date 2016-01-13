@@ -48,9 +48,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CargoDataSourceBase.cs" />
     <Compile Include="CargoEngine.cs" />
     <Compile Include="CargoExtensions.cs" />
     <Compile Include="CargoFileDataSource.cs" />
+    <Compile Include="FileDataSource.cs" />
     <Compile Include="CargoPipeline.cs" />
     <Compile Include="ContentCollection.cs" />
     <Compile Include="ContentContext.cs" />

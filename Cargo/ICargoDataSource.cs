@@ -19,26 +19,37 @@ namespace Cargo
         ContentItem GetById(string id);
 
         /// <summary>
-        /// Returns all <see cref="ContentItem"/>s for a location (i.e. page), or an empty <see cref="IEnumerable{ContentItem}"/> if
+        /// Returns the <see cref="ContentItem"/> with a matching <see cref="ContentItem.Location"/> and <see cref="ContentItem.Key"/>, or <c>null</c> if a match is not found.
+        /// </summary>
+        /// <param name="id">the value of the <see cref="ContentItem.Id"/> for the <see cref="ContentItem"/> to be returned.</param>
+        ContentItem Get(string location, string key);
+
+        /// <summary>
+        /// Creates a new content item
+        /// </summary>
+        /// <param name="location">The location for the <see cref="ContentItem"/>.</param>
+        /// <param name="key">The key of the <see cref="ContentItem"/>.</param>
+        /// <param name="defaultContent">The default content for the <see cref="ContentItem"/>.</param>
+        ContentItem GetOrCreate(string location, string key, string defaultContent);
+
+        /// <summary>
+        /// Returns all <see cref="ContentItem"/>s for a location (i.e. page), or an empty <see cref="ICollection{ContentItem}"/> if
         /// none exist.
         /// </summary>
-        /// <param name="location">The name of the location for which to return <see cref="ContentItem"/>s.
+        /// <param name="location">The name of the location for which to return <see cref="ContentItem"/>s. If this is null it will
+        /// return global content (content not bound to any specific location.
         /// </param>
-        IEnumerable<ContentItem> GetContent(string location);
+        ICollection<ContentItem> GetAllContentForLocation(string location);
 
         /// <summary>
-        /// Returns all <see cref="ContentItem"/>s not bound to any location.
+        /// Returns all <see cref="ContentItem"/>s in the data source.
         /// </summary>
-        /// <returns></returns>
-        IEnumerable<ContentItem> GetGlobalContent();
+        ICollection<ContentItem> GetAllContent();
 
         /// <summary>
-        /// Returns all <see cref="ContentItem"/>s with matching <see cref="ContentItem.Key"/>s, or an empty <see cref="IEnumerable{ContentItem}"/> if
-        /// none exist.
+        /// Returns all the various locations in the data source. The method may return locations that don't have any content items.
         /// </summary>
-        /// <param name="location">The name of the location for which to return <see cref="ContentItem"/>s.</param>
-        /// <param name="key">the value of the <see cref="ContentItem.Key"/> for the <see cref="ContentItem"/>s to be returned.</param>
-        IEnumerable<ContentItem> GetByKey(string location, string key);
+        ICollection<string> GetAllLocations();
 
         /// <summary>
         /// Adds or updates <see cref="ContentItem"/>s in the underlying data source. If the <see cref="ContentItem"/> is new

@@ -1,565 +1,227 @@
-﻿using Cargo.Newtonsoft;
-using Cargo.Newtonsoft.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Cargo
 {
-    /// <summary>
-    /// An implementation of <see cref="ICargoDataSource"/> that reads from and writes to a normal JSON file.
-    /// </summary>
-    public class CargoFileDataSource : IDisposable, ICargoDataSource
+    public class CargoFileDataSource : CargoDataSourceBase, IDisposable
     {
-        private string _filename;
-        JObject _items;
-        private ReaderWriterLockSlim _rwl = new ReaderWriterLockSlim();
-        private object _fileWriteLock = new object();
-        private JsonSerializer _serializer = new JsonSerializer();
-        private FileSystemWatcher _fsw;
-        private DateTime _lastModifiedTime;
-
-        private Lazy<bool> _isInWebApplication = new Lazy<bool>(FigureOutIfInWebApplication);
-        private Lazy<string> _appDataLocation = new Lazy<string>(GetAppDataFolderLocation);
-
-        private bool IsInWebApplication { get { return _isInWebApplication.Value; } }
-        private string AppDataFolder { get { return _appDataLocation.Value; } }
-
-        public string Filename
-        {
-            get { return _filename; }
-            set
-            {
-                if (Filename == null) throw new ArgumentNullException("value");
-                SetFileName(value);
-            }
-        }
-
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        private bool _disposed;
+        private FileDataSource _fds;
+        private bool _inWebApplication;
+        private string _appDataPath;
+        private string _rxId = @"^(.*)\/(.+)";
 
         public CargoFileDataSource()
             : this("cargo.json")
         {
         }
 
+        protected override ContentItem CreateInternal(string location, string key, string content)
+        {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+            if (location == null) throw new ArgumentNullException(nameof(location));
+            if (key == null) throw new ArgumentNullException(nameof(key));
+
+            ValidateLocation(location);
+            ValidateKey(key);
+
+            var id = GetId(location, key);
+            ValidateId(id);
+
+            _fds.Set(id, new ContentItemMinimal { content = content });
+
+            return new ContentItem
+            {
+                Content = content,
+                Id = id,
+                Key = key,
+                Location = location
+            };
+        }
+
+        public override ContentItem GetById(string id)
+        {
+            string content = _fds.Get<ContentItemMinimal>(id)?.content;
+            if (content == null) return null;
+            string location;
+            string key;
+            ParseId(id, out location, out key);
+
+            return new ContentItem
+            {
+                Content = content,
+                Id = id,
+                Key = key,
+                Location = location
+            };
+        }
+
+        public override ContentItem Get(string location, string key)
+        {
+            ValidateLocation(location);
+            ValidateKey(key);
+
+            var id = GetId(location, key);
+
+            string content = _fds.Get<ContentItemMinimal>(id)?.content;
+            if (content == null) return null;
+            return new ContentItem
+            {
+                Content = content,
+                Id = id,
+                Key = key,
+                Location = location
+            };
+        }
+
+        public override ICollection<ContentItem> GetAllContent()
+        {
+            return GetAllContentInternal()
+            .ToList()
+            .AsReadOnly();
+        }
+
+        public override ICollection<ContentItem> GetAllContentForLocation(string location)
+        {
+            return GetAllContentInternal()
+                .Where(x => x.Location == location)
+                .ToList()
+                .AsReadOnly();
+        }
+
+        public override ICollection<string> GetAllLocations()
+        {
+            return _fds.Keys.Select(id =>
+            {
+                string location;
+                string key;
+                ParseId(id, out location, out key);
+
+                return location;
+            }).Distinct()
+            .ToList()
+            .AsReadOnly();
+        }
+
+        public override void Remove(IEnumerable<string> contentItemIds)
+        { 
+            foreach(var id in contentItemIds)
+            {
+                _fds.Remove(id);
+            }
+        }
+
+        public override void Set(IEnumerable<ContentItem> contentItems)
+        {
+            foreach(var item in contentItems)
+            {
+                var id = GetId(item.Location, item.Key);
+
+                _fds.Set(id, new ContentItemMinimal { content = item.Content });
+            }
+        }
+
+        private static string GetId(string location, string key)
+        {
+            return $"{location}/{key}";
+        }
+
+        private IEnumerable<ContentItem> GetAllContentInternal()
+        {
+            return _fds.Keys.Select(id =>
+            {
+                string content = _fds.Get<ContentItemMinimal>(id)?.content;
+                if (content == null) return null;
+
+                string location;
+                string key;
+                ParseId(id, out location, out key);
+
+                return new ContentItem
+                {
+                    Id = id,
+                    Content = content,
+                    Key = key,
+                    Location = location
+                };
+            }).Where(x => x != null);
+        }
+
+        private void ParseId(string id, out string location, out string key)
+        {
+            ValidateId(id);
+
+            //note the greedy match of the first group
+            var m = Regex.Match(id, _rxId);
+            location = m.Groups[1].Value;
+            if (location == "") location = null;
+            key = m.Groups[2].Value;
+        }
+
+        protected override void ValidateId(string id)
+        {
+            base.ValidateId(id);
+
+            if (!Regex.IsMatch(id, _rxId)) throw new ArgumentException($"The id must be in the format {_rxId}");
+        }
+
         public CargoFileDataSource(string filename)
         {
-            SetFilenameInternal(filename);
-            Reload(force: true, @lock: false, notify: false);
+            FigureOutIfInWebApplication();
+
+            if (!Path.IsPathRooted(filename))
+            {
+                if (_inWebApplication && !string.IsNullOrEmpty(_appDataPath))
+                {
+                    filename = Path.Combine(_appDataPath, filename);
+                }
+            }
+
+            _fds = new FileDataSource(filename);
         }
 
-        event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged
+        private void FigureOutIfInWebApplication()
         {
-            add
-            {
-                throw new NotImplementedException();
-            }
-
-            remove
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private void SetFileName(string filename)
-        {
-            lock (_fileWriteLock)
-            {
-                _rwl.EnterWriteLock();
-                try
-                {
-                    if (filename != _filename)
-                    {
-                        SetFilenameInternal(filename);
-                        Reload(force: true, @lock: false);
-                    }
-                }
-                finally
-                {
-                    _rwl.ExitWriteLock();
-                }
-            }
-        }
-
-        private void SetFilenameInternal(string filename)
-        {
-            if(!Path.IsPathRooted(filename))
-            {
-                if(IsInWebApplication && AppDataFolder != null)
-                {
-                    filename = Path.Combine(AppDataFolder, filename);
-                }
-            }
-
-            if (File.Exists(filename))
-            {
-                var fileAttributes = File.GetAttributes(filename);
-                if ((fileAttributes & FileAttributes.Directory) == FileAttributes.Directory)
-                {
-                    throw new ArgumentException("filename cannot be a directory", "filename");
-                }
-            }
-            else
-            {
-                //touch the file
-                File.Create(filename).Close();
-            }
-
-            FileInfo fi = new FileInfo(filename);
-
-            string directoryName = fi.DirectoryName;
-            string onlyFileName = fi.Name;
-            _lastModifiedTime = fi.LastWriteTimeUtc;
-
-            //disable the old watcher
-            if (_fsw != null) _fsw.EnableRaisingEvents = false;
             try
             {
-                //create a new watcher disabled
-                var FileWatcher = new FileSystemWatcher(directoryName, onlyFileName);
-                FileWatcher.EnableRaisingEvents = false;
-                try
+                var systemweb = Assembly.Load("System.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
+                string appDomainAppId = systemweb.GetType("System.Web.HttpRuntime")
+                    .GetProperty("AppDomainAppId", BindingFlags.Static | BindingFlags.Public)
+                    .GetGetMethod()
+                    .Invoke(null, new object[0]) as string;
+                _inWebApplication = appDomainAppId != null;
+
+                if (_inWebApplication)
                 {
-                    FileWatcher.Created += FileWatcher_Modified;
-                    FileWatcher.Deleted += FileWatcher_Modified;
-                    FileWatcher.Changed += FileWatcher_Modified;
-                }
-                catch
-                {
-                    FileWatcher.Dispose();
-                    throw;
-                }
-
-                //replace the watcher
-                if (_fsw != null) _fsw.Dispose();
-                _fsw = FileWatcher;
-            }
-            finally
-            {
-                if (_fsw != null) _fsw.EnableRaisingEvents = true;
-            }
-
-            _filename = fi.FullName;
-        }
-
-        void FileWatcher_Modified(object sender, FileSystemEventArgs e)
-        {
-            Reload(false);
-        }
-
-        private void Reload(bool force, bool @lock = true, bool notify = true)
-        {
-            if (@lock) Monitor.Enter(_fileWriteLock);
-            try
-            {
-                FileInfo fi = new FileInfo(_filename);
-
-                if (!force)
-                {
-                    if (fi.Exists && fi.LastWriteTimeUtc <= _lastModifiedTime)
-                    {
-                        return;
-                    }
-                }
-
-                JObject oldItems = _items;
-                JObject newItems;
-                bool changed = false;
-
-                newItems = ReadFile(_filename);
-                if (newItems != null)
-                {
-                    if (@lock) _rwl.EnterUpgradeableReadLock();
-                    try
-                    {
-                        if (oldItems == null || !JToken.DeepEquals(newItems, _items))
-                        {
-                            if (@lock) _rwl.EnterWriteLock();
-                            try
-                            {
-                                _items = newItems;
-                            }
-                            finally
-                            {
-                                if (@lock) _rwl.ExitWriteLock();
-                            }
-                            changed = true;
-                        }
-                    }
-                    finally
-                    {
-                        if (@lock) _rwl.ExitUpgradeableReadLock();
-                    }
-                }
-
-                if (changed && notify)
-                {
-                    NotifyChangedThorough(oldItems, newItems);
+                    _appDataPath = systemweb.GetType("System.Web.Hosting.HostingEnvironment")
+                        .GetMethod("MapPath", BindingFlags.Static | BindingFlags.Public)
+                        .Invoke(null, new object[] { "~/App_Data" }) as string;
                 }
             }
-            finally
-            {
-                if (@lock) Monitor.Exit(_fileWriteLock);
-            }
-        }
-
-        private void NotifyChangedThorough(JObject oldItems, JObject newItems)
-        {
-            if (oldItems == null) oldItems = new JObject();
-            if (newItems == null) newItems = new JObject();
-
-            var addedProps = newItems.Properties().Where(x => oldItems.Property(x.Name) == null).Select(x => new KeyValuePair<string, object>(x.Name, MakeValueIntoObject(x))).ToArray();
-            var removedProps = oldItems.Properties().Where(x => newItems.Property(x.Name) == null).Select(x => new KeyValuePair<string, object>(x.Name, MakeValueIntoObject(x))).ToArray();
-            var changedProps = newItems.Properties()
-                .Join(oldItems.Properties(), x => x.Name, x => x.Name, (n, o) => new { n = n, o = o })
-                .Where(p => !JToken.DeepEquals(p.n.Value, p.o.Value))
-                .Select(p => new
-                {
-                    n = new KeyValuePair<string, object>(p.n.Name, MakeValueIntoObject(p.n)),
-                    o = new KeyValuePair<string, object>(p.o.Name, MakeValueIntoObject(p.o))
-                })
-                .ToArray();
-
-            if (addedProps.Length != 0) OnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, addedProps));
-            if (removedProps.Length != 0) OnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removedProps));
-            if (changedProps.Length != 0) OnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changedProps.Select(z => z.n).ToArray(), changedProps.Select(z => z.o).ToArray()));
-        }
-
-        protected virtual void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (CollectionChanged != null) CollectionChanged(sender, e);
-        }
-
-        private void Persist()
-        {
-            lock (_fileWriteLock)
-            {
-                _fsw.EnableRaisingEvents = false;
-                WriteFile(_items, _filename);
-                _fsw.EnableRaisingEvents = true;
-            }
-        }
-
-        private JObject ReadFile(string _filename)
-        {
-            if (!File.Exists(_filename)) return null;
-
-            using (var sr = File.OpenText(_filename))
-            {
-                using (JsonReader rdr = new JsonTextReader(sr))
-                {
-                    return _serializer.Deserialize<JObject>(rdr);
-                }
-            }
-        }
-
-        private void WriteFile(JObject toWrite, string filename)
-        {
-            using (var sw = File.CreateText(filename))
-            {
-                using (JsonWriter jsonWriter = new JsonTextWriter(sw))
-                {
-                    _serializer.Serialize(jsonWriter, toWrite);
-                }
-            }
-        }
-
-        public T GetOrSetDefault<T>(string key, T defaultValue)
-        {
-            bool mustWrite = false;
-            T result;
-
-            _rwl.EnterUpgradeableReadLock();
-            try
-            {
-                var prop = _items != null ? _items.Property(key) : null;
-                if (prop != null)
-                {
-                    result = prop.Value.ToObject<T>(_serializer);
-                }
-                else
-                {
-                    _rwl.EnterWriteLock();
-                    try
-                    {
-                        mustWrite = SetInternal(key, defaultValue);
-                    }
-                    finally
-                    {
-                        _rwl.ExitWriteLock();
-                    }
-
-                    result = defaultValue;
-                }
-            }
-            finally
-            {
-                _rwl.ExitUpgradeableReadLock();
-            }
-
-            if (mustWrite)
-            {
-                Persist();
-                NotifyChanged(null, new JProperty(key, defaultValue));
-            }
-
-            return result;
-        }
-
-        private void NotifyChanged(JProperty oldItem, JProperty newItem)
-        {
-            Debug.Assert(oldItem != null || newItem != null);
-
-            if (oldItem == null && newItem != null) OnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new KeyValuePair<string, object>(newItem.Name, MakeValueIntoObject(newItem))));
-            else if (oldItem != null && newItem == null) OnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new KeyValuePair<string, object>(oldItem.Name, MakeValueIntoObject(oldItem))));
-            else OnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, new KeyValuePair<string, object>(newItem.Name, MakeValueIntoObject(newItem)), new KeyValuePair<string, object>(oldItem.Name, MakeValueIntoObject(oldItem))));
-        }
-
-        public void Set<T>(string key, T value)
-        {
-            bool mustWrite;
-            JProperty oldItem;
-
-            _rwl.EnterUpgradeableReadLock();
-            try
-            {
-                if (_items != null)
-                {
-                    var oldprop = _items.Property(key);
-                    if (oldprop != null) oldItem = new JProperty(oldprop);
-                    else oldItem = null;
-                }
-                else oldItem = null;
-
-                _rwl.EnterWriteLock();
-                try
-                {
-                    mustWrite = SetInternal(key, value);
-                }
-                finally
-                {
-                    _rwl.ExitWriteLock();
-                }
-            }
-            finally
-            {
-                _rwl.ExitUpgradeableReadLock();
-            }
-
-
-            if (mustWrite)
-            {
-                Persist();
-                NotifyChanged(oldItem, value == null ? null : new JProperty(key, value));
-            }
-        }
-
-        private bool SetInternal<T>(string key, T value)
-        {
-            JToken objectToken = value == null ? new JValue((object)null) : JToken.FromObject(value, _serializer);
-            if (_items != null)
-            {
-                var prop = _items.Property(key);
-                if (prop != null)
-                {
-                    if (!JToken.DeepEquals(prop.Value, objectToken))
-                    {
-                        prop.Value = objectToken;
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    _items.Add(key, objectToken);
-                    return true;
-                }
-            }
-            else
-            {
-                _items = new JObject();
-                _items.Add(key, objectToken);
-                return true;
-            }
-        }
-
-        public T Get<T>(string key)
-        {
-            _rwl.EnterReadLock();
-            try
-            {
-                if (_items != null)
-                {
-                    var prop = _items.Property(key);
-                    if (prop != null) return prop.Value.ToObject<T>(_serializer);
-                    else return default(T);
-                }
-                else
-                {
-                    return default(T);
-                }
-            }
-            finally
-            {
-                _rwl.ExitReadLock();
-            }
-        }
-
-        private void Remove(string key)
-        {
-            if (string.IsNullOrEmpty(key)) return;
-
-            JProperty removed;
-            if (_items != null)
-            {
-                _rwl.EnterUpgradeableReadLock();
-                try
-                {
-                    removed = _items.Property(key);
-
-                    if (removed != null)
-                    {
-                        _rwl.EnterWriteLock();
-                        try
-                        {
-                            _items.Remove(key);
-                        }
-                        finally
-                        {
-                            _rwl.ExitWriteLock();
-                        }
-                    }
-                }
-                finally
-                {
-                    _rwl.ExitUpgradeableReadLock();
-                }
-
-                NotifyChanged(removed, null);
-            }
-        }
-
-        public int Count
-        {
-            get
-            {
-                if (_items != null) return _items.Count;
-                else return 0;
-            }
-        }
-
-        public bool ContainsKey(string key)
-        {
-            if (_items != null)
-            {
-                _rwl.EnterReadLock();
-                try
-                {
-                    if (_items != null)
-                    {
-                        return _items.Property(key) != null;
-                    }
-                }
-                finally
-                {
-                    _rwl.ExitReadLock();
-                }
-            }
-
-            return false;
-        }
-
-        public ICollection<string> Keys
-        {
-            get
-            {
-                _rwl.EnterReadLock();
-                try
-                {
-                    if (_items != null)
-                    {
-                        return _items.Properties().Select(x => x.Name).ToArray();
-                    }
-                    else
-                    {
-                        return new string[0];
-                    }
-                }
-                finally
-                {
-                    _rwl.ExitReadLock();
-                }
-            }
-        }
-
-        private object MakeValueIntoObject(JToken token)
-        {
-            switch (token.Type)
-            {
-                case JTokenType.Object:
-                    return ((JObject)token).Properties().ToDictionary(x => x.Name, x => MakeValueIntoObject(x.Value));
-                case JTokenType.Array:
-                    return ((JArray)token).Select(x => MakeValueIntoObject(x)).ToArray();
-                case JTokenType.Integer:
-                    return token.ToObject<int>(_serializer);
-                case JTokenType.Float:
-                    return token.ToObject<double>(_serializer);
-                case JTokenType.String:
-                    return token.ToObject<string>(_serializer);
-                case JTokenType.Boolean:
-                    return token.ToObject<bool>(_serializer);
-                case JTokenType.Date:
-                    return token.ToObject<DateTime>(_serializer);
-                case JTokenType.Guid:
-                    return token.ToObject<Guid>(_serializer);
-                case JTokenType.Uri:
-                    return token.ToObject<Uri>(_serializer);
-                case JTokenType.TimeSpan:
-                    return token.ToObject<TimeSpan>(_serializer);
-
-                case JTokenType.Null:
-                case JTokenType.Undefined:
-                    return null;
-
-                case JTokenType.Bytes:
-                    return token.ToObject<byte[]>(_serializer);
-                case JTokenType.Property:
-                    return MakeValueIntoObject(((JProperty)token).Value);
-
-                case JTokenType.None:
-                case JTokenType.Raw:
-                case JTokenType.Constructor:
-                case JTokenType.Comment:
-                default:
-                    throw new NotSupportedException();
-            }
+            catch { }
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
+            if (!_disposed)
             {
-                if (_fsw != null)
+                if (disposing)
                 {
-                    _fsw.Dispose();
-                    _fsw = null;
+                    if (_fds != null)
+                    {
+                        _fds.Dispose();
+                        _fds = null;
+                    }
                 }
-            }
-        }
 
-        ~CargoFileDataSource()
-        {
-            Dispose(false);
+                _disposed = true;
+            }
         }
 
         public void Dispose()
@@ -567,124 +229,9 @@ namespace Cargo
             Dispose(true);
         }
 
-        ContentItem ICargoDataSource.GetById(string id)
+        private class ContentItemMinimal
         {
-            if (id == null) throw new ArgumentNullException("id");
-            if (id == "") throw new ArgumentException("id cannot be blank", "id");
-
-            return Get<ContentItem>(id);
-        }
-
-        IEnumerable<ContentItem> ICargoDataSource.GetContent(string location)
-        {
-            if (location == null) throw new ArgumentNullException(nameof(location));
-
-            return GetContentInternal(location);
-        }
-
-        IEnumerable<ContentItem> ICargoDataSource.GetGlobalContent()
-        {
-            return GetContentInternal(null);
-        }
-
-        private IEnumerable<ContentItem> GetContentInternal(string location)
-        {
-            if (_items != null)
-            {
-                //todo: optimize
-                _rwl.EnterReadLock();
-                try
-                {
-                    if (_items != null)
-                    {
-                        var result = _items.PropertyValues()
-                        .Where(x => (string)((JValue)((JObject)x).Property("Location").Value).Value == location)
-                        .Select(x => x.ToObject<ContentItem>(_serializer))
-                        .ToArray();
-                        return (IEnumerable<ContentItem>)result;
-                    }
-                }
-                finally
-                {
-                    _rwl.ExitReadLock();
-                }
-            }
-
-            return Enumerable.Empty<ContentItem>();
-        }
-        
-        IEnumerable<ContentItem> ICargoDataSource.GetByKey(string location, string key)
-        {
-            if (_items != null)
-            {
-                //todo: optimize
-                _rwl.EnterReadLock();
-                try
-                {
-                    if (_items != null)
-                    {
-                        var result = _items.PropertyValues()
-                            .Where(x => (string)((JValue)((JObject)x).Property("Location").Value).Value == location && (string)((JValue)((JObject)x).Property("Key").Value).Value == key)
-                            .Select(x => x.ToObject<ContentItem>(_serializer))
-                            .ToArray();
-                        return (IEnumerable<ContentItem>)result;
-                    }
-                }
-                finally
-                {
-                    _rwl.ExitReadLock();
-                }
-            }
-
-            return Enumerable.Empty<ContentItem>();
-        }
-
-        void ICargoDataSource.Set(IEnumerable<ContentItem> contentItems)
-        {
-            if (contentItems == null) throw new ArgumentNullException("contentItem");
-
-            foreach (var item in contentItems)
-            {
-                string idAsString = Convert.ToString(item.Id);
-                if (string.IsNullOrEmpty(idAsString)) throw new InvalidOperationException("Could not convert Id to string");
-                Set(idAsString, item);
-            }
-        }
-
-        void ICargoDataSource.Remove(IEnumerable<string> contentItemIds)
-        {
-            if (contentItemIds == null) throw new ArgumentNullException("contentItem");
-
-            foreach (string id in contentItemIds)
-            {
-                Remove(id);
-            }
-        }
-
-
-        private static bool FigureOutIfInWebApplication()
-        {
-            try {
-                var systemweb = Assembly.Load("System.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
-                string appDomainAppId = systemweb.GetType("System.Web.HttpRuntime")
-                    .GetProperty("AppDomainAppId", BindingFlags.Static | BindingFlags.Public)
-                    .GetGetMethod()
-                    .Invoke(null, new object[0]) as string;
-                return appDomainAppId != null;
-            }
-            catch { return false; }
-        }
-
-        private static string GetAppDataFolderLocation()
-        {
-            try
-            {
-                var systemweb = Assembly.Load("System.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
-                return systemweb.GetType("System.Web.Hosting.HostingEnvironment")
-                    .GetMethod("MapPath", BindingFlags.Static | BindingFlags.Public)
-                    .Invoke(null, new object[] { "~/App_Data" }) as string;
-            }
-            catch { return null; }
+            public string content { get; set; }
         }
     }
 }

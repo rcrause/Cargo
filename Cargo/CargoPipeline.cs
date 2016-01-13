@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Cargo
 {
     /// <summary>
-    /// A pipeline for use with OWIN type architecture. Loads the Cargo Nancy server side admin interface
+    /// The pipeline for use with OWIN type architecture
     /// </summary>
     internal class CargoPipeline
     {

@@ -16,7 +16,7 @@ namespace Cargo
         /// The identifier for this <see cref="ContentItem"/>. May be provided by the datasource and should be unique for
         /// each <see cref="ContentItem"/>, even those with the same <see cref="Key"/>.
         /// </summary>
-        public virtual object Id { get; set; }
+        public virtual string Id { get; set; }
 
         /// <summary>
         /// The location (i.e. page) of this content item.
@@ -29,17 +29,6 @@ namespace Cargo
         /// <see cref="Condition"/>.
         /// </summary>
         public virtual string Key { get; set; }
-
-        /// <summary>
-        /// The <see cref="Condition"/> on which this <see cref="ContentItem"/> will be selected. The <see cref="ContentItem"/> chosen will be the
-        /// one with the most specific matching <see cref="Condition"/>.
-        /// </summary>
-        public virtual string Condition { get; set; }
-
-        /// <summary>
-        /// The type of the content
-        /// </summary>
-        public virtual ContentType ContentType { get; set; }
 
         /// <summary>
         /// The content for this <see cref="ContentItem"/>.
