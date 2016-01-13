@@ -87,10 +87,19 @@
     var panel;
     var editing = false;
     var saving = false;
-    var html = document.body.parentNode;
+    var head = document.head;
+    var html = document.children[0];
+    var body = document.body;
     var contentEvents = new Emitter;
     var lastHoveredElement = null;
-    var cargoUrlBase = document.currentScript.src.replace(/\js\/\d+$/, "");
+    var cargoUrlBase = document.currentScript.src.replace(/\js(?:\/\d+)?$/, "");
+
+    //
+    // First things first - Load CSS
+    var csslink = document.createElement('link');
+    csslink.rel = "stylesheet";
+    csslink.href = cargoUrlBase + "css";
+    head.appendChild(csslink);
 
     //
     // ContentItem Type
@@ -378,7 +387,7 @@
                 var node = textNode.parentNode;
                 var matches = regexSplit(text, rxPartialMatch);
 
-                if (!matches || matches.length == 0) return;
+                if (!matches || matches.length == 0 || !node) return;
 
                 if (matches.length == 1) {
                     if (node.firstChild.nextSibling) {
@@ -488,7 +497,7 @@
         };
 
         domWatcher = new MutationObserver(domCallback);
-        domWatcher.observe(document.body, { childList: true, attributes: false, subtree: true });
+        domWatcher.observe(html, { childList: true, attributes: false, subtree: true });
     }
 
     function watchElements() {
@@ -710,7 +719,7 @@
             function addContentItemToPanel(contentItem) {
                 var alreadyThere;
                 contentItem.elements.forEach(function (e) { if (contentList.contains(e)) alreadyThere = true; });
-                if (!alreadyThere && contentList.querySelectorAll("[data-cargo-key=" + contentItem.key + "]").length) alreadyThere = true;
+                if (!alreadyThere && contentList.querySelectorAll('[data-cargo-key="' + contentItem.key + '"]').length) alreadyThere = true;
 
                 if (!alreadyThere) {
                     //taking advantage of the fact that the DOM watched will make this thing editable directly
@@ -740,10 +749,13 @@
     listenForClicks();
     listenForHovers();
 
-    if (document.body != null) addButtons();
-    else document.addEventListener("load", addButtons);
+    if (body != null) addButtons();
+    else window.addEventListener("load", function () {
+        body = document.body;
+        addButtons();
+    });
 
     //uncloak
-    document.getElementsByTagName("html")[0].classList.remove("cargo-cloak");
+    html.classList.remove("cargo-cloak");
 
 })(this);

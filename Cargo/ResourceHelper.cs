@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,11 +16,15 @@ namespace Cargo
     {
         private Dictionary<string, string> _filesFromResource;
         private ReaderWriterLockSlim _rwl;
+        private Assembly _assembly;
+        private string _assemblyPrefix;
 
         public ResourceHelper()
         {
             _filesFromResource = new Dictionary<string, string>();
             _rwl = new ReaderWriterLockSlim();
+            _assembly = typeof(ResourceHelper).Assembly;
+            _assemblyPrefix = _assembly.GetName().Name;
         }
 
         public string this[string resource]
@@ -56,10 +61,11 @@ namespace Cargo
             }
         }
 
-        private static string GetResourceInternal(string resourceName)
+        private string GetResourceInternal(string resourceName)
         {
-            var assembly = typeof(CargoModule).Assembly;
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            resourceName = $"{_assemblyPrefix}.{resourceName}";
+
+            using (var stream = _assembly.GetManifestResourceStream(resourceName))
             {
                 using (StreamReader sr = new StreamReader(stream))
                 {
