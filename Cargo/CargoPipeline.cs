@@ -74,15 +74,20 @@ namespace Cargo
 
         private async Task HandleGetAsync(IDictionary<string, object> environment, bool onlyHead, string strippedPath, CancellationToken cancellationToken)
         {
-            if(strippedPath.StartsWith("/js"))
+            if(strippedPath == "/js")
             {
                 await WriteFromResource(environment, "cargo.js", "application/json", cancellationToken, TimeSpan.FromDays(10));
             }
-            else if(strippedPath.StartsWith("/css"))
+            else if(strippedPath == "/css")
             {
                 await WriteFromResource(environment, "cargo.css", "text/css", cancellationToken, TimeSpan.FromDays(10));
             }
-            else
+            else if (strippedPath == "/export")
+            {
+                var ds = _cargoEngine.Configuration.GetDataSource();
+                await WriteObject(environment, ds.GetAllContent(), cancellationToken);
+            }
+            else 
             {
                 await Return404Async(environment);
             }
@@ -92,13 +97,32 @@ namespace Cargo
         {
             if(strippedPath == "/save")
             {
-                var request = ReadJsonFromRequest(environment);
-                await WriteObject(environment, new { message = "ok" }, cancellationToken);
+                await PerformSave(environment, cancellationToken);
+            }
+            else if(strippedPath == "/import")
+            {
+                await PerformImport(environment, cancellationToken);
             }
             else
             {
                 await Return404Async(environment);
             }
+        }
+
+        private async Task PerformImport(IDictionary<string, object> environment, CancellationToken cancellationToken)
+        {
+            var request = ReadObjectFromRequest<List<ContentItem>>(environment);
+            var ds = _cargoEngine.Configuration.GetDataSource();
+            ds.Set(request);
+            await WriteObject(environment, new { message = "ok" }, cancellationToken);
+        }
+
+        private async Task PerformSave(IDictionary<string, object> environment, CancellationToken cancellationToken)
+        {
+            var request = ReadObjectFromRequest<List<ContentItem>>(environment);
+            var ds = _cargoEngine.Configuration.GetDataSource();
+            ds.Set(request);
+            await WriteObject(environment, new { message = "ok" }, cancellationToken);
         }
 
         private Task Return405Async(IDictionary<string, object> environment)
@@ -126,6 +150,19 @@ namespace Cargo
                 using (JsonReader jr = new JsonTextReader(sr))
                 {
                     return JToken.ReadFrom(jr);
+                }
+            }
+        }
+
+        private T ReadObjectFromRequest<T>(IDictionary<string, object> environment)
+        {
+            var body = Get<Stream>(environment, "owin.RequestBody");
+
+            using (StreamReader sr = new StreamReader(body))
+            {
+                using (JsonReader jr = new JsonTextReader(sr))
+                {
+                    return jsonSerializer.Deserialize<T>(jr);
                 }
             }
         }
