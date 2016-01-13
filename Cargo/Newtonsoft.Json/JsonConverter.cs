@@ -26,15 +26,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Newtonsoft.Json.Utilities;
-using Newtonsoft.Json.Schema;
+using Cargo.Newtonsoft.Utilities;
+using Cargo.Newtonsoft.Schema;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Converts an object to and from JSON.
     /// </summary>
-    public abstract class JsonConverter
+    internal abstract class JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.

@@ -27,17 +27,17 @@ using System;
 using System.Globalization;
 using System.ComponentModel;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Utilities;
-using Newtonsoft.Json.Serialization;
+using Cargo.Newtonsoft.Linq;
+using Cargo.Newtonsoft.Utilities;
+using Cargo.Newtonsoft.Serialization;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 
 #endif
 
-namespace Newtonsoft.Json.Schema
+namespace Cargo.Newtonsoft.Schema
 {
     /// <summary>
     /// <para>
@@ -48,7 +48,7 @@ namespace Newtonsoft.Json.Schema
     /// </note>
     /// </summary>
     [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
-    public class JsonSchemaGenerator
+    internal class JsonSchemaGenerator
     {
         /// <summary>
         /// Gets or sets how undefined schemas are handled by the serializer.

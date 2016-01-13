@@ -29,13 +29,13 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Globalization;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 
 #endif
 
-namespace Newtonsoft.Json.Utilities
+namespace Cargo.Newtonsoft.Utilities
 {
     internal interface IWrappedCollection : IList
     {

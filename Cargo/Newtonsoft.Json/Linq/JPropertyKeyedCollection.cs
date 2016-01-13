@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Newtonsoft.Json.Linq
+namespace Cargo.Newtonsoft.Linq
 {
     internal class JPropertyKeyedCollection : Collection<JToken>
     {

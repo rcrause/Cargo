@@ -28,20 +28,20 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 
 #endif
 
-namespace Newtonsoft.Json.Converters
+namespace Cargo.Newtonsoft.Converters
 {
     /// <summary>
     /// Converts an <see cref="Enum"/> to and from its name string value.
     /// </summary>
-    public class StringEnumConverter : JsonConverter
+    internal class StringEnumConverter : JsonConverter
     {
         /// <summary>
         /// Gets or sets a value indicating whether the written enum text should be camel case.

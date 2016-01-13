@@ -25,16 +25,16 @@
 
 using System;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json.Bson;
+using Cargo.Newtonsoft.Bson;
 using System.Globalization;
-using Newtonsoft.Json.Serialization;
+using Cargo.Newtonsoft.Serialization;
 
-namespace Newtonsoft.Json.Converters
+namespace Cargo.Newtonsoft.Converters
 {
     /// <summary>
     /// Converts a <see cref="Regex"/> to and from JSON and BSON.
     /// </summary>
-    public class RegexConverter : JsonConverter
+    internal class RegexConverter : JsonConverter
     {
         private const string PatternName = "Pattern";
         private const string OptionsName = "Options";

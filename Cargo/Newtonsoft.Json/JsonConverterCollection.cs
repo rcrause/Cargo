@@ -28,12 +28,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections.ObjectModel;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Represents a collection of <see cref="JsonConverter"/>.
     /// </summary>
-    public class JsonConverterCollection : Collection<JsonConverter>
+    internal class JsonConverterCollection : Collection<JsonConverter>
     {
     }
 }

@@ -26,14 +26,14 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Provides methods to get attributes from a <see cref="System.Type"/>, <see cref="MemberInfo"/>, <see cref="ParameterInfo"/> or <see cref="Assembly"/>.
     /// </summary>
-    public class ReflectionAttributeProvider : IAttributeProvider
+    internal class ReflectionAttributeProvider : IAttributeProvider
     {
         private readonly object _attributeProvider;
 

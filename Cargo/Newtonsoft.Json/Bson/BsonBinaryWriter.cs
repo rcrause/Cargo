@@ -27,9 +27,9 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Bson
+namespace Cargo.Newtonsoft.Bson
 {
     internal class BsonBinaryWriter
     {

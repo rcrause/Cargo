@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections;
-using Newtonsoft.Json.Schema;
+using Cargo.Newtonsoft.Schema;
 #if !(NET35 || NET20 || PORTABLE || PORTABLE40)
 using System.Collections.Concurrent;
 #endif
@@ -40,12 +40,12 @@ using System.Runtime.Serialization;
 using System.Security.Permissions;
 #endif
 using System.Xml.Serialization;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Utilities;
-using Newtonsoft.Json.Linq;
+using Cargo.Newtonsoft.Converters;
+using Cargo.Newtonsoft.Utilities;
+using Cargo.Newtonsoft.Linq;
 using System.Runtime.CompilerServices;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
@@ -58,7 +58,7 @@ using MemberTypes = System.Reflection.MemberTypes;
 using MethodInfo = System.Reflection.MethodInfo;
 using ParameterInfo = System.Reflection.ParameterInfo;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     internal struct ResolverContractKey : IEquatable<ResolverContractKey>
     {
@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Serialization
     /// <summary>
     /// Used by <see cref="JsonSerializer"/> to resolves a <see cref="JsonContract"/> for a given <see cref="System.Type"/>.
     /// </summary>
-    public class DefaultContractResolver : IContractResolver
+    internal class DefaultContractResolver : IContractResolver
     {
 #pragma warning disable 612,618
         private static readonly IContractResolver _instance = new DefaultContractResolver(true);

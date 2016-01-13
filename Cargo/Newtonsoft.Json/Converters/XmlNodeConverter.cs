@@ -32,19 +32,19 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
 using System.Reflection;
-using Newtonsoft.Json.Serialization;
+using Cargo.Newtonsoft.Serialization;
 #if !(NET20 || PORTABLE40)
 using System.Xml.Linq;
 #endif
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 
 #endif
 
-namespace Newtonsoft.Json.Converters
+namespace Cargo.Newtonsoft.Converters
 {
 
     #region XmlNodeWrappers
@@ -914,7 +914,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts XML to and from JSON.
     /// </summary>
-    public class XmlNodeConverter : JsonConverter
+    internal class XmlNodeConverter : JsonConverter
     {
         private const string TextName = "#text";
         private const string CommentName = "#comment";

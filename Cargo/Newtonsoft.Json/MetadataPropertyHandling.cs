@@ -27,12 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Specifies metadata property handling options for the <see cref="JsonSerializer"/>.
     /// </summary>
-    public enum MetadataPropertyHandling
+    internal enum MetadataPropertyHandling
     {
         /// <summary>
         /// Read metadata properties located at the start of a JSON object.

@@ -23,12 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace Newtonsoft.Json.Linq
+namespace Cargo.Newtonsoft.Linq
 {
     /// <summary>
     /// Specifies the type of token.
     /// </summary>
-    public enum JTokenType
+    internal enum JTokenType
     {
         /// <summary>
         /// No token type has been set.

@@ -31,16 +31,16 @@ using System.IO;
 using System.Numerics;
 #endif
 using System.Text;
-using Newtonsoft.Json.Utilities;
-using Newtonsoft.Json.Linq;
+using Cargo.Newtonsoft.Utilities;
+using Cargo.Newtonsoft.Linq;
 using System.Globalization;
 
-namespace Newtonsoft.Json.Bson
+namespace Cargo.Newtonsoft.Bson
 {
     /// <summary>
     /// Represents a writer that provides a fast, non-cached, forward-only way of generating JSON data.
     /// </summary>
-    public class BsonWriter : JsonWriter
+    internal class BsonWriter : JsonWriter
     {
         private readonly BsonBinaryWriter _writer;
 

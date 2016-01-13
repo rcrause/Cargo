@@ -25,12 +25,12 @@
 
 using System;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Provides data for the Error event.
     /// </summary>
-    public class ErrorEventArgs : EventArgs
+    internal class ErrorEventArgs : EventArgs
     {
         /// <summary>
         /// Gets the current object the error event is being raised against.

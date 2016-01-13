@@ -29,23 +29,23 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 #endif
 using System.Threading;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System.Collections;
 using System.Globalization;
 using System.ComponentModel;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 
 #endif
 
-namespace Newtonsoft.Json.Linq
+namespace Cargo.Newtonsoft.Linq
 {
     /// <summary>
     /// Represents a token that can contain other tokens.
     /// </summary>
-    public abstract class JContainer : JToken, IList<JToken>
+    internal abstract class JContainer : JToken, IList<JToken>
 #if !(DOTNET || PORTABLE || PORTABLE40)
         , ITypedList, IBindingList
 #endif

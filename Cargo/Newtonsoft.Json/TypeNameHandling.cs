@@ -26,7 +26,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Specifies type name handling options for the <see cref="JsonSerializer"/>.
@@ -37,7 +37,7 @@ namespace Newtonsoft.Json
     /// when deserializing with a value other than <c>TypeNameHandling.None</c>.
     /// </remarks>
     [Flags]
-    public enum TypeNameHandling
+    internal enum TypeNameHandling
     {
         /// <summary>
         /// Do not include the .NET type name when serializing types.

@@ -27,12 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Specifies reference loop handling options for the <see cref="JsonSerializer"/>.
     /// </summary>
-    public enum ReferenceLoopHandling
+    internal enum ReferenceLoopHandling
     {
         /// <summary>
         /// Throw a <see cref="JsonSerializationException"/> when a loop is encountered.

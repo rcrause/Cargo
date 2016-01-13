@@ -29,21 +29,21 @@ using System.IO;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System.Globalization;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 
 #endif
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Represents a writer that provides a fast, non-cached, forward-only way of generating JSON data.
     /// </summary>
-    public abstract class JsonWriter : IDisposable
+    internal abstract class JsonWriter : IDisposable
     {
         internal enum State
         {

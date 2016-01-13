@@ -28,15 +28,15 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Linq;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Contract details for a <see cref="System.Type"/> used by the <see cref="JsonSerializer"/>.
     /// </summary>
-    public class JsonObjectContract : JsonContainerContract
+    internal class JsonObjectContract : JsonContainerContract
     {
         /// <summary>
         /// Gets or sets the object member serialization.

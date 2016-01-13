@@ -26,7 +26,7 @@
 using System;
 using System.ComponentModel;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Specifies default value handling options for the <see cref="JsonSerializer"/>.
@@ -36,7 +36,7 @@ namespace Newtonsoft.Json
     ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="ReducingSerializedJsonSizeDefaultValueHandlingExample" title="DefaultValueHandling Ignore Example" />
     /// </example>
     [Flags]
-    public enum DefaultValueHandling
+    internal enum DefaultValueHandling
     {
         /// <summary>
         /// Include members where the member value is the same as the member's default value when serializing objects.

@@ -30,9 +30,9 @@ using System.Text;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using Newtonsoft.Json.Serialization;
+using Cargo.Newtonsoft.Serialization;
 
-namespace Newtonsoft.Json.Utilities
+namespace Cargo.Newtonsoft.Utilities
 {
     internal class ExpressionReflectionDelegateFactory : ReflectionDelegateFactory
     {

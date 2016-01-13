@@ -4,13 +4,13 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Represents a trace writer that writes to memory. When the trace message limit is
     /// reached then old trace messages will be removed as new messages are added.
     /// </summary>
-    public class MemoryTraceWriter : ITraceWriter
+    internal class MemoryTraceWriter : ITraceWriter
     {
         private readonly Queue<string> _traceMessages;
 

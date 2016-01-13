@@ -26,19 +26,19 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System.Collections;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #endif
 using ConstructorInfo = System.Reflection.ConstructorInfo;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Contract details for a <see cref="System.Type"/> used by the <see cref="JsonSerializer"/>.
     /// </summary>
-    public class JsonDictionaryContract : JsonContainerContract
+    internal class JsonDictionaryContract : JsonContainerContract
     {
         /// <summary>
         /// Gets or sets the property name resolver.

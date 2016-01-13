@@ -1,9 +1,9 @@
-﻿namespace Newtonsoft.Json.Linq
+﻿namespace Cargo.Newtonsoft.Linq
 {
     /// <summary>
     /// Specifies how JSON comments are handled when loading JSON.
     /// </summary>
-    public enum CommentHandling
+    internal enum CommentHandling
     {
         /// <summary>
         /// Ignore comments.
@@ -19,7 +19,7 @@
     /// <summary>
     /// Specifies how line information is handled when loading JSON.
     /// </summary>
-    public enum LineInfoHandling
+    internal enum LineInfoHandling
     {
         /// <summary>
         /// Ignore line information.

@@ -27,15 +27,15 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections.ObjectModel;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System.Globalization;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// A collection of <see cref="JsonProperty"/> objects.
     /// </summary>
-    public class JsonPropertyCollection : KeyedCollection<string, JsonProperty>
+    internal class JsonPropertyCollection : KeyedCollection<string, JsonProperty>
     {
         private readonly Type _type;
         private readonly List<JsonProperty> _list;

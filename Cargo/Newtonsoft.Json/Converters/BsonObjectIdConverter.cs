@@ -24,16 +24,16 @@
 #endregion
 
 using System;
-using Newtonsoft.Json.Bson;
+using Cargo.Newtonsoft.Bson;
 using System.Globalization;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Converters
+namespace Cargo.Newtonsoft.Converters
 {
     /// <summary>
     /// Converts a <see cref="BsonObjectId"/> to and from JSON and BSON.
     /// </summary>
-    public class BsonObjectIdConverter : JsonConverter
+    internal class BsonObjectIdConverter : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.

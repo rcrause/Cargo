@@ -25,15 +25,15 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Serialization;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Converters
+namespace Cargo.Newtonsoft.Converters
 {
     /// <summary>
     /// Converts a <see cref="KeyValuePair{TKey,TValue}"/> to and from JSON.
     /// </summary>
-    public class KeyValuePairConverter : JsonConverter
+    internal class KeyValuePairConverter : JsonConverter
     {
         private const string KeyName = "Key";
         private const string ValueName = "Value";

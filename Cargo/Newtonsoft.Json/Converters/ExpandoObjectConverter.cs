@@ -31,14 +31,14 @@ using System.Dynamic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Converters
+namespace Cargo.Newtonsoft.Converters
 {
     /// <summary>
     /// Converts an ExpandoObject to and from JSON.
     /// </summary>
-    public class ExpandoObjectConverter : JsonConverter
+    internal class ExpandoObjectConverter : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.

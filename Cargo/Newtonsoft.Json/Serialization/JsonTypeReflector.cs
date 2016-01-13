@@ -31,9 +31,9 @@ using System.Security;
 #if !(DOTNET || PORTABLE || PORTABLE40)
 using System.Security.Permissions;
 #endif
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
@@ -43,7 +43,7 @@ using MemberTypes = System.Reflection.MemberTypes;
 using PropertyInfo = System.Reflection.PropertyInfo;
 using ConstructorInfo = System.Reflection.ConstructorInfo;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     internal static class JsonTypeReflector
     {

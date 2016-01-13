@@ -28,9 +28,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// The exception thrown when an error occurs during JSON serialization or deserialization.
@@ -38,7 +38,7 @@ namespace Newtonsoft.Json
 #if !(DOTNET || PORTABLE40 || PORTABLE)
     [Serializable]
 #endif
-    public class JsonException : Exception
+    internal class JsonException : Exception
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonException"/> class.

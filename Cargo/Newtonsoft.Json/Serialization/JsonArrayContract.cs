@@ -28,21 +28,21 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System.Collections;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
 using ConstructorInfo = System.Reflection.ConstructorInfo;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Contract details for a <see cref="System.Type"/> used by the <see cref="JsonSerializer"/>.
     /// </summary>
-    public class JsonArrayContract : JsonContainerContract
+    internal class JsonArrayContract : JsonContainerContract
     {
         /// <summary>
         /// Gets the <see cref="System.Type"/> of the collection items.

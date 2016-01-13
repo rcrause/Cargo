@@ -28,16 +28,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.IO;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Utilities;
-using Newtonsoft.Json.Linq;
+using Cargo.Newtonsoft.Serialization;
+using Cargo.Newtonsoft.Utilities;
+using Cargo.Newtonsoft.Linq;
 
-namespace Newtonsoft.Json.Bson
+namespace Cargo.Newtonsoft.Bson
 {
     /// <summary>
     /// Represents a reader that provides fast, non-cached, forward-only access to serialized JSON data.
     /// </summary>
-    public class BsonReader : JsonReader
+    internal class BsonReader : JsonReader
     {
         private const int MaxCharBytesSize = 128;
         private static readonly byte[] SeqRange1 = new byte[] { 0, 127 }; // range of 1-byte sequence

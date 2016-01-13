@@ -30,9 +30,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Serialization;
+using Cargo.Newtonsoft.Serialization;
 
-namespace Newtonsoft.Json.Utilities
+namespace Cargo.Newtonsoft.Utilities
 {
     internal static class ImmutableCollectionsUtils
     {

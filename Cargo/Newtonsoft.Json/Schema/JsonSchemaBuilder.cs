@@ -25,17 +25,17 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Serialization;
+using Cargo.Newtonsoft.Serialization;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
 using System.Globalization;
-using Newtonsoft.Json.Utilities;
-using Newtonsoft.Json.Linq;
+using Cargo.Newtonsoft.Utilities;
+using Cargo.Newtonsoft.Linq;
 
-namespace Newtonsoft.Json.Schema
+namespace Cargo.Newtonsoft.Schema
 {
     [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
     internal class JsonSchemaBuilder

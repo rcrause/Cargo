@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Represents a trace writer.
     /// </summary>
-    public interface ITraceWriter
+    internal interface ITraceWriter
     {
         /// <summary>
         /// Gets the <see cref="TraceLevel"/> that will be used to filter the trace messages passed to the writer.

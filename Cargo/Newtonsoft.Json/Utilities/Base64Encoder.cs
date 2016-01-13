@@ -26,7 +26,7 @@
 using System;
 using System.IO;
 
-namespace Newtonsoft.Json.Utilities
+namespace Cargo.Newtonsoft.Utilities
 {
     internal class Base64Encoder
     {

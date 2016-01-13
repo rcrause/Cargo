@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Newtonsoft.Json.Linq.JsonPath
+namespace Cargo.Newtonsoft.Linq.JsonPath
 {
     internal class QueryFilter : PathFilter
     {

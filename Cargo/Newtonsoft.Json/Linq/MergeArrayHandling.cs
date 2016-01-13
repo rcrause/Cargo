@@ -1,9 +1,9 @@
-namespace Newtonsoft.Json.Linq
+namespace Cargo.Newtonsoft.Linq
 {
     /// <summary>
     /// Specifies how JSON arrays are merged together.
     /// </summary>
-    public enum MergeArrayHandling
+    internal enum MergeArrayHandling
     {
         /// <summary>Concatenate arrays.</summary>
         Concat = 0,

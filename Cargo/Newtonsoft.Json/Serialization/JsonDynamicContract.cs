@@ -29,15 +29,15 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System.Collections;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
     /// </summary>
-    public class JsonDynamicContract : JsonContainerContract
+    internal class JsonDynamicContract : JsonContainerContract
     {
         /// <summary>
         /// Gets the object's properties.

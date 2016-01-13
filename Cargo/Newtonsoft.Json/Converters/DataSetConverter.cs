@@ -26,14 +26,14 @@
 #if !(DOTNET || PORTABLE40 || PORTABLE)
 using System;
 using System.Data;
-using Newtonsoft.Json.Serialization;
+using Cargo.Newtonsoft.Serialization;
 
-namespace Newtonsoft.Json.Converters
+namespace Cargo.Newtonsoft.Converters
 {
     /// <summary>
     /// Converts a <see cref="DataSet"/> to and from JSON.
     /// </summary>
-    public class DataSetConverter : JsonConverter
+    internal class DataSetConverter : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.

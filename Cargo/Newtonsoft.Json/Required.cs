@@ -23,12 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Indicating whether a property is required.
     /// </summary>
-    public enum Required
+    internal enum Required
     {
         /// <summary>
         /// The property is not required. The default state.

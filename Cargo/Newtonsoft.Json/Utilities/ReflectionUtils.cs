@@ -35,13 +35,13 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
-using Newtonsoft.Json.Serialization;
+using Cargo.Newtonsoft.Serialization;
 
-namespace Newtonsoft.Json.Utilities
+namespace Cargo.Newtonsoft.Utilities
 {
 #if (DOTNET || PORTABLE || PORTABLE40)
     internal enum MemberTypes

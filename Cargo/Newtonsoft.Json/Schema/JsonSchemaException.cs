@@ -26,7 +26,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Newtonsoft.Json.Schema
+namespace Cargo.Newtonsoft.Schema
 {
     /// <summary>
     /// <para>
@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Schema
     [Serializable]
 #endif
     [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
-    public class JsonSchemaException : JsonException
+    internal class JsonSchemaException : JsonException
     {
         /// <summary>
         /// Gets the line number indicating where the error occurred.

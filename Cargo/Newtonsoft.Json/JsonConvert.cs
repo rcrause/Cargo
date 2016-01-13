@@ -32,18 +32,18 @@ using System.Numerics;
 #if !(NET20 || NET35 || PORTABLE40)
 using System.Threading.Tasks;
 #endif
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Linq;
+using Cargo.Newtonsoft.Utilities;
 using System.Xml;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
+using Cargo.Newtonsoft.Converters;
+using Cargo.Newtonsoft.Serialization;
 using System.Text;
 #if !(NET20 || PORTABLE40)
 using System.Xml.Linq;
 
 #endif
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Provides methods for converting between common language runtime types and JSON types.
@@ -51,7 +51,7 @@ namespace Newtonsoft.Json
     /// <example>
     ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializeObject" title="Serializing and Deserializing JSON with JsonConvert" />
     /// </example>
-    public static class JsonConvert
+    internal static class JsonConvert
     {
         /// <summary>
         /// Gets or sets a function that creates default <see cref="JsonSerializerSettings"/>.

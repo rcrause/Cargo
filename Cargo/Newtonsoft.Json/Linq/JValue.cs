@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System.Globalization;
 #if !(NET35 || NET20 || PORTABLE40)
 using System.Dynamic;
@@ -36,12 +36,12 @@ using System.Numerics;
 
 #endif
 
-namespace Newtonsoft.Json.Linq
+namespace Cargo.Newtonsoft.Linq
 {
     /// <summary>
     /// Represents a value in JSON (string, integer, date, etc).
     /// </summary>
-    public class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>
+    internal class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>
 #if !PORTABLE
         , IConvertible
 #endif

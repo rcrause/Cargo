@@ -25,16 +25,16 @@
 
 #if !(NET20 || DOTNET || PORTABLE40 || PORTABLE)
 using System;
-using Newtonsoft.Json.Serialization;
+using Cargo.Newtonsoft.Serialization;
 using System.Globalization;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Converters
+namespace Cargo.Newtonsoft.Converters
 {
     /// <summary>
     /// Converts an Entity Framework EntityKey to and from JSON.
     /// </summary>
-    public class EntityKeyMemberConverter : JsonConverter
+    internal class EntityKeyMemberConverter : JsonConverter
     {
         private const string EntityKeyMemberFullTypeName = "System.Data.EntityKeyMember";
 

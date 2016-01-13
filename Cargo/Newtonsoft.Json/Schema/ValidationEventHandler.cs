@@ -25,7 +25,7 @@
 
 using System;
 
-namespace Newtonsoft.Json.Schema
+namespace Cargo.Newtonsoft.Schema
 {
     /// <summary>
     /// <para>
@@ -36,5 +36,5 @@ namespace Newtonsoft.Json.Schema
     /// </note>
     /// </summary>
     [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
-    public delegate void ValidationEventHandler(object sender, ValidationEventArgs e);
+    internal delegate void ValidationEventHandler(object sender, ValidationEventArgs e);
 }

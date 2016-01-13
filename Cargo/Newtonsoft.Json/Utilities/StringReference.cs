@@ -25,7 +25,7 @@
 
 using System;
 
-namespace Newtonsoft.Json.Utilities
+namespace Cargo.Newtonsoft.Utilities
 {
     internal struct StringReference
     {

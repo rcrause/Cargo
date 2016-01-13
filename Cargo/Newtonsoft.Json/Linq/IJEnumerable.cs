@@ -25,13 +25,13 @@
 
 using System.Collections.Generic;
 
-namespace Newtonsoft.Json.Linq
+namespace Cargo.Newtonsoft.Linq
 {
     /// <summary>
     /// Represents a collection of <see cref="JToken"/> objects.
     /// </summary>
     /// <typeparam name="T">The type of token</typeparam>
-    public interface IJEnumerable<
+    internal interface IJEnumerable<
 #if !(NET20 || NET35)
         out
 #endif

@@ -26,11 +26,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Linq;
+using Cargo.Newtonsoft.Utilities;
 using System.Globalization;
 
-namespace Newtonsoft.Json.Schema
+namespace Cargo.Newtonsoft.Schema
 {
     /// <summary>
     /// <para>
@@ -41,7 +41,7 @@ namespace Newtonsoft.Json.Schema
     /// </note>
     /// </summary>
     [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
-    public class JsonSchema
+    internal class JsonSchema
     {
         /// <summary>
         /// Gets or sets the id.

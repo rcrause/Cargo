@@ -27,10 +27,10 @@ using System;
 using System.Collections;
 using System.Globalization;
 using System.Runtime.Serialization.Formatters;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System.Runtime.Serialization;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     internal class JsonSerializerProxy : JsonSerializer
     {

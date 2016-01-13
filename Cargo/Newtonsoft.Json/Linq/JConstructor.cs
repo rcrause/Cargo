@@ -26,15 +26,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System.Globalization;
 
-namespace Newtonsoft.Json.Linq
+namespace Cargo.Newtonsoft.Linq
 {
     /// <summary>
     /// Represents a JSON constructor.
     /// </summary>
-    public class JConstructor : JContainer
+    internal class JConstructor : JContainer
     {
         private string _name;
         private readonly List<JToken> _values = new List<JToken>();

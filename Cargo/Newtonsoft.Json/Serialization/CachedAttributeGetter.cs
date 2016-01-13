@@ -25,9 +25,9 @@
 
 using System;
 using System.Reflection;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     internal static class CachedAttributeGetter<T> where T : Attribute
     {

@@ -25,7 +25,7 @@
 
 using System;
 
-namespace Newtonsoft.Json.Schema
+namespace Cargo.Newtonsoft.Schema
 {
     /// <summary>
     /// <para>
@@ -37,7 +37,7 @@ namespace Newtonsoft.Json.Schema
     /// </summary>
     [Flags]
     [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
-    public enum JsonSchemaType
+    internal enum JsonSchemaType
     {
         /// <summary>
         /// No type specified.

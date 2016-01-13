@@ -23,12 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Specifies how date formatted strings, e.g. "\/Date(1198908717056)\/" and "2012-03-21T05:40Z", are parsed when reading JSON text.
     /// </summary>
-    public enum DateParseHandling
+    internal enum DateParseHandling
     {
         /// <summary>
         /// Date formatted strings are not parsed to a date type and are read as strings.

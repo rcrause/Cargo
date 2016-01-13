@@ -34,17 +34,17 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Security;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Linq;
+using Cargo.Newtonsoft.Utilities;
 using System.Runtime.Serialization;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 
 #endif
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     internal class JsonSerializerInternalWriter : JsonSerializerInternalBase
     {

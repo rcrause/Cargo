@@ -30,20 +30,20 @@ using System.Globalization;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Serialization;
+using Cargo.Newtonsoft.Utilities;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Represents a reader that provides fast, non-cached, forward-only access to serialized JSON data.
     /// </summary>
-    public abstract class JsonReader : IDisposable
+    internal abstract class JsonReader : IDisposable
     {
         /// <summary>
         /// Specifies the state of the reader.

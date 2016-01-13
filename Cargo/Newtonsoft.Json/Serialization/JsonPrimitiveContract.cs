@@ -25,14 +25,14 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
     /// </summary>
-    public class JsonPrimitiveContract : JsonContract
+    internal class JsonPrimitiveContract : JsonContract
     {
         internal PrimitiveTypeCode TypeCode { get; set; }
 

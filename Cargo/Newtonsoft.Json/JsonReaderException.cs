@@ -26,9 +26,9 @@
 using System;
 using System.Globalization;
 using System.Runtime.Serialization;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// The exception thrown when an error occurs while reading JSON text.
@@ -36,7 +36,7 @@ namespace Newtonsoft.Json
 #if !(DOTNET || PORTABLE || PORTABLE40)
     [Serializable]
 #endif
-    public class JsonReaderException : JsonException
+    internal class JsonReaderException : JsonException
     {
         /// <summary>
         /// Gets the line number indicating where the error occurred.

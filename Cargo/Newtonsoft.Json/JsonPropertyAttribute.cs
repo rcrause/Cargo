@@ -25,13 +25,13 @@
 
 using System;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Instructs the <see cref="JsonSerializer"/> to always serialize the member with the specified name.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = false)]
-    public sealed class JsonPropertyAttribute : Attribute
+    internal sealed class JsonPropertyAttribute : Attribute
     {
         // yuck. can't set nullable properties on an attribute in C#
         // have to use this approach to get an unset default state

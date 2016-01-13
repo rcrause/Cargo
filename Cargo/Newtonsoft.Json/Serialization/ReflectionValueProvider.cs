@@ -25,15 +25,15 @@
 
 using System;
 using System.Reflection;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System.Globalization;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Get and set values for a <see cref="MemberInfo"/> using reflection.
     /// </summary>
-    public class ReflectionValueProvider : IValueProvider
+    internal class ReflectionValueProvider : IValueProvider
     {
         private readonly MemberInfo _memberInfo;
 

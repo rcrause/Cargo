@@ -24,14 +24,14 @@
 #endregion
 
 using System;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Bson
+namespace Cargo.Newtonsoft.Bson
 {
     /// <summary>
     /// Represents a BSON Oid (object id).
     /// </summary>
-    public class BsonObjectId
+    internal class BsonObjectId
     {
         /// <summary>
         /// Gets or sets the value of the Oid.

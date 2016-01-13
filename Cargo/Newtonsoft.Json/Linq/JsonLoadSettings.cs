@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Newtonsoft.Json.Linq
+namespace Cargo.Newtonsoft.Linq
 {
     /// <summary>
     /// Specifies the settings used when loading JSON.
     /// </summary>
-    public class JsonLoadSettings
+    internal class JsonLoadSettings
     {
         private CommentHandling _commentHandling;
         private LineInfoHandling _lineInfoHandling;

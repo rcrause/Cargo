@@ -25,18 +25,18 @@
 
 using System;
 using System.Reflection;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #endif
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Maps a JSON property to a .NET member or constructor parameter.
     /// </summary>
-    public class JsonProperty
+    internal class JsonProperty
     {
         internal Required? _required;
         internal bool _hasExplicitDefaultValue;

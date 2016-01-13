@@ -28,20 +28,20 @@ using System.Collections.Generic;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Linq;
+using Cargo.Newtonsoft.Schema;
+using Cargo.Newtonsoft.Utilities;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.IO;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 
 #endif
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// <para>
@@ -52,7 +52,7 @@ namespace Newtonsoft.Json
     /// </note>
     /// </summary>
     [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
-    public class JsonValidatingReader : JsonReader, IJsonLineInfo
+    internal class JsonValidatingReader : JsonReader, IJsonLineInfo
     {
         private class SchemaScope
         {

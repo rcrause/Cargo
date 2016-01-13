@@ -27,13 +27,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Instructs the <see cref="JsonSerializer"/> to always serialize the member, and require the member has a value.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
-    public sealed class JsonRequiredAttribute : Attribute
+    internal sealed class JsonRequiredAttribute : Attribute
     {
     }
 }

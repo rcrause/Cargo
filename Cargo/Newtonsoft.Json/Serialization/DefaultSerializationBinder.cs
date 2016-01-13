@@ -27,14 +27,14 @@ using System;
 using System.Runtime.Serialization;
 using System.Reflection;
 using System.Globalization;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// The default serialization binder used when resolving and loading classes from type names.
     /// </summary>
-    public class DefaultSerializationBinder : SerializationBinder
+    internal class DefaultSerializationBinder : SerializationBinder
     {
         internal static readonly DefaultSerializationBinder Instance = new DefaultSerializationBinder();
 

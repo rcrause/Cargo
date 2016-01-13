@@ -25,12 +25,12 @@
 
 using System;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Specifies the state of the <see cref="JsonWriter"/>.
     /// </summary>
-    public enum WriteState
+    internal enum WriteState
     {
         /// <summary>
         /// An exception has been thrown, which has left the <see cref="JsonWriter"/> in an invalid state.

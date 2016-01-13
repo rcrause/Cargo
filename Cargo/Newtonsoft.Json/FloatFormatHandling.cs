@@ -23,13 +23,13 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Specifies float format handling options when writing special floating point numbers, e.g. <see cref="F:System.Double.NaN"/>,
     /// <see cref="F:System.Double.PositiveInfinity"/> and <see cref="F:System.Double.NegativeInfinity"/> with <see cref="JsonWriter"/>.
     /// </summary>
-    public enum FloatFormatHandling
+    internal enum FloatFormatHandling
     {
         /// <summary>
         /// Write special floating point values as strings in JSON, e.g. "NaN", "Infinity", "-Infinity".

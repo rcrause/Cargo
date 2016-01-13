@@ -26,16 +26,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace Newtonsoft.Json.Linq
+namespace Cargo.Newtonsoft.Linq
 {
     /// <summary>
     /// Represents a JSON property.
     /// </summary>
-    public class JProperty : JContainer
+    internal class JProperty : JContainer
     {
         #region JPropertyList
         private class JPropertyList : IList<JToken>

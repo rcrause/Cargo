@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Cargo.Newtonsoft;
+using Cargo.Newtonsoft.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;

@@ -24,26 +24,26 @@
 #endregion
 
 #if !(NET35 || NET20)
-using Newtonsoft.Json.Linq;
+using Cargo.Newtonsoft.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
-using Newtonsoft.Json.Serialization;
+using Cargo.Newtonsoft.Serialization;
 using System.Globalization;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using PropertyInfo = System.Reflection.PropertyInfo;
 
-namespace Newtonsoft.Json.Converters
+namespace Cargo.Newtonsoft.Converters
 {
     /// <summary>
     /// Converts a F# discriminated union type to and from JSON.
     /// </summary>
-    public class DiscriminatedUnionConverter : JsonConverter
+    internal class DiscriminatedUnionConverter : JsonConverter
     {
         #region UnionDefinition
         internal class Union

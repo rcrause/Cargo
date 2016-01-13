@@ -25,13 +25,13 @@
 
 using System;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Instructs the <see cref="JsonSerializer"/> how to serialize the object.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false)]
-    public abstract class JsonContainerAttribute : Attribute
+    internal abstract class JsonContainerAttribute : Attribute
     {
         /// <summary>
         /// Gets or sets the id.

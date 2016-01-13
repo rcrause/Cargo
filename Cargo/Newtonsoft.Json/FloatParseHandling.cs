@@ -23,12 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Specifies how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
     /// </summary>
-    public enum FloatParseHandling
+    internal enum FloatParseHandling
     {
         /// <summary>
         /// Floating point numbers are parsed to <see cref="Double"/>.

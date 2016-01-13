@@ -26,17 +26,17 @@
 #if !(DOTNET || PORTABLE40 || PORTABLE)
 using System.Collections.Generic;
 using System.Globalization;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System;
 using System.Data;
-using Newtonsoft.Json.Serialization;
+using Cargo.Newtonsoft.Serialization;
 
-namespace Newtonsoft.Json.Converters
+namespace Cargo.Newtonsoft.Converters
 {
     /// <summary>
     /// Converts a <see cref="DataTable"/> to and from JSON.
     /// </summary>
-    public class DataTableConverter : JsonConverter
+    internal class DataTableConverter : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.

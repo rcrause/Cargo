@@ -25,15 +25,15 @@
 
 using System;
 using System.Reflection;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Converters
+namespace Cargo.Newtonsoft.Converters
 {
     /// <summary>
     /// Create a custom object
     /// </summary>
     /// <typeparam name="T">The object type to convert.</typeparam>
-    public abstract class CustomCreationConverter<T> : JsonConverter
+    internal abstract class CustomCreationConverter<T> : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.

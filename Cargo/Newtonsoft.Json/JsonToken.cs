@@ -27,12 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Specifies the type of JSON token.
     /// </summary>
-    public enum JsonToken
+    internal enum JsonToken
     {
         /// <summary>
         /// This is returned by the <see cref="JsonReader"/> if a <see cref="JsonReader.Read"/> method has not been called. 

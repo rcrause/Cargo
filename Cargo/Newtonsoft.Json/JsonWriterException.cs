@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// The exception thrown when an error occurs while reading JSON text.
@@ -36,7 +36,7 @@ namespace Newtonsoft.Json
 #if !(DOTNET || PORTABLE40 || PORTABLE)
     [Serializable]
 #endif
-    public class JsonWriterException : JsonException
+    internal class JsonWriterException : JsonException
     {
         /// <summary>
         /// Gets the path to the JSON where the error occurred.

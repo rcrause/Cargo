@@ -25,14 +25,14 @@
 
 using System;
 using System.Globalization;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Converters
+namespace Cargo.Newtonsoft.Converters
 {
     /// <summary>
     /// Converts a <see cref="Version"/> to and from a string (e.g. "1.2.3.4").
     /// </summary>
-    public class VersionConverter : JsonConverter
+    internal class VersionConverter : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.

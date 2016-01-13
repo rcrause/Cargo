@@ -26,12 +26,12 @@
 using System;
 using System.Collections.Generic;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Provides methods to get attributes.
     /// </summary>
-    public interface IAttributeProvider
+    internal interface IAttributeProvider
     {
         /// <summary>
         /// Returns a collection of all of the attributes, or an empty collection if there are no attributes.

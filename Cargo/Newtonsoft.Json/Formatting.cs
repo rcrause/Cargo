@@ -23,12 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Specifies formatting options for the <see cref="JsonTextWriter"/>.
     /// </summary>
-    public enum Formatting
+    internal enum Formatting
     {
         /// <summary>
         /// No special formatting is applied. This is the default.

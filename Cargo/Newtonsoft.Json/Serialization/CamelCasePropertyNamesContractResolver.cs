@@ -24,14 +24,14 @@
 #endregion
 
 using System.Globalization;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Resolves member mappings for a type, camel casing property names.
     /// </summary>
-    public class CamelCasePropertyNamesContractResolver : DefaultContractResolver
+    internal class CamelCasePropertyNamesContractResolver : DefaultContractResolver
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CamelCasePropertyNamesContractResolver"/> class.

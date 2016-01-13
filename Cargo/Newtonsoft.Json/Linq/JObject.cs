@@ -35,16 +35,16 @@ using System.Dynamic;
 using System.Linq.Expressions;
 #endif
 using System.IO;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System.Globalization;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 
 #endif
 
-namespace Newtonsoft.Json.Linq
+namespace Cargo.Newtonsoft.Linq
 {
     /// <summary>
     /// Represents a JSON object.
@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Linq
     /// <example>
     ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
     /// </example>
-    public class JObject : JContainer, IDictionary<string, JToken>, INotifyPropertyChanged
+    internal class JObject : JContainer, IDictionary<string, JToken>, INotifyPropertyChanged
 #if !(DOTNET || PORTABLE40 || PORTABLE)
         , ICustomTypeDescriptor
 #endif

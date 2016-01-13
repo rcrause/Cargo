@@ -23,12 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace Newtonsoft.Json.Serialization
+namespace Cargo.Newtonsoft.Serialization
 {
     /// <summary>
     /// Provides methods to get and set values.
     /// </summary>
-    public interface IValueProvider
+    internal interface IValueProvider
     {
         /// <summary>
         /// Sets the value.

@@ -30,19 +30,19 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization.Formatters;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Converters;
+using Cargo.Newtonsoft.Serialization;
+using Cargo.Newtonsoft.Utilities;
 using System.Runtime.Serialization;
-using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
+using ErrorEventArgs = Cargo.Newtonsoft.Serialization.ErrorEventArgs;
 
-namespace Newtonsoft.Json
+namespace Cargo.Newtonsoft
 {
     /// <summary>
     /// Serializes and deserializes objects into and from the JSON format.
     /// The <see cref="JsonSerializer"/> enables you to control how objects are encoded into JSON.
     /// </summary>
-    public class JsonSerializer
+    internal class JsonSerializer
     {
         internal TypeNameHandling _typeNameHandling;
         internal FormatterAssemblyStyle _typeNameAssemblyFormat;

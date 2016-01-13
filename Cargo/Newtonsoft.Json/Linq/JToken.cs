@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq.JsonPath;
+using Cargo.Newtonsoft.Linq.JsonPath;
 #if !(NET35 || NET20 || PORTABLE40)
 using System.Dynamic;
 using System.Linq.Expressions;
@@ -35,23 +35,23 @@ using System.IO;
 using System.Numerics;
 #endif
 using System.Text;
-using Newtonsoft.Json.Utilities;
+using Cargo.Newtonsoft.Utilities;
 using System.Diagnostics;
 using System.Globalization;
 using System.Collections;
 #if NET20
-using Newtonsoft.Json.Utilities.LinqBridge;
+using Cargo.Newtonsoft.Utilities.LinqBridge;
 #else
 using System.Linq;
 
 #endif
 
-namespace Newtonsoft.Json.Linq
+namespace Cargo.Newtonsoft.Linq
 {
     /// <summary>
     /// Represents an abstract JSON token.
     /// </summary>
-    public abstract class JToken : IJEnumerable<JToken>, IJsonLineInfo
+    internal abstract class JToken : IJEnumerable<JToken>, IJsonLineInfo
 #if !(DOTNET || PORTABLE40 || PORTABLE)
         , ICloneable
 #endif

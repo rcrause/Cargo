@@ -1,11 +1,11 @@
 using System;
 
-namespace Newtonsoft.Json.Linq
+namespace Cargo.Newtonsoft.Linq
 {
     /// <summary>
     /// Specifies the settings used when merging JSON.
     /// </summary>
-    public class JsonMergeSettings
+    internal class JsonMergeSettings
     {
         private MergeArrayHandling _mergeArrayHandling;
 
