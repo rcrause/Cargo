@@ -294,7 +294,7 @@
             req.setRequestHeader("Content-Type", contentType);
             req.responseType = responseType;
 
-            if (/^(?:GET|HEAD)$/.test(method) || !req.data) req.send();
+            if (/^(?:GET|HEAD)$/.test(method) || !request.data) req.send();
             else req.send(JSON.stringify(request.data));
         });
     }
