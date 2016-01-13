@@ -90,6 +90,7 @@
     var html = document.body.parentNode;
     var contentEvents = new Emitter;
     var lastHoveredElement = null;
+    var cargoUrlBase = document.currentScript.src.replace(/\js\/\d+$/, "");
 
     //
     // ContentItem Type
@@ -264,6 +265,42 @@
         return new Promise(function (resolve, reject) {
             if (window.confirm(message)) resolve();
         });
+    }
+
+    function http(request) {
+
+        return new Promise(function (resolve, reject) {
+            var req = new XMLHttpRequest();
+
+            req.onreadystatechange = (function (req) {
+                return function onreadystatechange() {
+                    if (req.readyState == XMLHttpRequest.DONE) {
+                        var success = /^2\d\d$/.test(req.status);
+
+                        if (!success) {
+                            reject(req);
+                        } else {
+                            resolve(req);
+                        }
+                    }
+                }
+            })(req);
+
+            var contentType = request.contentType || "application/json";
+            var method = request.method || "GET";
+            var responseType = "responseType" in request ? request.responseType : "json";
+
+            req.open(request.method, request.url);
+            req.setRequestHeader("Content-Type", contentType);
+            req.responseType = responseType;
+
+            if (/^(?:GET|HEAD)$/.test(method) || !req.data) req.send();
+            else req.send(JSON.stringify(request.data));
+        });
+    }
+
+    function post(url, data) {
+        return http({ url: url, data: data, method: "POST" });
     }
 
     //
