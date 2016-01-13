@@ -5,3 +5,5 @@ Cargo/bin/
 Cargo/obj/
 bin/
 obj/
+
+*.user
