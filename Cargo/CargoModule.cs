@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Cargo
 {
@@ -45,11 +47,33 @@ namespace Cargo
                 string cargocss = FileFromResource("cargo.css");
                 return Content(cargocss, "text/css", TimeSpan.FromDays(10));
             };
+
+            Post[prefix + @"/save"] = r =>
+            {
+                JToken request = ReadJsonFromRequest();
+                return new { message = "ok" };
+            };
         }
 
         private static Response NotFound()
         {
             return new NotFoundResponse();
+        }
+
+        private static Response Nothing()
+        {
+            return new Response();
+        }
+
+        private JToken ReadJsonFromRequest()
+        {
+            using (StreamReader sr = new StreamReader(Request.Body))
+            {
+                using (JsonReader jr = new JsonTextReader(sr))
+                {
+                    return JToken.ReadFrom(jr);
+                }
+            }
         }
 
         private static Response Content(string content, string contentType, TimeSpan? cacheDuration = null)

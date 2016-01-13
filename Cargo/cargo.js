@@ -543,7 +543,8 @@
         var promise = new Promise(function (resolve, reject) {
             saving = true;
             console.log(JSON.stringify(content, null, '  '));
-            setTimeout(resolve, 1000);
+
+            post(cargoUrlBase + "save", content).then(resolve, reject);
         });
 
         promise.then(function () { saving = false; }, function () { saving = false; });
