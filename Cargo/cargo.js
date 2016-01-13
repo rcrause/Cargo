@@ -654,6 +654,11 @@
                     save().then(function () {
                         mainButton.classList.remove("cargo-saving");
                         mainButton.textContent = "mode_edit";
+                    }, function (req) {
+                        alert("There was a problem sending the request: " + req.statusText);
+                        mainButton.classList.remove("cargo-saving");
+                        mainButton.textContent = "save";
+                        startEditMode();
                     });
                 }
             });
