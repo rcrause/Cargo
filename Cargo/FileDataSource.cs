@@ -239,6 +239,8 @@ namespace Cargo
             bool mustWrite = false;
             T result;
 
+            JToken tv = JToken.FromObject(defaultValue, _serializer);
+
             _rwl.EnterUpgradeableReadLock();
             try
             {
@@ -252,7 +254,7 @@ namespace Cargo
                     _rwl.EnterWriteLock();
                     try
                     {
-                        mustWrite = SetInternal(key, defaultValue);
+                        mustWrite = SetInternal(key, tv);
                     }
                     finally
                     {
@@ -270,7 +272,7 @@ namespace Cargo
             if (mustWrite)
             {
                 Persist();
-                NotifyChanged(null, new JProperty(key, defaultValue));
+                NotifyChanged(null, new JProperty(key, tv));
             }
 
             return result;
@@ -289,6 +291,7 @@ namespace Cargo
         {
             bool mustWrite;
             JProperty oldItem;
+            JToken jvalue =  value == null ? JValue.CreateNull() : JToken.FromObject(value, _serializer);
 
             _rwl.EnterUpgradeableReadLock();
             try
@@ -304,7 +307,7 @@ namespace Cargo
                 _rwl.EnterWriteLock();
                 try
                 {
-                    mustWrite = SetInternal(key, value);
+                    mustWrite = SetInternal(key, jvalue);
                 }
                 finally
                 {
@@ -320,13 +323,12 @@ namespace Cargo
             if (mustWrite)
             {
                 Persist();
-                NotifyChanged(oldItem, value == null ? null : new JProperty(key, value));
+                NotifyChanged(oldItem, value == null ? null : new JProperty(key, jvalue));
             }
         }
 
-        private bool SetInternal<T>(string key, T value)
+        private bool SetInternal(string key, JToken objectToken)
         {
-            JToken objectToken = value == null ? new JValue((object)null) : JToken.FromObject(value, _serializer);
             if (_items != null)
             {
                 var prop = _items.Property(key);

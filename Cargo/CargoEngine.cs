@@ -14,8 +14,6 @@ namespace Cargo
     {
         public CargoConfiguration Configuration { get; set; }
 
-        private ICargoDataSource DataSource { get { return Configuration.DataSource; } }
-
         public CargoEngine()
             :this(CargoConfiguration.Default)
         {
@@ -26,14 +24,17 @@ namespace Cargo
             Configuration = configuration;
         }
 
-        public ContentCollection GetContent(IContentContext contentContext)
+        public ContentView GetContent(IContentContext contentContext)
         {
+            //get the data source
+            var dataSource = Configuration.GetDataSource();
+
             //get content for this location
-            var content = DataSource.GetAllContentForLocation(contentContext.Location);
+            var content = dataSource.GetAllContentForLocation(contentContext.Location);
 
             //create an immutable content collection for use by the view
-            var collection = new ContentCollection(content, contentContext);
-            
+            var collection = new ContentView(content, contentContext, dataSource);
+
             return collection;
         }
     }

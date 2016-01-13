@@ -38,8 +38,9 @@ namespace Cargo
         {
             var path = Get<string>(environment, "owin.RequestPath");
 
-            if (path.StartsWith(_cargoRoutePrefix))
+            if (path.StartsWith(_cargoRoutePrefix) && _cargoEngine.Configuration.AuthenticateRequest(environment))
             {
+
                 string strippedPath = path.Substring(_cargoRoutePrefix.Length);
 
                 var method = Get<string>(environment, "owin.RequestMethod");

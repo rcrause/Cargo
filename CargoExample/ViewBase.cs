@@ -11,14 +11,14 @@ namespace CargoExample
     public abstract class ViewBase<T> : WebViewPage<T>
     {
         private IContentContext _contentContext;
-        private ContentCollection _cargoContent;
+        private ContentView _cargoContent;
         private CargoEngine _cargoEngine;
 
         public CargoEngine CargoEngine { get { return _cargoEngine; } }
 
         public IContentContext CargoContext { get { return _contentContext; } }
 
-        public ContentCollection Cargo { get { return _cargoContent; } }
+        public ContentView Cargo { get { return _cargoContent; } }
 
         public override void ExecutePageHierarchy()
         {
@@ -26,7 +26,7 @@ namespace CargoExample
             _contentContext = new ContentContext
             {
                 Locale = this.Culture,
-                Location = this.Request.RawUrl,
+                Location = this.VirtualPath.Replace("~", ""),
                 EditingEnabled = true //Request.IsAuthenticated
             };
 

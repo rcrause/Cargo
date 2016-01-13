@@ -13,6 +13,14 @@ namespace Cargo
     {
         private Lazy<CargoFileDataSource> _cargoFileDataSource = new Lazy<CargoFileDataSource>();
 
-        public override ICargoDataSource DataSource { get { return _cargoFileDataSource.Value; } }
+        public override ICargoDataSource GetDataSource()
+        {
+            return _cargoFileDataSource.Value;
+        }
+
+        public override bool AuthenticateRequest(IDictionary<string, object> environment)
+        {
+            return true;
+        }
     }
 }

@@ -10,20 +10,21 @@ namespace Cargo
     /// <summary>
     /// Represents a collection of content for a specific <see cref="IContentContext"/>.
     /// </summary>
-    public class ContentCollection
+    public class ContentView
     {
         private SHA1Managed _sha = new SHA1Managed();
         private Encoding _utf8 = Encoding.UTF8;
 
-        public ContentCollection(IEnumerable<ContentItem> content, IContentContext contentContext)
+        public ContentView(IEnumerable<ContentItem> content, IContentContext contentContext, ICargoDataSource dataSource)
         {
             ContentContext = contentContext;
-            Content = content.ToLookup(x => x.Key);
+            Content = content.ToDictionary(x => x.Key);
+            DataSource = dataSource;
         }
         
         public IContentContext ContentContext { get; private set; }
-
-        public ILookup<string, ContentItem> Content { get; private set; }
+        public IDictionary<string, ContentItem> Content { get; private set; }
+        public ICargoDataSource DataSource { get; private set; }
 
         public string GetTokenizedContent(string key, string defaultContent)
         {
@@ -40,7 +41,7 @@ namespace Cargo
         {
             var contentItem = GetContentItem(key);
             if (contentItem != null) return contentItem.Content;
-            else return defaultContent;
+            else return DataSource.GetOrCreate(ContentContext.Location, key, defaultContent).Content;
         }
 
         public string GetContent(string defaultContent)
@@ -50,8 +51,9 @@ namespace Cargo
 
         private ContentItem GetContentItem(string key)
         {
-            IEnumerable<ContentItem> itemsWithKey = Content[key];
-            return itemsWithKey.FirstOrDefault();
+            ContentItem item;
+            Content.TryGetValue(key, out item);
+            return item;
         }
 
         private string Tokenize(string key, string content)

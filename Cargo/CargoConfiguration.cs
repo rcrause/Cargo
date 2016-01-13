@@ -14,7 +14,8 @@ namespace Cargo
         private static readonly Lazy<DefaultCargoConfiguration> _default = new Lazy<DefaultCargoConfiguration>();
         public static CargoConfiguration Default { get { return _default.Value; } }
 
-        public abstract ICargoDataSource DataSource { get; }
+        public abstract ICargoDataSource GetDataSource();
+        public abstract bool AuthenticateRequest(IDictionary<string, object> environment);
         public string CargoRoutePrefix { get; set; } = "/cargo";
     }
 }
