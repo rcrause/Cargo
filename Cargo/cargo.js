@@ -613,6 +613,9 @@
                         var contentItem = content[key];
                         contentItem.reset();
                     }
+
+                    exitEditMode();
+                    mainButton.textContent = "mode_edit";
                 });
             }
         }];
