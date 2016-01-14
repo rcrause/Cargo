@@ -3,7 +3,7 @@
   <metadata>
     <id>Cargo</id>
     <version>$version$</version>
-    <title>$title$</title>
+    <title>Cargo</title>
     <authors>Cillié Malan</authors>
     <owners>Cillié Malan</owners>
     <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
@@ -11,7 +11,6 @@
     <iconUrl>https://raw.githubusercontent.com/cilliemalan/Cargo/master/CargoLogo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A very very lightweight content management thingy for ASP.Net</description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags></tags>
     <dependencies>
