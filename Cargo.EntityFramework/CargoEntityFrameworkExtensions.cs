@@ -22,7 +22,9 @@ namespace Cargo
         /// <param name="schema">The schema for each created table.</param>
         public static void MapCargoContent(this DbModelBuilder model, string prefix = null, string schema = null)
         {
-            var contentItem = ToTableSmart(model.Entity<ContentItem>(), prefix + "ContentItems", schema);
+            var contentItem = model.Entity<ContentItem>();
+            ToTableSmart(contentItem, prefix + "ContentItems", schema);
+            
             contentItem.Property(x => x.Key).IsUnicode().IsRequired().HasMaxLength(200);
             contentItem.Property(x => x.Location).IsUnicode().IsRequired().HasMaxLength(200);
             contentItem.Property(x => x.Content).IsUnicode().IsRequired();
@@ -35,11 +37,11 @@ namespace Cargo
             contentItem.Ignore(x => x.Id);
         }
         
-        private static EntityTypeConfiguration<TEntityType> ToTableSmart<TEntityType>(EntityTypeConfiguration<TEntityType> entity, string tableName, string schemaName)
+        private static void ToTableSmart<TEntityType>(EntityTypeConfiguration<TEntityType> entity, string tableName, string schemaName)
             where TEntityType : class
         {
-            if (string.IsNullOrEmpty(schemaName)) return entity.ToTable(tableName);
-            else return entity.ToTable(tableName, schemaName);
+            if (string.IsNullOrEmpty(schemaName)) entity.ToTable(tableName);
+            else entity.ToTable(tableName, schemaName);
         }
     }
 }
