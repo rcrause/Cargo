@@ -40,13 +40,15 @@ namespace Cargo
             ValidateLocation(location);
             ValidateKey(key);
 
-            return ContentItems.Find(location, key);
+            return AddIds(ContentItems.Find(location, key));
         }
 
         /// <inheritdoc />
         public override ICollection<ContentItem> GetAllContent()
         {
-            return ContentItems.ToList();
+            return ContentItems
+                .Select(AddIds)
+                .ToList();
         }
 
         /// <inheritdoc />
@@ -56,13 +58,19 @@ namespace Cargo
 
             ValidateLocation(location);
 
-            return ContentItems.Where(x => x.Location == location).ToList();
+            return ContentItems
+                .Select(AddIds)
+                .Where(x => x.Location == location)
+                .ToList();
         }
 
         /// <inheritdoc />
         public override ICollection<string> GetAllLocations()
         {
-            return ContentItems.Select(x => x.Location).Distinct().ToList();
+            return ContentItems
+                .Select(x => x.Location)
+                .Distinct()
+                .ToList();
         }
 
         /// <inheritdoc />
@@ -77,7 +85,7 @@ namespace Cargo
             ValidateLocation(location);
             ValidateKey(key);
 
-            return ContentItems.Find(location, key);
+            return AddIds(ContentItems.Find(location, key));
         }
 
         /// <inheritdoc />
@@ -103,7 +111,7 @@ namespace Cargo
                 string location, key;
                 ParseId(id, out location, out key);
 
-                var contentItem = ContentItems.Find(location, key);
+                var contentItem = AddIds(ContentItems.Find(location, key));
                 if(contentItem != null)
                 {
                     contentItem.Content = item.Value;
@@ -134,7 +142,7 @@ namespace Cargo
                 string id = GetId(item.Location, item.Key);
                 ValidateId(id);
 
-                var contentItem = ContentItems.Find(item.Location, item.Key);
+                var contentItem = AddIds(ContentItems.Find(item.Location, item.Key));
                 if (contentItem != null)
                 {
                     contentItem.Content = item.Content;
@@ -163,7 +171,7 @@ namespace Cargo
             string id = GetId(location, key);
             ValidateId(id);
 
-            var contentItem = ContentItems.Find(location, key);
+            var contentItem = AddIds(ContentItems.Find(location, key));
             if (contentItem != null)
             {
                 contentItem.Content = content;
@@ -179,7 +187,16 @@ namespace Cargo
                 });
             }
 
+            _dataContext.SaveChanges();
+
             return contentItem;
+        }
+
+        private static ContentItem AddIds(ContentItem ci)
+        {
+            if (ci != null) ci.Id = GetId(ci.Location, ci.Key);
+
+            return ci;
         }
 
         private IEnumerable<ContentItem> GetMultipleById(IEnumerable<string> contentItemIds)
@@ -191,7 +208,10 @@ namespace Cargo
                 ValidateLocation(location);
                 ValidateKey(key);
 
-                yield return ContentItems.AsNoTracking().Single(x => x.Location == location && x.Key == key);
+                yield return ContentItems
+                    .AsNoTracking()
+                    .Select(AddIds)
+                    .Single(x => x.Location == location && x.Key == key);
             }
         }
 
