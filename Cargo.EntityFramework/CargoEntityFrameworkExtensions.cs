@@ -8,8 +8,18 @@ using System.Threading.Tasks;
 
 namespace Cargo
 {
+    /// <summary>
+    /// Provides extensions for Cargo to do with Entity Framework.
+    /// </summary>
     public static class CargoEntityFrameworkExtensions
     {
+        /// <summary>
+        /// Map the entities needed for this <see cref="DbContext"/> to be used by an
+        /// <see cref="EntityFrameworkCargoDataSource"/>. 
+        /// </summary>
+        /// <param name="model">The <see cref="DbModelBuilder"/> passed to <see cref="DbContext.OnModelCreating(DbModelBuilder)"/>.</param>
+        /// <param name="prefix">The prefix to add before each created table.</param>
+        /// <param name="schema">The schema for each created table.</param>
         public static void MapCargoContent(this DbModelBuilder model, string prefix = null, string schema = null)
         {
             var contentItem = ToTableSmart(model.Entity<ContentItem>(), prefix + "ContentItems", schema);

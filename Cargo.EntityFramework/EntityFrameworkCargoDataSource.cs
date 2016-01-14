@@ -5,8 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cargo.EntityFramework
+namespace Cargo
 {
+    /// <summary>
+    /// Allows using an Entity Framework data context as a data source for Cargo. The
+    /// relevant <see cref="DbContext"/> instance needs to have the needed entities mapped
+    /// by calling <see cref="CargoEntityFrameworkExtensions.MapCargoContent(DbModelBuilder, string, string)"/>.
+    /// </summary>
     public class EntityFrameworkCargoDataSource : CargoDataSourceBase
     {
         private DbContext _dataContext;
