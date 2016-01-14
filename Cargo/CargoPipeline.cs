@@ -119,10 +119,25 @@ namespace Cargo
 
         private async Task PerformSave(IDictionary<string, object> environment, CancellationToken cancellationToken)
         {
-            var request = ReadObjectFromRequest<List<ContentItem>>(environment);
-            var ds = _cargoEngine.Configuration.GetDataSource();
-            ds.Set(request);
-            await WriteObject(environment, new { message = "ok" }, cancellationToken);
+            int itemsWritten = 0;
+
+            var request = ReadJsonFromRequest(environment) as JObject;
+            if(request != null)
+            {
+                var items = request.Properties()
+                    .Select(x => new { id = x.Name, val = ((x.Value as JObject)?.Property("content")?.Value as JValue)?.Value as string })
+                    .Where(x => x.id != null && x.val != null)
+                    .ToDictionary(x => x.id, x => x.val);
+
+                if(items.Count > 0)
+                {
+                    var ds = _cargoEngine.Configuration.GetDataSource();
+                    ds.SetById(items);
+                    itemsWritten = items.Count;
+                }
+            }
+
+            await WriteObject(environment, new { message = $"saved {itemsWritten} items" }, cancellationToken);
         }
 
         private Task Return405Async(IDictionary<string, object> environment)
