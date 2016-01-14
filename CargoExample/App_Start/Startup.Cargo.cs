@@ -14,8 +14,7 @@ namespace CargoExample
         
         public void ConfigureCargo(IAppBuilder app)
         {
-            CargoConfiguration cargoConfig = CargoConfiguration.Default;
-            _cargoEngine = new CargoEngine(cargoConfig);
+            _cargoEngine = new CargoEngine(new CargoConfig());
             app.UseCargo(_cargoEngine);
         }
     }
