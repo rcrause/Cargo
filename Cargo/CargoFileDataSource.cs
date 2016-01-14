@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Cargo
 {
+    /// <summary>
+    /// Provides an implementation of <see cref="ICargoDataSource"/>
+    /// </summary>
     public class CargoFileDataSource : CargoDataSourceBase, IDisposable
     {
         private bool _disposed;
@@ -17,6 +20,10 @@ namespace Cargo
         private string _appDataPath;
         private string _rxId = @"^(.*)\/(.+)";
 
+        /// <summary>
+        /// Creates a new <see cref="CargoFileDataSource"/>, using the "cargo.json" as
+        /// filename
+        /// </summary>
         public CargoFileDataSource()
             : this("cargo.json")
         {
@@ -185,6 +192,15 @@ namespace Cargo
             if (!Regex.IsMatch(id, _rxId)) throw new ArgumentException($"The id must be in the format {_rxId}");
         }
 
+        /// <summary>
+        /// Creates a new <see cref="CargoFileDataSource"/>, using the given filename for a file.
+        /// </summary>
+        /// <param name="filename">The file to use.</param>
+        /// <remarks>
+        /// If the filename is not rooted (i.e. is a relative path), and this class is being instantiated
+        /// in an appdomain in which a System.Web based web application is running, the file will be created
+        /// relative to the App_Data folder.
+        /// </remarks>
         public CargoFileDataSource(string filename)
         {
             FigureOutIfInWebApplication();
