@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Cargo
@@ -14,57 +15,200 @@ namespace Cargo
     /// </summary>
     public class EntityFrameworkCargoDataSource : CargoDataSourceBase
     {
+        private string _rxId = @"^(.*)\/(.+)";
         private DbContext _dataContext;
         private DbSet<ContentItem> ContentItems { get { return _dataContext.Set<ContentItem>(); } }
 
+        /// <summary>
+        /// Create a new <see cref="EntityFrameworkCargoDataSource"/> given an instance of <see cref="DbContext"/>. 
+        /// </summary>
+        /// <param name="dataContext">
+        /// The <see cref="DbContext"/> to use. The <see cref="DbContext"/>
+        /// must have been prepared by calling <see cref="CargoEntityFrameworkExtensions.MapCargoContent(DbModelBuilder, string, string)"/>.
+        /// </param>
         public EntityFrameworkCargoDataSource(DbContext dataContext)
         {
             _dataContext = dataContext;
         }
 
+        /// <inheritdoc />
         public override ContentItem Get(string location, string key)
         {
-            throw new NotImplementedException();
+            if (key == null) throw new ArgumentNullException(nameof(key));
+            if (location == null) throw new ArgumentNullException(nameof(location));
+
+            ValidateLocation(location);
+            ValidateKey(key);
+
+            return ContentItems.Find(location, key);
         }
 
+        /// <inheritdoc />
         public override ICollection<ContentItem> GetAllContent()
         {
-            throw new NotImplementedException();
+            return ContentItems.ToList();
         }
 
+        /// <inheritdoc />
         public override ICollection<ContentItem> GetAllContentForLocation(string location)
         {
-            throw new NotImplementedException();
+            if (location == null) throw new ArgumentNullException(nameof(location));
+
+            ValidateLocation(location);
+
+            return ContentItems.Where(x => x.Location == location).ToList();
         }
 
+        /// <inheritdoc />
         public override ICollection<string> GetAllLocations()
         {
-            throw new NotImplementedException();
+            return ContentItems.Select(x => x.Location).Distinct().ToList();
         }
 
+        /// <inheritdoc />
         public override ContentItem GetById(string id)
         {
-            throw new NotImplementedException();
+            if (id == null) throw new ArgumentNullException(nameof(id));
+
+            ValidateId(id);
+
+            string location, key;
+            ParseId(id, out location, out key);
+            ValidateLocation(location);
+            ValidateKey(key);
+
+            return ContentItems.Find(location, key);
         }
 
+        /// <inheritdoc />
         public override void Remove(IEnumerable<string> contentItemIds)
         {
-            throw new NotImplementedException();
+            foreach(var item in GetMultipleById(contentItemIds))
+            {
+                if(item != null)
+                {
+                    ContentItems.Remove(item);
+                }
+            }
+
+            _dataContext.SaveChanges();
         }
 
+        /// <inheritdoc />
         public override void SetByIdInternal(IEnumerable<KeyValuePair<string, string>> idContentPairs)
         {
-            throw new NotImplementedException();
+            foreach(var item in idContentPairs)
+            {
+                string id = item.Key;
+                string location, key;
+                ParseId(id, out location, out key);
+
+                var contentItem = ContentItems.Find(location, key);
+                if(contentItem != null)
+                {
+                    contentItem.Content = item.Value;
+                }
+                else
+                {
+                    ContentItems.Add(new ContentItem
+                    {
+                        Id = id,
+                        Location = location,
+                        Key = key,
+                        Content = item.Value
+                    });
+                }
+            }
+
+            _dataContext.SaveChanges();
         }
 
+        /// <inheritdoc />
         public override void SetInternal(IEnumerable<ContentItem> contentItems)
         {
-            throw new NotImplementedException();
+            foreach (var item in contentItems)
+            {
+                ValidateKey(item.Key);
+                ValidateLocation(item.Location);
+
+                string id = GetId(item.Location, item.Key);
+                ValidateId(id);
+
+                var contentItem = ContentItems.Find(item.Location, item.Key);
+                if (contentItem != null)
+                {
+                    contentItem.Content = item.Content;
+                }
+                else
+                {
+                    ContentItems.Add(new ContentItem
+                    {
+                        Id = id,
+                        Location = item.Location,
+                        Key = item.Key,
+                        Content = item.Content
+                    });
+                }
+            }
+
+            _dataContext.SaveChanges();
         }
 
+        /// <inheritdoc />
         protected override ContentItem CreateInternal(string location, string key, string content)
         {
-            throw new NotImplementedException();
+            ValidateKey(key);
+            ValidateLocation(location);
+
+            string id = GetId(location, key);
+            ValidateId(id);
+
+            var contentItem = ContentItems.Find(location, key);
+            if (contentItem != null)
+            {
+                contentItem.Content = content;
+            }
+            else
+            {
+                contentItem = ContentItems.Add(new ContentItem
+                {
+                    Id = id,
+                    Location = location,
+                    Key = key,
+                    Content = content
+                });
+            }
+
+            return contentItem;
+        }
+
+        private IEnumerable<ContentItem> GetMultipleById(IEnumerable<string> contentItemIds)
+        {
+            foreach (var id in contentItemIds)
+            {
+                string location, key;
+                ParseId(id, out location, out key);
+                ValidateLocation(location);
+                ValidateKey(key);
+
+                yield return ContentItems.AsNoTracking().Single(x => x.Location == location && x.Key == key);
+            }
+        }
+
+        private static string GetId(string location, string key)
+        {
+            return $"{location}/{key}";
+        }
+
+        private void ParseId(string id, out string location, out string key)
+        {
+            ValidateId(id);
+
+            //note the greedy match of the first group
+            var m = Regex.Match(id, _rxId);
+            location = m.Groups[1].Value;
+            if (location == "") location = null;
+            key = m.Groups[2].Value;
         }
     }
 }
