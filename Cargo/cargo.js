@@ -551,7 +551,6 @@
 
         var promise = new Promise(function (resolve, reject) {
             saving = true;
-            console.log(JSON.stringify(content, null, '  '));
 
             post(cargoUrlBase + "save", content).then(resolve, reject);
         });
