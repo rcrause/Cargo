@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Cargo")]
-[assembly: AssemblyDescription("A very lightweight content manager")]
+[assembly: AssemblyDescription("A very very lightweight content management thingy for ASP.Net")]
 [assembly: AssemblyProduct("Cargo")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
