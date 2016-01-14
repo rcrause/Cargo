@@ -18,8 +18,8 @@
     </dependencies> 
   </metadata>
   <files>
-    <file src="bin\Release\Cargo.dll" target="lib\net40" />
-    <file src="bin\Release\Cargo.pdb" target="lib\net40" />
-    <file src="bin\Release\Cargo.XML" target="lib\net40" />
+    <file src="bin\Release\Cargo.dll" target="lib\net46" />
+    <file src="bin\Release\Cargo.pdb" target="lib\net46" />
+    <file src="bin\Release\Cargo.XML" target="lib\net46" />
   </files>
 </package>
