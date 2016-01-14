@@ -9,3 +9,5 @@ obj/
 *.user
 CargoExample/App_Data/cargo.json
 *.nupkg
+*.ldf
+*.mdf
