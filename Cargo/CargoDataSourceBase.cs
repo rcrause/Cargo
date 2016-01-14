@@ -7,14 +7,11 @@ using System.Threading.Tasks;
 
 namespace Cargo
 {
+    /// <summary>
+    /// Provides a an abstract base for <see cref="ICargoDataSource"/>.
+    /// </summary>
     public abstract class CargoDataSourceBase : ICargoDataSource
-    {
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
-
-        /// <summary>
-        /// Returns the <see cref="ContentItem"/> with a matching <see cref="ContentItem.Id"/>, or <c>null</c> if a match is not found.
-        /// </summary>
-        /// <param name="id">the value of the <see cref="ContentItem.Id"/> for the <see cref="ContentItem"/> to be returned.</param>
+    {        
         protected abstract ContentItem CreateInternal(string location, string key, string content);
 
         public abstract ContentItem GetById(string id);
@@ -68,12 +65,6 @@ namespace Cargo
             ValidateId(contentItem.Id);
 
             return contentItem;
-        }
-
-
-        protected virtual void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (CollectionChanged != null) CollectionChanged(sender, e);
         }
 
         public void Set(IEnumerable<ContentItem> contentItems)

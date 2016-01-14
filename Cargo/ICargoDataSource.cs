@@ -10,7 +10,7 @@ namespace Cargo
     /// <summary>
     /// Provides persistence for content items. Optionally also provides notification of items modified in the underlying data source.
     /// </summary>
-    public interface ICargoDataSource : INotifyCollectionChanged
+    public interface ICargoDataSource
     {
         /// <summary>
         /// Returns the <see cref="ContentItem"/> with a matching <see cref="ContentItem.Id"/>, or <c>null</c> if a match is not found.
@@ -52,8 +52,8 @@ namespace Cargo
         ICollection<string> GetAllLocations();
 
         /// <summary>
-        /// Adds or updates <see cref="ContentItem"/>s in the underlying data source. If the <see cref="ContentItem"/> is new
-        /// and is added to the database, it should fill in the <see cref="ContentItem.Id"/> property.
+        /// Adds or updates <see cref="ContentItem"/>s in the underlying data source based on <see cref="ContentItem.Key"/>
+        /// and <see cref="ContentItem.Location"/>.
         /// </summary>
         /// <param name="contentItems">The <see cref="ContentItem"/>s to update or add in the database.</param>
         void Set(IEnumerable<ContentItem> contentItems);
