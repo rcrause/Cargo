@@ -28,8 +28,8 @@ namespace Cargo
 
         public string GetTokenizedContent(string key, string defaultContent)
         {
-            var content = GetContent(key, defaultContent);
-            return Tokenize(key, content);
+            var contentItem = GetContentItem(key, defaultContent);
+            return Tokenize(contentItem.Id, contentItem.Content);
         }
 
         public string GetTokenizedContent(string defaultContent)
@@ -39,9 +39,7 @@ namespace Cargo
 
         public string GetContent(string key, string defaultContent)
         {
-            var contentItem = GetContentItem(key);
-            if (contentItem != null) return contentItem.Content;
-            else return DataSource.GetOrCreate(ContentContext.Location, key, defaultContent).Content;
+            return GetContentItem(key, defaultContent)?.Content;
         }
 
         public string GetContent(string defaultContent)
@@ -49,10 +47,13 @@ namespace Cargo
             return GetContent(ComputeHash(defaultContent), defaultContent);
         }
 
-        private ContentItem GetContentItem(string key)
+        private ContentItem GetContentItem(string key, string defaultContent)
         {
             ContentItem item;
-            Content.TryGetValue(key, out item);
+            if(!Content.TryGetValue(key, out item))
+            {
+                item = DataSource.GetOrCreate(ContentContext.Location, key, defaultContent);
+            }
             return item;
         }
 
