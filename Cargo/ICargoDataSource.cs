@@ -59,6 +59,13 @@ namespace Cargo
         void Set(IEnumerable<ContentItem> contentItems);
 
         /// <summary>
+        /// Adds or updates <see cref="ContentItem"/>s in the underlying data source, using id/content pairs. The
+        /// content items must already exist or this method will throw.
+        /// </summary>
+        /// <param name="contentItems">The <see cref="ContentItem"/>s to update or add in the database.</param>
+        void SetById(IEnumerable<KeyValuePair<string, string>> idContentPairs);
+
+        /// <summary>
         /// Removes <see cref="ContentItem"/>s from the underlying data source.
         /// </summary>
         /// <param name="contentItemIds">The Id's <see cref="ContentItem"/>s to remove from the database.</param>

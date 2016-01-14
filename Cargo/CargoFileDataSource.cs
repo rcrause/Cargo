@@ -117,13 +117,27 @@ namespace Cargo
             }
         }
 
-        public override void Set(IEnumerable<ContentItem> contentItems)
+        public override void SetInternal(IEnumerable<ContentItem> contentItems)
         {
             foreach(var item in contentItems)
             {
+                ValidateLocation(item.Location);
+                ValidateKey(item.Key);
+
                 var id = GetId(item.Location, item.Key);
+                ValidateId(id);
 
                 _fds.Set(id, new ContentItemMinimal { content = item.Content });
+            }
+        }
+
+        public override void SetByIdInternal(IEnumerable<KeyValuePair<string, string>> idContentPairs)
+        {
+            foreach (var item in idContentPairs)
+            {
+                ValidateId(item.Key);
+
+                _fds.Set(item.Key, new ContentItemMinimal { content = item.Value });
             }
         }
 

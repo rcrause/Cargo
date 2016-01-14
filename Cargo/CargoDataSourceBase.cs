@@ -16,14 +16,15 @@ namespace Cargo
         /// </summary>
         /// <param name="id">the value of the <see cref="ContentItem.Id"/> for the <see cref="ContentItem"/> to be returned.</param>
         protected abstract ContentItem CreateInternal(string location, string key, string content);
-        
+
         public abstract ContentItem GetById(string id);
         public abstract ContentItem Get(string location, string key);
         public abstract ICollection<ContentItem> GetAllContent();
         public abstract ICollection<ContentItem> GetAllContentForLocation(string location);
         public abstract ICollection<string> GetAllLocations();
         public abstract void Remove(IEnumerable<string> contentItemIds);
-        public abstract void Set(IEnumerable<ContentItem> contentItems);
+        public abstract void SetInternal(IEnumerable<ContentItem> contentItems);
+        public abstract void SetByIdInternal(IEnumerable<KeyValuePair<string, string>> idContentPairs);
 
         protected virtual void ValidateId(string id)
         {
@@ -53,7 +54,7 @@ namespace Cargo
             if (location.Contains('~')) throw new ArgumentException($"{nameof(location)} cannot contain a ~ character", nameof(location));
             if (location.Contains('`')) throw new ArgumentException($"{nameof(location)} cannot contain a ` character", nameof(location));
         }
-        
+
         public ContentItem GetOrCreate(string location, string key, string defaultContent)
         {
             if (defaultContent == null) throw new ArgumentNullException(nameof(defaultContent));
@@ -73,6 +74,32 @@ namespace Cargo
         protected virtual void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (CollectionChanged != null) CollectionChanged(sender, e);
+        }
+
+        public void Set(IEnumerable<ContentItem> contentItems)
+        {
+            if (contentItems == null) throw new ArgumentNullException(nameof(contentItems));
+
+            SetInternal(contentItems.Select(x =>
+            {
+                if (x == null) throw new InvalidOperationException("encountered a null item");
+                ValidateKey(x.Key);
+                ValidateLocation(x.Location);
+                
+                return x;
+            }));
+        }
+
+        public void SetById(IEnumerable<KeyValuePair<string, string>> idContentPairs)
+        {
+            if (idContentPairs == null) throw new ArgumentNullException(nameof(idContentPairs));
+
+            SetByIdInternal(idContentPairs.Select(x =>
+            {
+                ValidateId(x.Key);
+
+                return x;
+            }));
         }
     }
 }
