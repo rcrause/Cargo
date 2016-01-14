@@ -22,7 +22,7 @@ namespace Cargo
         JObject _items;
         private ReaderWriterLockSlim _rwl = new ReaderWriterLockSlim();
         private object _fileWriteLock = new object();
-        private JsonSerializer _serializer = new JsonSerializer();
+        private JsonSerializer _serializer = new JsonSerializer() { Formatting = Formatting.Indented };
         private FileSystemWatcher _fsw;
         private DateTime _lastModifiedTime;
 
