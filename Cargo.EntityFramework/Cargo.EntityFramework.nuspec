@@ -7,7 +7,7 @@
     <authors>Cillié Malan</authors>
     <owners>Cillié Malan</owners>
     <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
-    <projectUrl>https://github.com/cilliemalan/cargo</projectUrl>
+    <projectUrl>https://github.com/cilliemalan/Cargo/tree/master/Cargo.EntityFramework</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/cilliemalan/Cargo/master/CargoLogo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Allows an EF6 data context to be used as a data source for Cargo.</description>
