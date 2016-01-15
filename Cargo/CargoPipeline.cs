@@ -17,91 +17,96 @@ namespace Cargo
     /// </summary>
     internal class CargoPipeline
     {
-        private CargoEngine _cargoEngine;
+        private Func<CargoEngine> _getCargoEngine;
         private Func<IDictionary<string, object>, Task> _next;
-        private string _cargoRoutePrefix;
         private ResourceHelper _resourceHelper = new ResourceHelper();
         private System.Security.Cryptography.SHA1Managed _sha = new System.Security.Cryptography.SHA1Managed();
         private Lazy<DateTime> _assemblyLastModifiedDate = new Lazy<DateTime>(() => new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime);
         private JsonSerializer jsonSerializer = new JsonSerializer();
+        
 
         public CargoPipeline(Func<IDictionary<string, object>, Task> next, CargoEngine cargoEngine)
+            : this(next, () => cargoEngine)
         {
-            _cargoEngine = cargoEngine;
-            _next = next;
-            
-            var configuration = cargoEngine.Configuration;
-            _cargoRoutePrefix = configuration.CargoRoutePrefix;
         }
 
-        public async Task Invoke(IDictionary<string, object> environment)
+        public CargoPipeline(Func<IDictionary<string, object>, Task> next, Func<CargoEngine> deferredGetCargoEngine)
+        {
+            if (next == null) throw new ArgumentNullException(nameof(next));
+            if (deferredGetCargoEngine == null) throw new ArgumentNullException(nameof(deferredGetCargoEngine));
+
+            _next = next;
+            _getCargoEngine = deferredGetCargoEngine;
+        }
+
+        public Task Invoke(IDictionary<string, object> environment)
         {
             var path = Get<string>(environment, "owin.RequestPath");
 
-            if (path.StartsWith(_cargoRoutePrefix) && _cargoEngine.Configuration.AuthenticateRequest(environment))
+            //get the cargo engine safely
+            CargoEngine cargoEngine = null;
+            try { cargoEngine = _getCargoEngine(); } catch { }
+
+            if (cargoEngine != null)
             {
+                string cargoRoutePrefix = null;
+                CargoConfiguration config = null;
 
-                string strippedPath = path.Substring(_cargoRoutePrefix.Length);
-
-                var method = Get<string>(environment, "owin.RequestMethod");
-                var scheme = Get<string>(environment, "owin.RequestScheme");
-                var headers = Get<IDictionary<string, string[]>>(environment, "owin.RequestHeaders");
-                var pathBase = Get<string>(environment, "owin.RequestPathBase");
-                var queryString = Get<string>(environment, "owin.RequestQueryString");
-                var body = Get<Stream>(environment, "owin.RequestBody");
-                var protocol = Get<string>(environment, "owin.RequestProtocol");
-                var cancellationToken = Get<CancellationToken>(environment, "owin.CallCancelled");
-
-                switch(method)
+                //get configuration safely
+                try
                 {
-                    case "HEAD":
-                    case "GET":
-                        await HandleGetAsync(environment, method == "HEAD", strippedPath, cancellationToken);
-                        break;
-                    case "POST":
-                        await HandlePostAsync(environment, strippedPath, cancellationToken);
-                        break;
-                    default:
-                        await Return405Async(environment);
-                        break;
+                    config = cargoEngine.Configuration;
+                    cargoRoutePrefix = config?.CargoRoutePrefix;
+                }
+                catch { }
+
+                //if the route prefix matches handle the request
+                if (!string.IsNullOrEmpty(cargoRoutePrefix) &&
+                    path.StartsWith(cargoRoutePrefix))
+                {
+                    bool authorized = config.AuthenticateRequest(environment);
+                    string strippedPath = path.Substring(cargoRoutePrefix.Length);
+
+                    var method = Get<string>(environment, "owin.RequestMethod");
+                    var scheme = Get<string>(environment, "owin.RequestScheme");
+                    var headers = Get<IDictionary<string, string[]>>(environment, "owin.RequestHeaders");
+                    var pathBase = Get<string>(environment, "owin.RequestPathBase");
+                    var queryString = Get<string>(environment, "owin.RequestQueryString");
+                    var body = Get<Stream>(environment, "owin.RequestBody");
+                    var protocol = Get<string>(environment, "owin.RequestProtocol");
+                    var cancellationToken = Get<CancellationToken>(environment, "owin.CallCancelled");
+
+                    switch (method)
+                    {
+                        case "HEAD":
+                        case "GET":
+                            return HandleGetAsync(cargoEngine, environment, method == "HEAD", strippedPath, cancellationToken);
+                        case "POST":
+                            return HandlePostAsync(cargoEngine, environment, strippedPath, cancellationToken);
+                        default:
+                            return Return405Async(environment);
+                    }
                 }
             }
-            else
-            {
-                await _next(environment);
-            }
+
+            //if we get here the request remained unhandled
+            return _next(environment);
         }
 
-        private async Task HandleGetAsync(IDictionary<string, object> environment, bool onlyHead, string strippedPath, CancellationToken cancellationToken)
+        private async Task HandleGetAsync(CargoEngine cargoEngine, IDictionary<string, object> environment, bool onlyHead, string strippedPath, CancellationToken cancellationToken)
         {
-            if(strippedPath == "/js")
+            if (strippedPath == "/js")
             {
                 await WriteFromResource(environment, "cargo.js", "application/json", cancellationToken, TimeSpan.FromDays(10));
             }
-            else if(strippedPath == "/css")
+            else if (strippedPath == "/css")
             {
                 await WriteFromResource(environment, "cargo.css", "text/css", cancellationToken, TimeSpan.FromDays(10));
             }
             else if (strippedPath == "/export")
             {
-                var ds = _cargoEngine.Configuration.GetDataSource();
+                var ds = cargoEngine.Configuration.GetDataSource();
                 await WriteObject(environment, ds.GetAllContent(), cancellationToken);
-            }
-            else 
-            {
-                await Return404Async(environment);
-            }
-        }
-
-        private async Task HandlePostAsync(IDictionary<string, object> environment, string strippedPath, CancellationToken cancellationToken)
-        {
-            if(strippedPath == "/save")
-            {
-                await PerformSave(environment, cancellationToken);
-            }
-            else if(strippedPath == "/import")
-            {
-                await PerformImport(environment, cancellationToken);
             }
             else
             {
@@ -109,29 +114,45 @@ namespace Cargo
             }
         }
 
-        private async Task PerformImport(IDictionary<string, object> environment, CancellationToken cancellationToken)
+        private async Task HandlePostAsync(CargoEngine cargoEngine, IDictionary<string, object> environment, string strippedPath, CancellationToken cancellationToken)
+        {
+            if (strippedPath == "/save")
+            {
+                await PerformSave(cargoEngine, environment, cancellationToken);
+            }
+            else if (strippedPath == "/import")
+            {
+                await PerformImport(cargoEngine, environment, cancellationToken);
+            }
+            else
+            {
+                await Return404Async(environment);
+            }
+        }
+
+        private async Task PerformImport(CargoEngine cargoEngine, IDictionary<string, object> environment, CancellationToken cancellationToken)
         {
             var request = ReadObjectFromRequest<List<ContentItem>>(environment);
-            var ds = _cargoEngine.Configuration.GetDataSource();
+            var ds = cargoEngine.Configuration.GetDataSource();
             ds.Set(request);
             await WriteObject(environment, new { message = "ok" }, cancellationToken);
         }
 
-        private async Task PerformSave(IDictionary<string, object> environment, CancellationToken cancellationToken)
+        private async Task PerformSave(CargoEngine cargoEngine, IDictionary<string, object> environment, CancellationToken cancellationToken)
         {
             int itemsWritten = 0;
 
             var request = ReadJsonFromRequest(environment) as JObject;
-            if(request != null)
+            if (request != null)
             {
                 var items = request.Properties()
                     .Select(x => new { id = x.Name, val = ((x.Value as JObject)?.Property("content")?.Value as JValue)?.Value as string })
                     .Where(x => x.id != null && x.val != null)
                     .ToDictionary(x => x.id, x => x.val);
 
-                if(items.Count > 0)
+                if (items.Count > 0)
                 {
-                    var ds = _cargoEngine.Configuration.GetDataSource();
+                    var ds = cargoEngine.Configuration.GetDataSource();
                     ds.SetById(items);
                     itemsWritten = items.Count;
                 }
@@ -204,7 +225,7 @@ namespace Cargo
                 toWrite = ms.ToArray();
             }
 
-                owinResponseHeaders["Content-Length"] = new[] { toWrite.Length.ToString() };
+            owinResponseHeaders["Content-Length"] = new[] { toWrite.Length.ToString() };
 
             await owinResponseBody.WriteAsync(toWrite, 0, toWrite.Length, cancellationToken);
         }
