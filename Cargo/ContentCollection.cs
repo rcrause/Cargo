@@ -61,7 +61,8 @@ namespace Cargo
         private string Tokenize(string key, string content)
         {
             content = WebUtility.HtmlEncode(content);
-            if (content.Contains('~')) content = content.Replace("~", "&#126;");
+            if (content.Contains('`')) content = content.Replace("`", "``");
+            if (content.Contains('~')) content = content.Replace("~", "`t");
             return string.Format("~{0}#{1}~", key, content);
         }
 

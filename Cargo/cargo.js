@@ -361,7 +361,7 @@
             function registerNode(node, match) {
                 var key = match[1];
                 var content = match[2];
-                node.innerHTML = content;
+                node.innerHTML = content.replace(/`([`t])/g, function (m) { return m[1] == "t" ? "~" : "`"; });
 
                 var contentItem = contentItemFor(key, node);
 
