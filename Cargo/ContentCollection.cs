@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,8 +60,8 @@ namespace Cargo
 
         private string Tokenize(string key, string content)
         {
-            //TODO:figure out how to not have to do this:
-            if (content.Contains('~')) content = content.Replace("~", "");
+            content = WebUtility.HtmlEncode(content);
+            if (content.Contains('~')) content = content.Replace("~", "&#126;");
             return string.Format("~{0}#{1}~", key, content);
         }
 

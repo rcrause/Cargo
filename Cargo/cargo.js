@@ -360,7 +360,7 @@
 
             function registerNode(node, match) {
                 var key = match[1];
-                var content = htmlDecode(match[2]);
+                var content = match[2];
                 node.innerHTML = content;
 
                 var contentItem = contentItemFor(key, node);
