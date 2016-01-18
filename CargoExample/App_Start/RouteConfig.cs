@@ -15,8 +15,8 @@ namespace CargoExample
 
             routes.MapRoute(
                 name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                url: "{view}",
+                defaults: new { controller = "Home", action = "Index", view = "Index", id = UrlParameter.Optional }
             );
         }
     }

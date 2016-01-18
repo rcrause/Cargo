@@ -8,9 +8,9 @@ namespace CargoExample.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Index(string view)
         {
-            return View();
+            return View(viewName: view);
         }
     }
 }
