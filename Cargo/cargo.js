@@ -474,6 +474,7 @@
         processNode(document.body);
     }
 
+    //watches for any changes to the dom in order to track new content
     function watchDOM() {
 
         function processMutation(mutation) {
@@ -500,6 +501,7 @@
         domWatcher.observe(html, { childList: true, attributes: false, subtree: true });
     }
 
+    //watches each content item to track it's changes
     function watchElements() {
 
         function processElementMutation(mutation) {
@@ -511,8 +513,8 @@
             }
 
             var contentElement = findContentElement(mutation.target);
-
-            if (contentElement && contentElement.contentEditable) {
+            
+            if (contentElement && contentElement.contentEditable === "true") {
                 var contentItem = contentByElement.get(contentElement);
                 if (contentItem != null) {
                     contentItem.processChange(contentElement);
@@ -563,7 +565,7 @@
     function listenForClicks() {
         contentEvents.on("click", function (event, contentItem) {
             var target = event.target;
-            target.contentEditable = true;
+            target.contentEditable = "true";
             target.focus();
 
             contentItem.elements.forEach(function (i) { i.classList.add("cargo-itemediting"); });
@@ -572,7 +574,7 @@
 
         contentEvents.on("blur", function (event, contentItem) {
             if (event.target.contentEditable) {
-                event.target.contentEditable = false;
+                event.target.contentEditable = "inherit";
 
                 var content = contentItem.content;
                 var trimmed = trimHtml(content);
