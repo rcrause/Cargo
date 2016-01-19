@@ -739,7 +739,9 @@
             text: "cached",
             hint: "Reset this content item to its original value",
             click: function (event, element, contentItem) {
+                startEditingElement(element, contentItem);
                 contentItem.reset();
+                stopEditingElement(element, contentItem);
             }
         }];
 
