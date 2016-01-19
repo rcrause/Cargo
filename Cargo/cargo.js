@@ -93,6 +93,7 @@
     var contentEvents = new Emitter;
     var lastHoveredElement = null;
     var cargoUrlBase = document.currentScript.src.replace(/\js(?:\/\d+)?$/, "");
+    var _hasAngular;
 
     //
     // First things first - Load CSS
@@ -310,6 +311,51 @@
 
     function post(url, data) {
         return http({ url: url, data: data, method: "POST" });
+    }
+
+    function hasAngular() {
+        if (typeof _hasAngular == "undefined")
+        {
+            _hasAngular = window.angular &&
+                window.angular.version &&
+                window.angular.version.full &&
+                window.angular.version.full > "0" &&
+                window.angular.version.full < "2";
+        }
+
+        return _hasAngular;
+    }
+
+    function suspendDigestsOn(element) {
+        if (!_hasAngular) return;
+
+        var injector = angular.element(element).injector();
+        if (injector) {
+            var $rootScope = injector.get("$rootScope");
+            if ($rootScope) {
+                var oldDigest = Symbol.for("cargo_oldDigest");
+                if (!$rootScope[oldDigest]) {
+                    $rootScope[oldDigest] = $rootScope.$digest;
+                    $rootScope.$digest = function () { };
+                }
+            }
+        }
+    }
+
+    function resumeDigestsOn(element) {
+        if (!_hasAngular) return;
+
+        var injector = angular.element(element).injector();
+        if (injector) {
+            var $rootScope = injector.get("$rootScope");
+            if ($rootScope) {
+                var oldDigest = Symbol.for("cargo_oldDigest");
+                if ($rootScope[oldDigest]) {
+                    $rootScope.$digest = $rootScope[oldDigest];
+                    delete $rootScope[oldDigest];
+                }
+            }
+        }
     }
 
     //
@@ -562,30 +608,48 @@
         return promise;
     }
 
+    function startEditingElement(element, contentItem) {
+        element.contentEditable = "true";
+        element.focus();
+        contentItem.elements.forEach(function (i) {
+            i.classList.add("cargo-itemediting");
+
+            if (hasAngular()) {
+                suspendDigestsOn(i);
+            }
+        });
+    }
+
+    function stopEditingElement(element, contentItem) {
+        element.contentEditable = "inherit";
+
+        var content = contentItem.content;
+        var trimmed = trimHtml(content);
+
+        if (!trimmed) {
+            contentItem.content = "[empty]";
+        } else if (trimmed != content) {
+            contentItem.content = trimmed;
+        }
+
+        contentItem.elements.forEach(function (i) {
+            i.classList.remove("cargo-itemediting");
+
+            if (hasAngular()) {
+                resumeDigestsOn(i);
+            }
+        });
+    }
+
     function listenForClicks() {
         contentEvents.on("click", function (event, contentItem) {
-            var target = event.target;
-            target.contentEditable = "true";
-            target.focus();
-
-            contentItem.elements.forEach(function (i) { i.classList.add("cargo-itemediting"); });
+            startEditingElement(event.target, contentItem);
             event.preventDefault();
         });
 
         contentEvents.on("blur", function (event, contentItem) {
-            if (event.target.contentEditable) {
-                event.target.contentEditable = "inherit";
-
-                var content = contentItem.content;
-                var trimmed = trimHtml(content);
-
-                if (!trimmed) {
-                    contentItem.content = "[empty]";
-                } else if (trimmed != content) {
-                    contentItem.content = trimmed;
-                }
-
-                contentItem.elements.forEach(function (i) { i.classList.remove("cargo-itemediting"); });
+            if (event.target.contentEditable === "true") {
+                stopEditingElement(event.target, contentItem);
             }
         });
     }
