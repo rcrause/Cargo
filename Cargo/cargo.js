@@ -560,10 +560,27 @@
 
             var contentElement = findContentElement(mutation.target);
             
-            if (contentElement && contentElement.contentEditable === "true") {
-                var contentItem = contentByElement.get(contentElement);
-                if (contentItem != null) {
-                    contentItem.processChange(contentElement);
+            if (contentElement) {
+                if (contentElement.contentEditable === "true") {
+                    //the user changed the element
+                    var contentItem = contentByElement.get(contentElement);
+                    if (contentItem) {
+                        contentItem.processChange(contentElement);
+                    }
+                } else {
+                    //the element was changed via outside influence. We need to update the panel.
+                    //ignore if the element changing is the one on the panel.
+                    if (panel && !panel.contains(contentElement)) {
+                        var contentItem = contentByElement.get(contentElement);
+                        if (contentItem) {
+                            //we need to update this element on the panel
+                            var myhtml = contentElement.innerHTML;
+                            var panelElement = panel.querySelector('[data-cargo-key="' + contentItem.key + '"]');
+                            if (panelElement.innerHTML != myhtml) {
+                                panelElement.innerHTML = myhtml;
+                            }
+                        }
+                    }
                 }
             }
         }
