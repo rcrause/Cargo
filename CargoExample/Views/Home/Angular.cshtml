@@ -21,12 +21,16 @@
                 <div class="col-xs-12 col-sm-6 col-lg-3 margin">
                     This text is not content, but this is some content containing nothing but the angular thingy inside a tag: @Content("<i>{{now}}</i>"). As is clear.
                 </div>
+                <div class="col-xs-12 col-sm-6 col-lg-3 margin">
+                    <p>@Content("This is in two places: {{now}}")</p>
+                    <p>@Content("This is in two places: {{now}}")</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
 
 
 
@@ -34,12 +38,12 @@
     setTimeout(function () {
 
         angular.bootstrap(document, ["cargoApp"]);
-    }, 2000);
+    }, 1);
 
 
 
     angular.module("cargoApp", [])
-        .controller('mainController', ["$interval", "$scope", function ($interval, $scope) {
+        .controller('mainController', ["$interval", "$scope", "$compile", function ($interval, $scope, $compile) {
 
             $scope.now = new Date().toLocaleTimeString();
             $interval(function () { $scope.now = new Date().toLocaleTimeString() }, 1000)
