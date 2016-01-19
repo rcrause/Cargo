@@ -375,6 +375,16 @@
         }
     }
 
+    function debounce(code) {
+        (function (hasRun) {
+            if (!window[hasRun]) {
+                code();
+                window[hasRun] = true;
+                window.setTimeout(function () { delete window[hasRun]; }, 0);
+            }
+        })(Symbol.for("debounce_hasrun_" + code.toString()));
+    }
+
     //
     // Core functions
     function processNode(node) {
@@ -415,7 +425,7 @@
                 events.forEach(function (event) {
                     element.addEventListener(event, function (e) {
                         if (editing) {
-                            contentEvents.emit(event, e, contentItem);
+                            debounce(function () { contentEvents.emit(event, e, contentItem); });
                         }
                     });
                 });
