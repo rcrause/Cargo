@@ -358,6 +358,24 @@
         }
     }
 
+    function angularRecompile(element) {
+        if (!_hasAngular) return;
+
+        if (panel.contains(element)) return;
+
+        var angel = angular.element(element);
+        var injector = angel && angel.injector();
+        if (injector) {
+            var $compile = injector.get("$compile");
+            var $rootScope = injector.get("$rootScope");
+            var scope = angel.scope();
+            if ($rootScope && $compile && scope) {
+                $compile(element)(scope);
+                $rootScope.$digest();
+            }
+        }
+    }
+
     //
     // Core functions
     function processNode(node) {
