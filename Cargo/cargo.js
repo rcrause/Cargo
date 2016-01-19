@@ -353,6 +353,7 @@
                 if ($rootScope[oldDigest]) {
                     $rootScope.$digest = $rootScope[oldDigest];
                     delete $rootScope[oldDigest];
+                    $rootScope.$digest();
                 }
             }
         }
@@ -367,11 +368,9 @@
         var injector = angel && angel.injector();
         if (injector) {
             var $compile = injector.get("$compile");
-            var $rootScope = injector.get("$rootScope");
             var scope = angel.scope();
-            if ($rootScope && $compile && scope) {
+            if ($compile && scope) {
                 $compile(element)(scope);
-                $rootScope.$digest();
             }
         }
     }
@@ -674,12 +673,12 @@
 
         contentItem.elements.forEach(function (i) {
             i.classList.remove("cargo-itemediting");
-
-            if (hasAngular()) {
-                resumeDigestsOn(i);
-                angularRecompile(i);
-            }
         });
+
+        if (hasAngular()) {
+            contentItem.elements.forEach(angularRecompile);
+            contentItem.elements.forEach(resumeDigestsOn);
+        }
     }
 
     function listenForClicks() {
