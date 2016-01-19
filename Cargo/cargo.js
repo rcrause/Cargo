@@ -314,8 +314,7 @@
     }
 
     function hasAngular() {
-        if (typeof _hasAngular == "undefined")
-        {
+        if (typeof _hasAngular == "undefined") {
             _hasAngular = window.angular &&
                 window.angular.version &&
                 window.angular.version.full &&
@@ -397,6 +396,8 @@
         //   2.1 none of them are text nodes
         //   2.2 one or more of the text nodes contains content
         //3. the node is empty
+
+        //if (node && node.textContent && node.textContent.startsWith("This content item is alone")) debugger;
 
         function processNodeInternal(node) {
             function contentItemFor(key, node) {
@@ -496,10 +497,12 @@
                     if (!/head|link|meta|script|style/i.test(node.tagName)) {
                         if (node.classList.contains("cargo-has-content") && node.hasAttribute("data-cargo-key")) {
 
-                            //this is for the case where HTML randomly gets parsed and attached
-                            //or for some other case where a node is attached that has the right
-                            //attributes but for some reason isn't registered.
-                            reRegisterNode(node);
+                            if (!contentByElement.has(node)) {
+                                //this is for the case where HTML randomly gets parsed and attached
+                                //or for some other case where a node is attached that has the right
+                                //attributes but for some reason isn't registered.
+                                reRegisterNode(node);
+                            }
                         } else {
                             if (node.hasChildNodes()) {
                                 //do each child in turn
@@ -586,7 +589,7 @@
             }
 
             var contentElement = findContentElement(mutation.target);
-            
+
             if (contentElement) {
                 if (contentElement.contentEditable === "true") {
                     //the user changed the element
@@ -693,8 +696,18 @@
 
     function listenForClicks() {
         contentEvents.on("click", function (event, contentItem) {
-            startEditingElement(event.target, contentItem);
-            event.preventDefault();
+            var relevantElement;
+            contentItem.elements.forEach(function (e) {
+                if (!relevantElement) {
+                    if (e === event.target || e.contains(event.target)) {
+                        relevantElement = e;
+                    }
+                }
+            });
+            if (relevantElement) {
+                startEditingElement(relevantElement, contentItem);
+                event.preventDefault();
+            }
         });
 
         contentEvents.on("blur", function (event, contentItem) {
