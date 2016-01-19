@@ -18,9 +18,4 @@
       <dependency id="EntityFramework" version="[4.1.10311.0,7.0)" />
     </dependencies>
   </metadata>
-  <files>
-    <file src="bin\Release\Cargo.EntityFramework.dll" target="lib\net46" />
-    <file src="bin\Release\Cargo.EntityFramework.pdb" target="lib\net46" />
-    <file src="bin\Release\Cargo.EntityFramework.XML" target="lib\net46" />
-  </files>
 </package>

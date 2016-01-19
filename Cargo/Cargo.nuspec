@@ -17,9 +17,4 @@
       <dependency id="OWIN" version="1.0" />
     </dependencies> 
   </metadata>
-  <files>
-    <file src="bin\Release\Cargo.dll" target="lib\net46" />
-    <file src="bin\Release\Cargo.pdb" target="lib\net46" />
-    <file src="bin\Release\Cargo.XML" target="lib\net46" />
-  </files>
 </package>
