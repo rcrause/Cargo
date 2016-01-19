@@ -652,6 +652,11 @@
             if (hasAngular()) {
                 suspendDigestsOn(i);
             }
+
+            //if the content is not what it is supposed to be, fix it.
+            if (i.innerHTML != contentItem.content) {
+                i.innerHTML = contentItem.content;
+            }
         });
     }
 
@@ -672,6 +677,7 @@
 
             if (hasAngular()) {
                 resumeDigestsOn(i);
+                angularRecompile(i);
             }
         });
     }
