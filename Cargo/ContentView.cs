@@ -90,6 +90,7 @@ namespace Cargo
             if(!Content.TryGetValue(key, out item))
             {
                 item = DataSource.GetOrCreate(ContentContext.Location, key, defaultContent);
+                Content[key] = item;
             }
             return item;
         }
