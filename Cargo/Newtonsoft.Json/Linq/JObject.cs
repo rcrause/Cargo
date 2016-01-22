@@ -50,7 +50,7 @@ namespace Cargo.Newtonsoft.Linq
     /// Represents a JSON object.
     /// </summary>
     /// <example>
-    ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
+    ///   <code lang="cs" source="..\Src\Cargo.Newtonsoft.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
     /// </example>
     internal class JObject : JContainer, IDictionary<string, JToken>, INotifyPropertyChanged
 #if !(DOTNET || PORTABLE40 || PORTABLE)
@@ -310,7 +310,7 @@ namespace Cargo.Newtonsoft.Linq
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.
+        /// Gets or sets the <see cref="Cargo.Newtonsoft.Linq.JToken"/> with the specified property name.
         /// </summary>
         /// <value></value>
         public JToken this[string propertyName]
@@ -391,7 +391,7 @@ namespace Cargo.Newtonsoft.Linq
         /// <param name="json">A <see cref="String"/> that contains JSON.</param>
         /// <returns>A <see cref="JObject"/> populated from the string that contains JSON.</returns>
         /// <example>
-        ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
+        ///   <code lang="cs" source="..\Src\Cargo.Newtonsoft.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
         /// </example>
         public new static JObject Parse(string json)
         {
@@ -406,7 +406,7 @@ namespace Cargo.Newtonsoft.Linq
         /// If this is null, default load settings will be used.</param>
         /// <returns>A <see cref="JObject"/> populated from the string that contains JSON.</returns>
         /// <example>
-        ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
+        ///   <code lang="cs" source="..\Src\Cargo.Newtonsoft.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
         /// </example>
         public new static JObject Parse(string json, JsonLoadSettings settings)
         {
@@ -469,23 +469,23 @@ namespace Cargo.Newtonsoft.Linq
         }
 
         /// <summary>
-        /// Gets the <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.
+        /// Gets the <see cref="Cargo.Newtonsoft.Linq.JToken"/> with the specified property name.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        /// <returns>The <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.</returns>
+        /// <returns>The <see cref="Cargo.Newtonsoft.Linq.JToken"/> with the specified property name.</returns>
         public JToken GetValue(string propertyName)
         {
             return GetValue(propertyName, StringComparison.Ordinal);
         }
 
         /// <summary>
-        /// Gets the <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.
+        /// Gets the <see cref="Cargo.Newtonsoft.Linq.JToken"/> with the specified property name.
         /// The exact property name will be searched for first and if no matching property is found then
         /// the <see cref="StringComparison"/> will be used to match a property.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="comparison">One of the enumeration values that specifies how the strings will be compared.</param>
-        /// <returns>The <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.</returns>
+        /// <returns>The <see cref="Cargo.Newtonsoft.Linq.JToken"/> with the specified property name.</returns>
         public JToken GetValue(string propertyName, StringComparison comparison)
         {
             if (propertyName == null)
@@ -516,7 +516,7 @@ namespace Cargo.Newtonsoft.Linq
         }
 
         /// <summary>
-        /// Tries to get the <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.
+        /// Tries to get the <see cref="Cargo.Newtonsoft.Linq.JToken"/> with the specified property name.
         /// The exact property name will be searched for first and if no matching property is found then
         /// the <see cref="StringComparison"/> will be used to match a property.
         /// </summary>

@@ -24,9 +24,7 @@ namespace Cargo
         public virtual string Location { get; set; }
 
         /// <summary>
-        /// The key for this data item. The key identifies each individual <see cref="ContentItem"/>, but there may be multiple content items
-        /// with the same key differentiated by the <see cref="Condition"/>. The <see cref="ContentItem"/> chosen will be the one with the most specific matching
-        /// <see cref="Condition"/>.
+        /// The key for this data item. The key identifies each individual <see cref="ContentItem"/>.
         /// </summary>
         public virtual string Key { get; set; }
 
