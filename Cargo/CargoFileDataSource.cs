@@ -240,6 +240,7 @@ namespace Cargo
             key = m.Groups[2].Value;
         }
 
+        /// <inheritdoc />
         protected override void ValidateId(string id)
         {
             base.ValidateId(id);
