@@ -26,8 +26,14 @@ namespace Cargo
         private FileSystemWatcher _fsw;
         private DateTime _lastModifiedTime;
 
+        /// <summary>
+        /// Fired when content changes.
+        /// </summary>
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
+        /// <summary>
+        /// The name of the file to use.
+        /// </summary>
         public string Filename
         {
             get { return _filename; }
@@ -38,6 +44,10 @@ namespace Cargo
             }
         }
 
+        /// <summary>
+        /// Creates a new <see cref="FileDataSource"/> with a given filename.
+        /// </summary>
+        /// <param name="filename">The name of the file to use. Will use relative to App_Data if the path is relative and within a System.Web web app.</param>
         public FileDataSource(string filename)
         {
             SetFilenameInternal(filename);
@@ -234,6 +244,12 @@ namespace Cargo
             }
         }
 
+        /// <summary>
+        /// Get an item or create a new item with given default value.
+        /// </summary>
+        /// <typeparam name="T">The type of the item to get/set.</typeparam>
+        /// <param name="key">The key for the item.</param>
+        /// <param name="defaultValue">The default value to set if the key is not present.</param>
         public T GetOrSetDefault<T>(string key, T defaultValue)
         {
             bool mustWrite = false;
@@ -287,6 +303,12 @@ namespace Cargo
             else OnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, new KeyValuePair<string, object>(newItem.Name, MakeValueIntoObject(newItem)), new KeyValuePair<string, object>(oldItem.Name, MakeValueIntoObject(oldItem))));
         }
 
+        /// <summary>
+        /// Sets an item, or creates it if it does not exist.
+        /// </summary>
+        /// <typeparam name="T">The type of the item.</typeparam>
+        /// <param name="key">The key for the item.</param>
+        /// <param name="value">The item to add/set.</param>
         public void Set<T>(string key, T value)
         {
             bool mustWrite;
@@ -358,6 +380,11 @@ namespace Cargo
             }
         }
 
+        /// <summary>
+        /// Retrieves an item, or returns the default value if none is present.
+        /// </summary>
+        /// <typeparam name="T">The type of the item to deserialize.</typeparam>
+        /// <param name="key">The key of the item to retrieve.</param>
         public T Get<T>(string key)
         {
             _rwl.EnterReadLock();
@@ -380,6 +407,10 @@ namespace Cargo
             }
         }
 
+        /// <summary>
+        /// Removes an item with a given key if it is present.
+        /// </summary>
+        /// <param name="key">The key of the item to remove.</param>
         public void Remove(string key)
         {
             if (string.IsNullOrEmpty(key)) return;
@@ -414,6 +445,9 @@ namespace Cargo
             }
         }
 
+        /// <summary>
+        /// Gets the number of items.
+        /// </summary>
         public int Count
         {
             get
@@ -423,6 +457,10 @@ namespace Cargo
             }
         }
 
+        /// <summary>
+        /// Returns <c>true</c> if an item with the given key is present.
+        /// </summary>
+        /// <param name="key">The key of the item to look for.</param>
         public bool ContainsKey(string key)
         {
             if (_items != null)
@@ -444,6 +482,9 @@ namespace Cargo
             return false;
         }
 
+        /// <summary>
+        /// Gets a collection containing all the keys present in the data source.
+        /// </summary>
         public ICollection<string> Keys
         {
             get
@@ -510,11 +551,21 @@ namespace Cargo
             }
         }
 
+        /// <summary>
+        /// Fires the <see cref="CollectionChanged"/> event.
+        /// </summary>
+        /// <param name="sender">The sender to pass to the event.</param>
+        /// <param name="e">The event arguments to pass to the event.</param>
         protected virtual void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (CollectionChanged != null) CollectionChanged(sender, e);
         }
 
+        /// <summary>
+        /// Dispose this instance. The <paramref name="disposing"/> parameter specifies whether or not
+        /// this method is being called from a disposing method or a finalizer.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> when called from <see cref="Dispose()"/> and <c>false</c> when called from a finalizer.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -528,11 +579,15 @@ namespace Cargo
             }
         }
 
+        /// <summary>
+        /// The finalizer.
+        /// </summary>
         ~FileDataSource()
         {
             Dispose(false);
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
