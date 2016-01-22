@@ -11,18 +11,33 @@ namespace Cargo
     /// Provides a an abstract base for <see cref="ICargoDataSource"/>.
     /// </summary>
     public abstract class CargoDataSourceBase : ICargoDataSource
-    {        
-        protected abstract ContentItem CreateInternal(string location, string key, string content);
-
+    {
+        /// <inheritdoc />
         public abstract ContentItem GetById(string id);
+        /// <inheritdoc />
         public abstract ContentItem Get(string location, string key);
+        /// <inheritdoc />
         public abstract ICollection<ContentItem> GetAllContent();
+        /// <inheritdoc />
         public abstract ICollection<ContentItem> GetAllContentForLocation(string location);
+        /// <inheritdoc />
         public abstract ICollection<string> GetAllLocations();
+        /// <inheritdoc />
+        public abstract ContentItem GetOrCreate(string location, string key, string defaultContent);
+        /// <inheritdoc />
+        public abstract void Set(IEnumerable<ContentItem> contentItems);
+        /// <inheritdoc />
+        public abstract void SetById(IEnumerable<KeyValuePair<string, string>> idContentPairs);
+        /// <inheritdoc />
         public abstract void Remove(IEnumerable<string> contentItemIds);
-        public abstract void SetInternal(IEnumerable<ContentItem> contentItems);
-        public abstract void SetByIdInternal(IEnumerable<KeyValuePair<string, string>> idContentPairs);
 
+
+        /// <summary>
+        /// Validates an id based on certain criteria. An id must be less
+        /// than 200 characters, not null or empty, and not contain ~ or ` characters. This 
+        /// method will throw if the id is invalid.
+        /// </summary>
+        /// <param name="id">The id to validate</param>
         protected virtual void ValidateId(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
@@ -32,6 +47,12 @@ namespace Cargo
             if (id.Contains('`')) throw new ArgumentException($"{nameof(id)} cannot contain a ` character", nameof(id));
         }
 
+        /// <summary>
+        /// Validates an key based on certain criteria. An key must be less
+        /// than 200 characters, not null or empty, and not contain ~ or ` or / or \ characters. This 
+        /// method will throw if the key is invalid.
+        /// </summary>
+        /// <param name="key">The key to validate</param>
         protected virtual void ValidateKey(string key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
@@ -43,6 +64,12 @@ namespace Cargo
             if (key.Contains('`')) throw new ArgumentException($"{nameof(key)} cannot contain a ` character", nameof(key));
         }
 
+        /// <summary>
+        /// Validates an location based on certain criteria. An location must be less
+        /// than 200 characters, not null or empty, and not contain ~ or ` characters. This 
+        /// method will throw if the location is invalid.
+        /// </summary>
+        /// <param name="location">The location to validate</param>
         protected virtual void ValidateLocation(string location)
         {
             if (location == null) throw new ArgumentNullException(nameof(location));
@@ -52,54 +79,20 @@ namespace Cargo
             if (location.Contains('`')) throw new ArgumentException($"{nameof(location)} cannot contain a ` character", nameof(location));
         }
 
-        public ContentItem GetOrCreate(string location, string key, string defaultContent)
-        {
-            if (defaultContent == null) throw new ArgumentNullException(nameof(defaultContent));
-
-            ValidateLocation(location);
-            ValidateKey(key);
-            var existing = Get(location, key);
-            if (existing != null) return existing;
-
-            var contentItem = CreateInternal(location, key, defaultContent);
-            ValidateId(contentItem.Id);
-
-            return contentItem;
-        }
-
-        public void Set(IEnumerable<ContentItem> contentItems)
-        {
-            if (contentItems == null) throw new ArgumentNullException(nameof(contentItems));
-
-            SetInternal(contentItems.Select(x =>
-            {
-                if (x == null) throw new InvalidOperationException("encountered a null item");
-                ValidateKey(x.Key);
-                ValidateLocation(x.Location);
-                
-                return x;
-            }));
-        }
-
-        public void SetById(IEnumerable<KeyValuePair<string, string>> idContentPairs)
-        {
-            if (idContentPairs == null) throw new ArgumentNullException(nameof(idContentPairs));
-
-            SetByIdInternal(idContentPairs.Select(x =>
-            {
-                ValidateId(x.Key);
-
-                return x;
-            }));
-        }
-
+        /// <summary>
+        /// Dispose this instance. The <paramref name="disposing"/> parameter specifies whether or not
+        /// this method is being called from a disposing method or a finalizer.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> when called from <see cref="Dispose()"/> and <c>false</c> when called from a finalizer.</param>
         protected virtual void Dispose(bool disposing)
         {
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
         }
+
     }
 }

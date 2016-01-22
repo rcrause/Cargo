@@ -28,6 +28,7 @@ namespace Cargo
         /// The <see cref="DbContext"/> to use. The <see cref="DbContext"/>
         /// must have been prepared by calling <see cref="CargoEntityFrameworkExtensions.MapCargoContent(DbModelBuilder, string, string)"/>.
         /// </param>
+        /// <param name="ownsContext">If set to <c>true</c> the context will be disposed when this instance is disposed.</param>
         public EntityFrameworkCargoDataSource(DbContext dataContext, bool ownsContext = true)
         {
             _dataContext = dataContext;
@@ -37,9 +38,6 @@ namespace Cargo
         /// <inheritdoc />
         public override ContentItem Get(string location, string key)
         {
-            if (key == null) throw new ArgumentNullException(nameof(key));
-            if (location == null) throw new ArgumentNullException(nameof(location));
-
             ValidateLocation(location);
             ValidateKey(key);
 
@@ -57,8 +55,6 @@ namespace Cargo
         /// <inheritdoc />
         public override ICollection<ContentItem> GetAllContentForLocation(string location)
         {
-            if (location == null) throw new ArgumentNullException(nameof(location));
-
             ValidateLocation(location);
 
             return ContentItems
@@ -79,8 +75,6 @@ namespace Cargo
         /// <inheritdoc />
         public override ContentItem GetById(string id)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id));
-
             ValidateId(id);
 
             string location, key;
@@ -106,16 +100,81 @@ namespace Cargo
         }
 
         /// <inheritdoc />
-        public override void SetByIdInternal(IEnumerable<KeyValuePair<string, string>> idContentPairs)
+        public override ContentItem GetOrCreate(string location, string key, string defaultContent)
         {
-            foreach(var item in idContentPairs)
+            ValidateKey(key);
+            ValidateLocation(location);
+
+            var contentItem = ContentItems.Find(location, key);
+            if(contentItem == null)
             {
+                contentItem = ContentItems.Add(new ContentItem
+                {
+                    Content = defaultContent,
+                    Key = key,
+                    Location = location,
+                    Id = GetId(location, key)
+                });
+
+                _dataContext.SaveChanges();
+            }
+
+            return contentItem;
+        }
+
+        /// <inheritdoc />
+        public override void Set(IEnumerable<ContentItem> contentItems)
+        {
+            bool anyset = false;
+            foreach(var item in contentItems)
+            {
+                ValidateKey(item.Key);
+                ValidateLocation(item.Location);
+
+                var contentItem = ContentItems.Find(item.Location, item.Key);
+                if (contentItem == null)
+                {
+                    contentItem = ContentItems.Add(new ContentItem
+                    {
+                        Content = item.Content,
+                        Key = item.Key,
+                        Location = item.Location,
+                        Id = GetId(item.Location, item.Key)
+                    });
+
+                    anyset = true;
+                }
+                else
+                {
+                    if (contentItem.Content != item.Content)
+                    {
+                        contentItem.Content = item.Content;
+                        anyset = true;
+                    }
+                }
+            }
+
+            if(anyset)
+            {
+                _dataContext.SaveChanges();
+            }
+        }
+
+        /// <inheritdoc />
+        public override void SetById(IEnumerable<KeyValuePair<string, string>> idContentPairs)
+        {
+            foreach (var item in idContentPairs)
+            {
+                ValidateId(item.Key);
+
                 string id = item.Key;
                 string location, key;
                 ParseId(id, out location, out key);
+                ValidateLocation(location);
+                ValidateKey(key);
 
                 var contentItem = AddIds(ContentItems.Find(location, key));
-                if(contentItem != null)
+                if (contentItem != null)
                 {
                     contentItem.Content = item.Value;
                 }
@@ -134,67 +193,6 @@ namespace Cargo
             _dataContext.SaveChanges();
         }
 
-        /// <inheritdoc />
-        public override void SetInternal(IEnumerable<ContentItem> contentItems)
-        {
-            foreach (var item in contentItems)
-            {
-                ValidateKey(item.Key);
-                ValidateLocation(item.Location);
-
-                string id = GetId(item.Location, item.Key);
-                ValidateId(id);
-
-                var contentItem = AddIds(ContentItems.Find(item.Location, item.Key));
-                if (contentItem != null)
-                {
-                    contentItem.Content = item.Content;
-                }
-                else
-                {
-                    ContentItems.Add(new ContentItem
-                    {
-                        Id = id,
-                        Location = item.Location,
-                        Key = item.Key,
-                        Content = item.Content
-                    });
-                }
-            }
-
-            _dataContext.SaveChanges();
-        }
-
-        /// <inheritdoc />
-        protected override ContentItem CreateInternal(string location, string key, string content)
-        {
-            ValidateKey(key);
-            ValidateLocation(location);
-
-            string id = GetId(location, key);
-            ValidateId(id);
-
-            var contentItem = AddIds(ContentItems.Find(location, key));
-            if (contentItem != null)
-            {
-                contentItem.Content = content;
-            }
-            else
-            {
-                contentItem = ContentItems.Add(new ContentItem
-                {
-                    Id = id,
-                    Location = location,
-                    Key = key,
-                    Content = content
-                });
-            }
-
-            _dataContext.SaveChanges();
-
-            return contentItem;
-        }
-
         private static ContentItem AddIds(ContentItem ci)
         {
             if (ci != null) ci.Id = GetId(ci.Location, ci.Key);
@@ -206,15 +204,15 @@ namespace Cargo
         {
             foreach (var id in contentItemIds)
             {
+                ValidateId(id);
+
                 string location, key;
                 ParseId(id, out location, out key);
                 ValidateLocation(location);
                 ValidateKey(key);
 
-                yield return ContentItems
-                    .AsNoTracking()
-                    .Select(AddIds)
-                    .Single(x => x.Location == location && x.Key == key);
+                var contentItem = ContentItems.Find(location, key);
+                if (contentItem != null) yield return contentItem;
             }
         }
 

@@ -12,7 +12,7 @@ namespace Cargo
     /// <summary>
     /// Provides an implementation of <see cref="ICargoDataSource"/>
     /// </summary>
-    public class CargoFileDataSource : CargoDataSourceBase, IDisposable
+    public class CargoFileDataSource : CargoDataSourceBase
     {
         private bool _disposed;
         private FileDataSource _fds;
@@ -29,29 +29,7 @@ namespace Cargo
         {
         }
 
-        protected override ContentItem CreateInternal(string location, string key, string content)
-        {
-            if (content == null) throw new ArgumentNullException(nameof(content));
-            if (location == null) throw new ArgumentNullException(nameof(location));
-            if (key == null) throw new ArgumentNullException(nameof(key));
-
-            ValidateLocation(location);
-            ValidateKey(key);
-
-            var id = GetId(location, key);
-            ValidateId(id);
-
-            _fds.Set(id, new ContentItemMinimal { content = content });
-
-            return new ContentItem
-            {
-                Content = content,
-                Id = id,
-                Key = key,
-                Location = location
-            };
-        }
-
+        /// <inheritdoc />
         public override ContentItem GetById(string id)
         {
             string content = _fds.Get<ContentItemMinimal>(id)?.content;
@@ -69,6 +47,7 @@ namespace Cargo
             };
         }
 
+        /// <inheritdoc />
         public override ContentItem Get(string location, string key)
         {
             ValidateLocation(location);
@@ -87,6 +66,7 @@ namespace Cargo
             };
         }
 
+        /// <inheritdoc />
         public override ICollection<ContentItem> GetAllContent()
         {
             return GetAllContentInternal()
@@ -94,6 +74,7 @@ namespace Cargo
             .AsReadOnly();
         }
 
+        /// <inheritdoc />
         public override ICollection<ContentItem> GetAllContentForLocation(string location)
         {
             return GetAllContentInternal()
@@ -102,6 +83,7 @@ namespace Cargo
                 .AsReadOnly();
         }
 
+        /// <inheritdoc />
         public override ICollection<string> GetAllLocations()
         {
             return _fds.Keys.Select(id =>
@@ -116,6 +98,7 @@ namespace Cargo
             .AsReadOnly();
         }
 
+        /// <inheritdoc />
         public override void Remove(IEnumerable<string> contentItemIds)
         { 
             foreach(var id in contentItemIds)
@@ -124,27 +107,99 @@ namespace Cargo
             }
         }
 
-        public override void SetInternal(IEnumerable<ContentItem> contentItems)
+        /// <inheritdoc />
+        public override ContentItem GetOrCreate(string location, string key, string defaultContent)
         {
-            foreach(var item in contentItems)
+            ValidateLocation(location);
+            ValidateKey(key);
+            var id = GetId(location, key);
+
+            var contentItem = _fds.Get<ContentItemMinimal>(id);
+
+            if (contentItem == null)
             {
-                ValidateLocation(item.Location);
-                ValidateKey(item.Key);
+                _fds.Set(id, new ContentItemMinimal
+                {
+                    content = defaultContent
+                });
 
-                var id = GetId(item.Location, item.Key);
-                ValidateId(id);
-
-                _fds.Set(id, new ContentItemMinimal { content = item.Content });
+                return new ContentItem
+                {
+                    Id = id,
+                    Content = defaultContent,
+                    Key = key,
+                    Location = location
+                };
+            }
+            else
+            {
+                return new ContentItem
+                {
+                    Id = id,
+                    Content = contentItem.content,
+                    Key = key,
+                    Location = location
+                };
             }
         }
 
-        public override void SetByIdInternal(IEnumerable<KeyValuePair<string, string>> idContentPairs)
+        /// <inheritdoc />
+        public override void Set(IEnumerable<ContentItem> contentItems)
+        {
+            foreach (var item in contentItems)
+            {
+                ValidateKey(item.Key);
+                ValidateLocation(item.Location);
+                var id = GetId(item.Location, item.Key);
+
+                var contentItem = _fds.Get<ContentItemMinimal>(id);
+                if (contentItem == null)
+                {
+                    _fds.Set(id, new ContentItemMinimal
+                    {
+                        content = item.Content
+                    });
+                }
+                else
+                {
+                    if (contentItem.content != item.Content)
+                    {
+                        contentItem.content = item.Content;
+                        _fds.Set(id, contentItem);
+                    }
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        public override void SetById(IEnumerable<KeyValuePair<string, string>> idContentPairs)
         {
             foreach (var item in idContentPairs)
             {
-                ValidateId(item.Key);
+                var id = item.Key;
+                ValidateId(id);
 
-                _fds.Set(item.Key, new ContentItemMinimal { content = item.Value });
+                string location, key;
+                ParseId(id, out location, out key);
+                ValidateKey(key);
+                ValidateLocation(location);
+
+                var contentItem = _fds.Get<ContentItemMinimal>(id);
+                if (contentItem == null)
+                {
+                    _fds.Set(id, new ContentItemMinimal
+                    {
+                        content = item.Value
+                    });
+                }
+                else
+                {
+                    if (contentItem.content != item.Value)
+                    {
+                        contentItem.content = item.Value;
+                        _fds.Set(id, contentItem);
+                    }
+                }
             }
         }
 
@@ -237,7 +292,8 @@ namespace Cargo
             catch { }
         }
 
-        protected virtual void Dispose(bool disposing)
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
         {
             if (!_disposed)
             {
@@ -252,11 +308,8 @@ namespace Cargo
 
                 _disposed = true;
             }
-        }
 
-        public void Dispose()
-        {
-            Dispose(true);
+            base.Dispose(disposing);
         }
 
         private class ContentItemMinimal
