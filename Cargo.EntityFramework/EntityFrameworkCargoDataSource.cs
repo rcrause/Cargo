@@ -232,6 +232,7 @@ namespace Cargo
             key = m.Groups[2].Value;
         }
 
+        /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             if(disposing)
