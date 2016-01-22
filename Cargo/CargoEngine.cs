@@ -12,18 +12,32 @@ namespace Cargo
     /// </summary>
     public abstract class CargoEngine
     {
+        /// <summary>
+        /// The configuration for this <see cref="CargoEngine"/>.
+        /// </summary>
         public CargoConfiguration Configuration { get; set; }
 
+        /// <summary>
+        /// Creates a new <see cref="CargoEngine"/> with the default <see cref="CargoConfiguration"/>.
+        /// </summary>
         public CargoEngine()
             :this(new CargoConfiguration())
         {
         }
 
+        /// <summary>
+        /// Creates a new <see cref="CargoEngine"/> with given <see cref="CargoConfiguration"/>.
+        /// </summary>
+        /// <param name="configuration"></param>
         public CargoEngine(CargoConfiguration configuration)
         {
             Configuration = configuration;
         }
 
+        /// <summary>
+        /// Returns a <see cref="ContentView"/> for a given <see cref="IContentContext"/>.
+        /// </summary>
+        /// <param name="contentContext">The context to get the <see cref="ContentView"/> for.</param>
         public ContentView GetContent(IContentContext contentContext)
         {
             var dataSource = CreateDataSource();
@@ -37,7 +51,16 @@ namespace Cargo
             return collection;
         }
 
+        /// <summary>
+        /// When overridden in a derived class, will create a data source to use for content management.
+        /// </summary>
+        /// <returns></returns>
         public abstract ICargoDataSource CreateDataSource();
+
+        /// <summary>
+        /// When overridden in a derived class, authenticates a request to the Cargo API.
+        /// </summary>
+        /// <param name="environment">The request OWIN environment</param>
         public abstract bool AuthenticateRequest(IDictionary<string, object> environment);
     }
 }
