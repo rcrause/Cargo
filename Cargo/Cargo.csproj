@@ -59,7 +59,6 @@
     <Compile Include="ContentCollection.cs" />
     <Compile Include="ContentContext.cs" />
     <Compile Include="IContentContext.cs" />
-    <Compile Include="ContentType.cs" />
     <Compile Include="CargoConfiguration.cs" />
     <Compile Include="ContentItem.cs" />
     <Compile Include="ICargoDataSource.cs" />
