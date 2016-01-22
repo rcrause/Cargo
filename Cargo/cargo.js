@@ -94,6 +94,7 @@
     var lastHoveredElement = null;
     var cargoUrlBase = document.currentScript.src.replace(/\js(?:\/\d+)?$/, "");
     var _hasAngular;
+    var contentEditor = null;
 
     //
     // First things first - Load CSS
@@ -734,6 +735,39 @@
         });
     }
 
+    function createContentEditor() {
+        contentEditor = document.createElement("div");
+        contentEditor.id = "cargo_contentEditor";
+        contentEditor.style.display = "none";
+        document.body.appendChild(contentEditor);
+        contentEditor.addEventListener("click", hideEditor)
+
+        var editorpanel = document.createElement("div"); contentEditor.appendChild(editorpanel);
+        var loading = document.createElement("div"); editorpanel.appendChild("loading");
+        loading.classList.add("cargo-loading");
+        loading.classList.add("material-icons");
+        loading.textContent = "cached";
+
+
+        //var tinymce = document.createElement("script"); contentEditor.appendChild(tinymce);
+        //tinymce.src = "https://cdn.tinymce.com/4/tinymce.min.js"
+        //tinymce.addEventListener("load", function () {
+        //    window.tinymce.init()
+        //});
+    }
+
+    function showEditor(contentItem) {
+        if (!contentEditor) {
+            createContentEditor();
+        }
+
+        contentEditor.style.display = "block";
+    }
+
+    function hideEditor() {
+
+    }
+
     function addButtons() {
 
         var toolbuttons = [{
@@ -765,6 +799,12 @@
                 startEditingElement(element, contentItem);
                 contentItem.reset();
                 stopEditingElement(element, contentItem);
+            }
+        }, {
+            text: "code",
+            hint: "Edit HTML",
+            click: function (event, element, contentItem) {
+                showEditor(contentItem);
             }
         }];
 

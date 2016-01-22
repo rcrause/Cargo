@@ -275,16 +275,16 @@ body.cargo-editing {
     display: block;
 }
 
-.cargo-editing #cargo_panel.cargo-visible {
-    width: 300px;
-    margin-left: 0;
-}
+    .cargo-editing #cargo_panel.cargo-visible {
+        width: 300px;
+        margin-left: 0;
+    }
 
     .cargo-editing #cargo_panel > ul {
         padding: 0;
         margin: 0;
         list-style: none;
-        width:283px;
+        width: 283px;
     }
 
         .cargo-editing #cargo_panel > ul > li {
@@ -296,3 +296,27 @@ body.cargo-editing {
             .cargo-editing #cargo_panel > ul > li > span {
                 outline: none;
             }
+
+.cargo-loading {
+    text-align: center;
+    width: 24px;
+    height: 24px;
+}
+
+#cargo_contentEditor {
+    position: absolute;
+    z-index: 100050;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.3);
+    padding: 100px;
+}
+
+    #cargo_contentEditor > div {
+        background: white;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        padding: 10px;
+        min-height: 200px;
+    }
