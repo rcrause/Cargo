@@ -21,11 +21,12 @@ namespace Cargo
         /// <summary>
         /// Returns the <see cref="ContentItem"/> with a matching <see cref="ContentItem.Location"/> and <see cref="ContentItem.Key"/>, or <c>null</c> if a match is not found.
         /// </summary>
-        /// <param name="id">the value of the <see cref="ContentItem.Id"/> for the <see cref="ContentItem"/> to be returned.</param>
+        /// <param name="key">The content item key to retrieve.</param>
+        /// <param name="location">The location of the content item.</param>
         ContentItem Get(string location, string key);
 
         /// <summary>
-        /// Creates a new content item
+        /// Gets an existing content item, or creates a new one if it does not already exist.
         /// </summary>
         /// <param name="location">The location for the <see cref="ContentItem"/>.</param>
         /// <param name="key">The key of the <see cref="ContentItem"/>.</param>
@@ -62,7 +63,7 @@ namespace Cargo
         /// Adds or updates <see cref="ContentItem"/>s in the underlying data source, using id/content pairs. The
         /// content items must already exist or this method will throw.
         /// </summary>
-        /// <param name="contentItems">The <see cref="ContentItem"/>s to update or add in the database.</param>
+        /// <param name="idContentPairs">An enumeration of id's with content to set for each existing item.</param>
         void SetById(IEnumerable<KeyValuePair<string, string>> idContentPairs);
 
         /// <summary>
