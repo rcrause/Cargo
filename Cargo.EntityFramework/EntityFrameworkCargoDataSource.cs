@@ -17,6 +17,8 @@ namespace Cargo
     {
         private string _rxId = @"^(.*)\/(.+)";
         private DbContext _dataContext;
+        private bool _ownsContext;
+
         private DbSet<ContentItem> ContentItems { get { return _dataContext.Set<ContentItem>(); } }
 
         /// <summary>
@@ -26,9 +28,10 @@ namespace Cargo
         /// The <see cref="DbContext"/> to use. The <see cref="DbContext"/>
         /// must have been prepared by calling <see cref="CargoEntityFrameworkExtensions.MapCargoContent(DbModelBuilder, string, string)"/>.
         /// </param>
-        public EntityFrameworkCargoDataSource(DbContext dataContext)
+        public EntityFrameworkCargoDataSource(DbContext dataContext, bool ownsContext = true)
         {
             _dataContext = dataContext;
+            _ownsContext = ownsContext;
         }
 
         /// <inheritdoc />
@@ -229,6 +232,20 @@ namespace Cargo
             location = m.Groups[1].Value;
             if (location == "") location = null;
             key = m.Groups[2].Value;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if(disposing)
+            {
+                if(_dataContext != null && _ownsContext)
+                {
+                    _dataContext.Dispose();
+                    _dataContext = null;
+                }
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

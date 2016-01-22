@@ -92,5 +92,14 @@ namespace Cargo
                 return x;
             }));
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace Cargo
     /// <summary>
     /// Represents a collection of content for a specific <see cref="IContentContext"/>.
     /// </summary>
-    public class ContentView
+    public class ContentView : IDisposable
     {
         private SHA1Managed _sha = new SHA1Managed();
         private Encoding _utf8 = Encoding.UTF8;
@@ -80,6 +80,23 @@ namespace Cargo
                 .Replace("=", "")
                 .Replace('+', '-')
                 .Replace('/', '_');
+        }
+        
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if(DataSource!= null)
+                {
+                    DataSource.Dispose();
+                    DataSource = null;
+                }
+            }
+        }
+        
+        public void Dispose()
+        {
+            Dispose(true);
         }
     }
 }

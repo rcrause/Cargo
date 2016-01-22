@@ -64,7 +64,7 @@ namespace Cargo
                 if (!string.IsNullOrEmpty(cargoRoutePrefix) &&
                     path.StartsWith(cargoRoutePrefix))
                 {
-                    bool authorized = config.AuthenticateRequest(environment);
+                    bool authorized = cargoEngine.AuthenticateRequest(environment);
                     string strippedPath = path.Substring(cargoRoutePrefix.Length);
 
                     var method = Get<string>(environment, "owin.RequestMethod");
@@ -105,8 +105,10 @@ namespace Cargo
             }
             else if (strippedPath == "/export")
             {
-                var ds = cargoEngine.Configuration.GetDataSource();
-                await WriteObject(environment, ds.GetAllContent(), cancellationToken);
+                using (var ds = cargoEngine.CreateDataSource())
+                {
+                    await WriteObject(environment, ds.GetAllContent(), cancellationToken);
+                }
             }
             else
             {
@@ -133,9 +135,11 @@ namespace Cargo
         private async Task PerformImport(CargoEngine cargoEngine, IDictionary<string, object> environment, CancellationToken cancellationToken)
         {
             var request = ReadObjectFromRequest<List<ContentItem>>(environment);
-            var ds = cargoEngine.Configuration.GetDataSource();
-            ds.Set(request);
-            await WriteObject(environment, new { message = "ok" }, cancellationToken);
+            using (var ds = cargoEngine.CreateDataSource())
+            {
+                ds.Set(request);
+                await WriteObject(environment, new { message = "ok" }, cancellationToken);
+            }
         }
 
         private async Task PerformSave(CargoEngine cargoEngine, IDictionary<string, object> environment, CancellationToken cancellationToken)
@@ -152,9 +156,11 @@ namespace Cargo
 
                 if (items.Count > 0)
                 {
-                    var ds = cargoEngine.Configuration.GetDataSource();
-                    ds.SetById(items);
-                    itemsWritten = items.Count;
+                    using (var ds = cargoEngine.CreateDataSource())
+                    {
+                        ds.SetById(items);
+                        itemsWritten = items.Count;
+                    }
                 }
             }
 

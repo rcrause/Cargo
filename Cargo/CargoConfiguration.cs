@@ -9,13 +9,8 @@ namespace Cargo
     /// <summary>
     /// Contains the configuration for a <see cref="CargoEngine"/>.
     /// </summary>
-    public abstract class CargoConfiguration
+    public class CargoConfiguration
     {
-        private static readonly Lazy<DefaultCargoConfiguration> _default = new Lazy<DefaultCargoConfiguration>();
-        public static CargoConfiguration Default { get { return _default.Value; } }
-
-        public abstract ICargoDataSource GetDataSource();
-        public abstract bool AuthenticateRequest(IDictionary<string, object> environment);
         public string CargoRoutePrefix { get; set; } = "/cargo";
     }
 }

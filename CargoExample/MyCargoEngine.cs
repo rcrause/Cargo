@@ -1,23 +1,19 @@
-﻿using System;
+﻿using Cargo;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Cargo;
 
 namespace CargoExample
 {
-    public class CargoConfig : DefaultCargoConfiguration
+    public class MyCargoEngine : CargoEngine
     {
-        public CargoConfig()
-        {
-        }
-
         public override bool AuthenticateRequest(IDictionary<string, object> environment)
         {
             return true;
         }
 
-        public override ICargoDataSource GetDataSource()
+        public override ICargoDataSource CreateDataSource()
         {
             return new EntityFrameworkCargoDataSource(new MyDataContext());
         }

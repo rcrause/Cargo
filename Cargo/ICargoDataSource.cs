@@ -10,7 +10,7 @@ namespace Cargo
     /// <summary>
     /// Provides persistence for content items. Optionally also provides notification of items modified in the underlying data source.
     /// </summary>
-    public interface ICargoDataSource
+    public interface ICargoDataSource : IDisposable
     {
         /// <summary>
         /// Returns the <see cref="ContentItem"/> with a matching <see cref="ContentItem.Id"/>, or <c>null</c> if a match is not found.
