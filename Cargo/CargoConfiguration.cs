@@ -11,6 +11,9 @@ namespace Cargo
     /// </summary>
     public class CargoConfiguration
     {
+        /// <summary>
+        /// The route prefix for the Cargo API.
+        /// </summary>
         public string CargoRoutePrefix { get; set; } = "/cargo";
     }
 }
