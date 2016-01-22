@@ -31,10 +31,5 @@ namespace Cargo
         {
             return app.Use(typeof(CargoPipeline), deferredCargoEngineProc);
         }
-
-        public static ICollection<ContentItem> GetGlobalContent(this ICargoDataSource cds)
-        {
-            return cds.GetAllContentForLocation(null);
-        }
     }
 }
