@@ -56,7 +56,7 @@
     <Compile Include="CargoFileDataSource.cs" />
     <Compile Include="FileDataSource.cs" />
     <Compile Include="CargoPipeline.cs" />
-    <Compile Include="ContentCollection.cs" />
+    <Compile Include="ContentView.cs" />
     <Compile Include="ContentContext.cs" />
     <Compile Include="IContentContext.cs" />
     <Compile Include="CargoConfiguration.cs" />
