@@ -173,6 +173,15 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601141147129_InitialCreate.cs" />
+    <Compile Include="Migrations\201601141147129_InitialCreate.Designer.cs">
+      <DependentUpon>201601141147129_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601250846461_OriginalContent.cs" />
+    <Compile Include="Migrations\201601250846461_OriginalContent.Designer.cs">
+      <DependentUpon>201601250846461_OriginalContent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -236,6 +245,14 @@
       <Project>{ea3518c2-6d8e-4502-969f-0d385edddcf9}</Project>
       <Name>Cargo</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201601141147129_InitialCreate.resx">
+      <DependentUpon>201601141147129_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601250846461_OriginalContent.resx">
+      <DependentUpon>201601250846461_OriginalContent.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
