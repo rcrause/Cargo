@@ -28,6 +28,7 @@ namespace Cargo
             contentItem.Property(x => x.Key).IsUnicode().IsRequired().HasMaxLength(200);
             contentItem.Property(x => x.Location).IsUnicode().IsRequired().HasMaxLength(200);
             contentItem.Property(x => x.Content).IsUnicode().IsRequired();
+            contentItem.Property(x => x.OriginalContent).IsUnicode();
 
             //making this the primary key has it's drawbacks, but these
             //should be offset by caching.

@@ -32,5 +32,12 @@ namespace Cargo
         /// The content for this <see cref="ContentItem"/>.
         /// </summary>
         public virtual string Content { get; set; }
+
+        /// <summary>
+        /// The original content for this <see cref="ContentItem"/>, Specified if
+        /// <see cref="Key"/> is derived from content and only used to store the
+        /// value for later manual lookup.
+        /// </summary>
+        public virtual string OriginalContent { get; set; }
     }
 }

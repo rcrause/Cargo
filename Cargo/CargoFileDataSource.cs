@@ -120,7 +120,8 @@ namespace Cargo
             {
                 _fds.Set(id, new ContentItemMinimal
                 {
-                    content = defaultContent
+                    content = defaultContent,
+                    originalContent = defaultContent
                 });
 
                 return new ContentItem
@@ -128,7 +129,8 @@ namespace Cargo
                     Id = id,
                     Content = defaultContent,
                     Key = key,
-                    Location = location
+                    Location = location,
+                    OriginalContent = defaultContent
                 };
             }
             else
@@ -138,7 +140,8 @@ namespace Cargo
                     Id = id,
                     Content = contentItem.content,
                     Key = key,
-                    Location = location
+                    Location = location,
+                    OriginalContent = contentItem.originalContent
                 };
             }
         }
@@ -157,7 +160,8 @@ namespace Cargo
                 {
                     _fds.Set(id, new ContentItemMinimal
                     {
-                        content = item.Content
+                        content = item.Content,
+                        originalContent = item.OriginalContent
                     });
                 }
                 else
@@ -165,6 +169,7 @@ namespace Cargo
                     if (contentItem.content != item.Content)
                     {
                         contentItem.content = item.Content;
+                        contentItem.originalContent = item.OriginalContent;
                         _fds.Set(id, contentItem);
                     }
                 }
@@ -185,14 +190,7 @@ namespace Cargo
                 ValidateLocation(location);
 
                 var contentItem = _fds.Get<ContentItemMinimal>(id);
-                if (contentItem == null)
-                {
-                    _fds.Set(id, new ContentItemMinimal
-                    {
-                        content = item.Value
-                    });
-                }
-                else
+                if (contentItem != null)
                 {
                     if (contentItem.content != item.Value)
                     {
@@ -212,8 +210,8 @@ namespace Cargo
         {
             return _fds.Keys.Select(id =>
             {
-                string content = _fds.Get<ContentItemMinimal>(id)?.content;
-                if (content == null) return null;
+                var contentItem = _fds.Get<ContentItemMinimal>(id);
+                if (contentItem == null) return null;
 
                 string location;
                 string key;
@@ -222,9 +220,10 @@ namespace Cargo
                 return new ContentItem
                 {
                     Id = id,
-                    Content = content,
+                    Content = contentItem.content,
                     Key = key,
-                    Location = location
+                    Location = location,
+                    OriginalContent = contentItem.originalContent
                 };
             }).Where(x => x != null);
         }
@@ -316,6 +315,7 @@ namespace Cargo
         private class ContentItemMinimal
         {
             public string content { get; set; }
+            public string originalContent { get; set; }
         }
     }
 }

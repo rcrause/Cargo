@@ -113,9 +113,16 @@ namespace Cargo
                     Content = defaultContent,
                     Key = key,
                     Location = location,
-                    Id = GetId(location, key)
+                    Id = GetId(location, key),
+                    OriginalContent = defaultContent
                 });
 
+                _dataContext.SaveChanges();
+            }
+
+            if(contentItem.OriginalContent != defaultContent)
+            {
+                contentItem.OriginalContent = defaultContent;
                 _dataContext.SaveChanges();
             }
 
@@ -139,7 +146,8 @@ namespace Cargo
                         Content = item.Content,
                         Key = item.Key,
                         Location = item.Location,
-                        Id = GetId(item.Location, item.Key)
+                        Id = GetId(item.Location, item.Key),
+                        OriginalContent = item.OriginalContent
                     });
 
                     anyset = true;
@@ -149,6 +157,7 @@ namespace Cargo
                     if (contentItem.Content != item.Content)
                     {
                         contentItem.Content = item.Content;
+                        contentItem.OriginalContent = item.OriginalContent;
                         anyset = true;
                     }
                 }
@@ -177,16 +186,6 @@ namespace Cargo
                 if (contentItem != null)
                 {
                     contentItem.Content = item.Value;
-                }
-                else
-                {
-                    ContentItems.Add(new ContentItem
-                    {
-                        Id = id,
-                        Location = location,
-                        Key = key,
-                        Content = item.Value
-                    });
                 }
             }
 
