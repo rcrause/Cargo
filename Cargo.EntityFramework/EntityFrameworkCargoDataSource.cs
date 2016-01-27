@@ -59,7 +59,7 @@ namespace Cargo
 
             return ContentItems
                 .Select(AddIds)
-                .Where(x => x.Location == location)
+                .Where(x => x.Location == location && x.OriginalContent != null)
                 .ToList();
         }
 
@@ -104,6 +104,7 @@ namespace Cargo
         {
             ValidateKey(key);
             ValidateLocation(location);
+            defaultContent = defaultContent ?? "";
 
             var contentItem = ContentItems.Find(location, key);
             if(contentItem == null)
