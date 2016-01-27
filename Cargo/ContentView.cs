@@ -53,7 +53,7 @@ namespace Cargo
         public string GetTokenizedContent(string key, string defaultContent)
         {
             var contentItem = GetContentItem(key, defaultContent);
-            return Tokenize(contentItem.Id, contentItem.Content);
+            return Tokenize(contentItem.Id, contentItem.Content, contentItem.OriginalContent);
         }
 
         /// <summary>
@@ -95,12 +95,18 @@ namespace Cargo
             return item;
         }
 
-        private string Tokenize(string key, string content)
+        private string Tokenize(string key, string content, string defaultContent)
+        {
+            return $"~{TokenEscape(key)}#{TokenEscape(content)}#{TokenEscape(defaultContent)}~";
+        }
+
+        private string TokenEscape(string content)
         {
             content = WebUtility.HtmlEncode(content);
             if (content.Contains('`')) content = content.Replace("`", "``");
             if (content.Contains('~')) content = content.Replace("~", "`t");
-            return string.Format("~{0}#{1}~", key, content);
+            if (content.Contains('#')) content = content.Replace("#", "`h");
+            return content;
         }
 
         private string ComputeHash(string originalContent)

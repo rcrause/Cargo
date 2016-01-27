@@ -78,8 +78,8 @@
     // Globals
     var content = {};
     var contentByElement = new WeakMap();
-    var rxFullMatch = /^\s*~([^#]+)#([^~]*)~\s*$/;
-    var rxPartialMatch = /~([^#]+)#([^~]*)~/g;
+    var rxFullMatch = /^\s*~([^~#]+)#([^~#]*)#([^~#]*)~\s*$/;
+    var rxPartialMatch = /~([^~#]+)#([^~#]*)#([^~#]*)~/g;
     var domWatcher;
     var elementWatcher;
     var toolbutton;
@@ -94,6 +94,7 @@
     var lastHoveredElement = null;
     var cargoUrlBase = document.currentScript.src.replace(/\js(?:\/\d+)?$/, "");
     var _hasAngular;
+    var sortingby = "key";
 
     //
     // First things first - Load CSS
@@ -104,10 +105,11 @@
 
     //
     // ContentItem Type
-    var ContentItem = function ContentItem(key, content) {
+    var ContentItem = function ContentItem(key, content, originalContent) {
         this[ContentItem._key] = key;
         this[ContentItem._content] = content;
-        this[ContentItem._originalContent] = content;
+        this[ContentItem._savedContent] = content;
+        this[ContentItem._originalContent] = originalContent !== undefined ? originalContent : content;
         this[ContentItem._elements] = new Set();
         this[ContentItem._emitReadOnly] = function (a, b, c, d) {
             this[ContentItem._readonly] = true;
@@ -122,6 +124,11 @@
 
         Object.defineProperty(this, "modified", {
             get: function () { return this[ContentItem._content] != this[ContentItem._originalContent] },
+            enumerable: false
+        });
+
+        Object.defineProperty(this, "unsaved", {
+            get: function () { return this[ContentItem._content] != this[ContentItem._savedContent] },
             enumerable: false
         });
 
@@ -171,6 +178,7 @@
     ContentItem._key = Symbol();
     ContentItem._content = Symbol();
     ContentItem._originalContent = Symbol();
+    ContentItem._savedContent = Symbol();
     ContentItem._elements = Symbol();
     ContentItem._emitReadOnly = Symbol();
     ContentItem._readonly = Symbol();
@@ -181,12 +189,14 @@
         if (this[ContentItem._content] != newContent) {
             var otherItems = this[ContentItem._elements];
             var modified = newContent != this[ContentItem._originalContent];
+            var unsaved = newContent != this[ContentItem._savedContent];
 
             otherItems.forEach(function (otherItem) {
                 if (otherItem !== element) {
                     otherItem.innerHTML = newContent;
                 }
                 otherItem.classList.toggle("cargo-modified", modified);
+                otherItem.classList.toggle("cargo-unsaved", unsaved);
             });
 
             var oldContent = this[ContentItem._content];
@@ -199,6 +209,14 @@
         if (this[ContentItem._content] != this[ContentItem._originalContent]) {
             this.content = this[ContentItem._originalContent];
         }
+    }
+
+    ContentItem.prototype.markSaved = function markSaved() {
+        this[ContentItem._savedContent] = this[ContentItem._content];
+
+        this[ContentItem._elements].forEach(function (e) {
+            e.classList.remove("cargo-unsaved");
+        });
     }
 
     Emitter(ContentItem.prototype);
@@ -384,6 +402,28 @@
         })(Symbol.for("debounce_hasrun_" + code.toString()));
     }
 
+    function domElementWithText(tagNameForNewElement, textContent) {
+        var element = document.createElement(tagNameForNewElement);
+        element.textContent = textContent;
+        return element;
+    }
+
+    function domCreate(tagNameForNewElement, child1, child2) {
+        var element = document.createElement(tagNameForNewElement);
+        for (var a = 1; a < arguments.length; a++) {
+            element.appendChild(arguments[a]);
+        }
+        return element;
+    }
+
+    function domAppend(element, newElement1, newElement2) {
+        for (var a = 1; a < arguments.length; a++) {
+            element.appendChild(arguments[a]);
+        }
+
+        return element;
+    }
+
     //
     // Core functions
     function processNode(node) {
@@ -400,7 +440,7 @@
         //if (node && node.textContent && node.textContent.startsWith("This content item is alone")) debugger;
 
         function processNodeInternal(node) {
-            function contentItemFor(key, node) {
+            function contentItemFor(key, node, originalContent) {
                 var contentItem;
 
                 if (key in content) {
@@ -411,8 +451,13 @@
                 } else {
                     //the content item does not exist. Create the node using
                     //the content of the node as the content.
-                    var contentItem = new ContentItem(key, node.innerHTML);
+                    var contentItem = new ContentItem(key, node.innerHTML, originalContent);
                     content[key] = contentItem;
+
+
+                    if (originalContent === undefined) {
+                        console.warn("created content item without default content", contentItem);
+                    }
                 }
 
                 //add the node to the content item and set the associative array of elements.
@@ -432,18 +477,32 @@
                 });
             }
 
+            function unescapetokenized(wut) {
+                return wut.replace(/`([`th])/g, function (m) {
+                    switch (m[1]) {
+                        case '`': return "`";
+                        case 't': return "~";
+                        case 'h': return "#";
+                        default: return m[1];
+                    }
+                });
+            }
+
             function registerNode(node, match) {
                 var key = match[1];
-                var content = match[2];
-                node.innerHTML = content.replace(/`([`t])/g, function (m) { return m[1] == "t" ? "~" : "`"; });
+                var content = unescapetokenized(match[2]);
+                var originalContent = unescapetokenized(match[3]);
+                node.innerHTML = content
 
-                var contentItem = contentItemFor(key, node);
+                var contentItem = contentItemFor(key, node, originalContent);
 
                 node.classList.add("cargo-has-content");
                 node.setAttribute("data-cargo-key", key);
                 registerEvents(node, contentItem, ["mouseenter", "mouseleave", "click", "focus", "blur"]);
                 elementWatcher.observe(node, { childList: true, attributes: false, subtree: true, characterData: true });
                 contentEvents.emit("contentAdded", contentItem, node, true);
+                node.classList.toggle("cargo-modified", contentItem.modified);
+                node.classList.toggle("cargo-unsaved", contentItem.unsaved);
             }
 
             function reRegisterNode(node) {
@@ -454,6 +513,8 @@
                 registerEvents(node, contentItem, ["mouseenter", "mouseleave", "click", "focus", "blur"]);
                 elementWatcher.observe(node, { childList: true, attributes: false, subtree: true, characterData: true });
                 contentEvents.emit("contentAdded", contentItem, node, false);
+                node.classList.toggle("cargo-modified", contentItem.modified);
+                node.classList.toggle("cargo-unsaved", contentItem.unsaved);
             }
 
             function processTextNode(textNode) {
@@ -647,7 +708,25 @@
         var promise = new Promise(function (resolve, reject) {
             saving = true;
 
-            post(cargoUrlBase + "save", content).then(resolve, reject);
+            var toSave = {};
+
+            for (var key in content) {
+                var contentItem = content[key];
+                if (contentItem.unsaved) {
+                    toSave[key] = contentItem;
+                }
+            }
+
+            (function (toSave) {
+                post(cargoUrlBase + "save", toSave)
+                    .then(function (result) {
+                        for (var key in toSave) {
+                            toSave[key].markSaved();
+                        }
+                        resolve(result);
+                    }, reject);
+            })(toSave)
+
         });
 
         promise.then(function () { saving = false; }, function () { saving = false; });
@@ -845,30 +924,86 @@
             panel.id = "cargo_panel";
 
             //create the list (panel)
-            var contentList = document.createElement("ul"); panel.appendChild(contentList);
+            var contentTable = document.createElement("table"); panel.appendChild(contentTable);
+            var contentTableHead = document.createElement("thead"); contentTable.appendChild(contentTableHead);
+            var contentTableHeadRow = document.createElement("tr"); contentTableHead.appendChild(contentTableHeadRow);
+            var contentTableHeaderId = document.createElement("th"); contentTableHeadRow.appendChild(contentTableHeaderId); contentTableHeaderId.textContent = "Key";
+            var contentTableHeaderOriginalContent = document.createElement("th"); contentTableHeadRow.appendChild(contentTableHeaderOriginalContent); contentTableHeaderOriginalContent.textContent = "Original Content";
+            var contentTableHeaderCurrentContent = document.createElement("th"); contentTableHeadRow.appendChild(contentTableHeaderCurrentContent); contentTableHeaderCurrentContent.textContent = "Current Content";
+            var contentTableBody = document.createElement("tbody"); contentTable.appendChild(contentTableBody);
+
+            contentTableHeaderId.addEventListener("click", function () { sortingby = "key"; sort(); });
+            contentTableHeaderOriginalContent.addEventListener("click", function () { sortingby = "originalContent"; sort(); });
+            contentTableHeaderCurrentContent.addEventListener("click", function () { sortingby = "content"; sort(); });
+
             function addContentItemToPanel(contentItem) {
                 var alreadyThere;
-                contentItem.elements.forEach(function (e) { if (contentList.contains(e)) alreadyThere = true; });
-                if (!alreadyThere && contentList.querySelectorAll('[data-cargo-key="' + contentItem.key + '"]').length) alreadyThere = true;
+                contentItem.elements.forEach(function (e) { if (contentTableBody.contains(e)) alreadyThere = true; });
+                if (!alreadyThere && contentTableBody.querySelectorAll('[data-cargo-key="' + contentItem.key + '"]').length) alreadyThere = true;
 
                 if (!alreadyThere) {
                     //taking advantage of the fact that the DOM watched will make this thing editable directly
-                    var li = document.createElement("li");
-                    var span = document.createElement("span"); li.appendChild(span);
-                    span.innerHTML = contentItem.content;
-                    span.setAttribute("data-cargo-key", contentItem.key);
-                    span.classList.add("cargo-has-content");
-                    contentList.appendChild(li);
+                    var tr = document.createElement("tr");
+                    var tdKey = document.createElement("td"); tr.appendChild(tdKey);
+                    var tdOriginal = document.createElement("td"); tr.appendChild(tdOriginal);
+                    var tdCurrent = document.createElement("td"); tr.appendChild(tdCurrent);
+
+                    tdKey.textContent = contentItem.key;
+                    tdKey.classList.add("cargo-col-key");
+
+                    tdOriginal.classList.add("cargo-col-original");
+
+                    tdCurrent.classList.add("cargo-col-current");
+
+                    var span2 = document.createElement("span"); tdOriginal.appendChild(span2);
+                    span2.textContent = contentItem.originalContent;
+
+                    var span2 = document.createElement("span"); tdCurrent.appendChild(span2);
+                    span2.innerHTML = contentItem.content;
+                    span2.setAttribute("data-cargo-key", contentItem.key);
+                    span2.classList.add("cargo-has-content");
+
+                    //add to the table
+                    contentTableBody.appendChild(tr);
                 }
             }
+
+            function sort() {
+                var children = [];
+                while(contentTableBody.firstChild) {
+                    children.push(contentTableBody.firstChild);
+                    contentTableBody.removeChild(contentTableBody.firstChild);
+                }
+
+                children.sort(function (a, b) {
+                    var keyA = a.querySelector("[data-cargo-key]").getAttribute("data-cargo-key");
+                    var keyB = b.querySelector("[data-cargo-key]").getAttribute("data-cargo-key");
+
+                    var itemA = content[keyA][sortingby];
+                    var itemB = content[keyB][sortingby];
+
+                    if (itemA < itemB) return -1;
+                    else if (itemA > itemB) return 1;
+                    else return 0;
+                });
+
+                children.forEach(function (c) { contentTableBody.appendChild(c); });
+            }
+
             //add all current content to the list (panel)
             for (var key in content) {
                 var contentItem = content[key];
 
                 addContentItemToPanel(contentItem);
             }
+
             //if more come add them too
-            contentEvents.on("contentAdded", addContentItemToPanel);
+            contentEvents.on("contentAdded", function (e) {
+                addContentItemToPanel(e);
+                //sort();
+            });
+
+            sort();
         }
     }
 

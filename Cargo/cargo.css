@@ -67,9 +67,13 @@ body.cargo-editing {
     cursor: pointer;
 }
 
-    .cargo-editing .cargo-has-content.cargo-modified {
+    .cargo-editing .cargo-has-content.cargo-unsaved {
         outline: 1px dashed rgb(128, 0, 128);
         box-shadow: 0 0 8px rgba(255, 0, 255, 1.0);
+    }
+    
+    .cargo-editing .cargo-has-content.cargo-modified {
+        outline: 1px dashed rgb(0, 255, 0);
     }
 
     .cargo-editing .cargo-has-content.cargo-itemediting {
@@ -265,7 +269,6 @@ body.cargo-editing {
     padding: 15px;
     overflow-y: scroll;
     margin: 0 0 0 -30px;
-    padding: 15px;
     -moz-box-sizing: content-box;
     -webkit-box-sizing: content-box;
     box-sizing: content-box;
@@ -275,24 +278,52 @@ body.cargo-editing {
     display: block;
 }
 
+.cargo-editing .cargo-col-key {
+    width: 100px;
+    font-size: 0.8em;
+    font-family: monospace;
+}
+
+.cargo-editing .cargo-col-original {
+    width: 400px;
+}
+
+.cargo-editing .cargo-col-current {
+}
+
 .cargo-editing #cargo_panel.cargo-visible {
-    width: 300px;
+    width: 1200px;
     margin-left: 0;
 }
 
-    .cargo-editing #cargo_panel > ul {
-        padding: 0;
-        margin: 0;
-        list-style: none;
-        width:283px;
+.cargo-editing #cargo_panel > table {
+}
+
+    .cargo-editing #cargo_panel > table > thead > tr > th {
+        font-weight: bold;
+        border: 1px solid #ccc;
+        padding: 3px;
+        cursor: pointer;
     }
 
-        .cargo-editing #cargo_panel > ul > li {
-            display: block;
-            margin: 3px 0;
-            border: 1px solid #CCC;
-        }
+    .cargo-editing #cargo_panel > table > tbody > tr > td {
+        border: 1px solid #ccc;
+        padding: 3px;
+    }
 
-            .cargo-editing #cargo_panel > ul > li > span {
-                outline: none;
-            }
+.cargo-editing #cargo_panel > ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    width: 283px;
+}
+
+    .cargo-editing #cargo_panel > ul > li {
+        display: block;
+        margin: 3px 0;
+        border: 1px solid #CCC;
+    }
+
+        .cargo-editing #cargo_panel > ul > li > span {
+            outline: none;
+        }
