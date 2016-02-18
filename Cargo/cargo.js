@@ -821,21 +821,23 @@
             click: function (event) {
                 panel.classList.toggle("cargo-visible");
             }
-        }, {
-            text: "settings_backup_restore",
-            hint: "Reset all changes made since the last save",
-            click: function (event) {
-                confirm("Are you sure you want to revert ALL CHANGES?").then(function () {
-                    for (var key in content) {
-                        var contentItem = content[key];
-                        contentItem.reset();
-                    }
-
-                    exitEditMode();
-                    mainButton.textContent = "mode_edit";
-                });
-            }
-        }];
+        }
+        //,
+        //{
+        //    text: "settings_backup_restore",
+        //    hint: "Reset all changes made since the last save",
+        //    click: function (event) {
+        //        confirm("Are you sure you want to revert ALL CHANGES?").then(function () {
+        //            for (var key in content) {
+        //                var contentItem = content[key];
+        //                contentItem.reset();
+        //            }
+        //            exitEditMode();
+        //            mainButton.textContent = "mode_edit";
+        //        });
+        //    }
+        //}
+        ];
 
         var quickbuttons = [{
             text: "cached",
