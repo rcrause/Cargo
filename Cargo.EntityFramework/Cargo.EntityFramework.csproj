@@ -40,9 +40,22 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Nito.AsyncEx.Context, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.Context.1.1.0\lib\net46\Nito.AsyncEx.Context.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Tasks, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.Tasks.1.1.0\lib\net46\Nito.AsyncEx.Tasks.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nito.Disposables, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.Disposables.1.0.0\lib\portable45-net45+win8+wp8+wpa81\Nito.Disposables.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -60,6 +73,10 @@
     <ProjectReference Include="..\Cargo\Cargo.csproj">
       <Project>{ea3518c2-6d8e-4502-969f-0d385edddcf9}</Project>
       <Name>Cargo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Stores\Stores.csproj">
+      <Project>{B4BFB147-4112-4475-89B8-51F70904F6C9}</Project>
+      <Name>Stores</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

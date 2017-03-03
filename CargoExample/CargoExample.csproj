@@ -49,13 +49,18 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StackExchange.Redis, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StackExchange.Redis.1.2.1\lib\net46\StackExchange.Redis.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -244,6 +249,10 @@
     <ProjectReference Include="..\Cargo\Cargo.csproj">
       <Project>{ea3518c2-6d8e-4502-969f-0d385edddcf9}</Project>
       <Name>Cargo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Stores\Stores.csproj">
+      <Project>{B4BFB147-4112-4475-89B8-51F70904F6C9}</Project>
+      <Name>Stores</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

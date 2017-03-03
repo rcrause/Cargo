@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cargo", "Cargo\Cargo.csproj", "{EA3518C2-6D8E-4502-969F-0D385EDDDCF9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CargoExample", "CargoExample\CargoExample.csproj", "{68FBFEAB-E7D9-4A1E-B1AB-30A55CA785DF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cargo.EntityFramework", "Cargo.EntityFramework\Cargo.EntityFramework.csproj", "{4F1AE28F-3B55-473A-915F-7B016DAB141C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stores", "Stores\Stores.csproj", "{B4BFB147-4112-4475-89B8-51F70904F6C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{4F1AE28F-3B55-473A-915F-7B016DAB141C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F1AE28F-3B55-473A-915F-7B016DAB141C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F1AE28F-3B55-473A-915F-7B016DAB141C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4BFB147-4112-4475-89B8-51F70904F6C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4BFB147-4112-4475-89B8-51F70904F6C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4BFB147-4112-4475-89B8-51F70904F6C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4BFB147-4112-4475-89B8-51F70904F6C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
