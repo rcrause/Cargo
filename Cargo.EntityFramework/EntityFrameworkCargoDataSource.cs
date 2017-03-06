@@ -22,6 +22,8 @@ namespace Cargo
         private bool _ownsContext;
         private IStore _cache;
 
+        private const string REDIS_ALL_LOCATION_KEY = "all:loc";
+
         private DbSet<ContentItem> ContentItems { get { return _dataContext.Set<ContentItem>(); } }
 
         /// <summary>
@@ -40,14 +42,78 @@ namespace Cargo
             _cache = cache;
         }
 
+        #region Cache Helper functions
+
+        //Get and setting single key in cache
+        private CacheItem<ContentItem> GetCacheContentItem(string location, string key)
+        {
+            return AsyncContext.Run(() => _cache.TryItemRestoreAsync<ContentItem>(GetId(location, key)));
+        }
+
+        private CacheItem<ContentItem> GetCacheContentItem(string id)
+        {
+            return AsyncContext.Run(() => _cache.TryItemRestoreAsync<ContentItem>(id));
+        }
+
+        private void SetCacheContentItem(ContentItem item)
+        {
+            AsyncContext.Run(() => _cache.ItemSaveAsync(item.Id, item, TimeSpan.MaxValue));
+        }
+        
+        private void RemoveCacheContentItem(ContentItem item)
+        {
+            AsyncContext.Run(() => _cache.ItemDeleteAsync(item.Id));
+        }
+
+        //Get and set cache for a location
+        private CacheItem<ICollection<ContentItem>> GetCacheLocationItem(string location)
+        {
+            string redisKey = $"loc:{location}";
+            return AsyncContext.Run(() => _cache.TryItemRestoreAsync<ICollection<ContentItem>>(redisKey));
+        }
+
+        private void SetCacheLocationItem(string location, List<ContentItem> locationItems)
+        {
+            string redisKey = $"loc:{location}";
+            AsyncContext.Run(() => _cache.ItemSaveAsync(redisKey, locationItems, TimeSpan.MaxValue));
+        }
+
+        private void RemoveCacheLocationItem(string location)
+        {
+            string redisKey = $"loc:{location}";
+            AsyncContext.Run(() => _cache.ItemDeleteAsync(redisKey));
+        }
+
+
+        //Get and set locations list
+        private CacheItem<ICollection<string>> GetCacheAllLocations()
+        {
+            string redisKey = REDIS_ALL_LOCATION_KEY;
+            return AsyncContext.Run(() => _cache.TryItemRestoreAsync<ICollection<string>>(redisKey));
+        }
+
+        private void SetCacheAllLocations(List<string> locations)
+        {
+            string redisKey = REDIS_ALL_LOCATION_KEY;
+            AsyncContext.Run(() => _cache.ItemSaveAsync(redisKey, locations, TimeSpan.MaxValue));
+        }
+
+        private void RemoveCacheAllLocations()
+        {
+            string redisKey = REDIS_ALL_LOCATION_KEY;
+            AsyncContext.Run(() => _cache.ItemDeleteAsync(redisKey));
+        }
+
+
+        #endregion
+
         /// <inheritdoc />
         public override ContentItem Get(string location, string key)
         {
             ValidateLocation(location);
             ValidateKey(key);
 
-            CacheItem<ContentItem> r = AsyncContext.Run(() => _cache.TryItemRestoreAsync<ContentItem>(GetId(location, key)));
-
+            CacheItem<ContentItem> r = GetCacheContentItem(location, key);
             if (r.Success)
             {
                 return r.Item;
@@ -55,7 +121,7 @@ namespace Cargo
             else
             {
                 ContentItem contentItem = AddIds(ContentItems.Find(location, key));
-                AsyncContext.Run(() => _cache.ItemSaveAsync(contentItem.Id, contentItem, TimeSpan.MaxValue));
+                SetCacheContentItem(contentItem);
 
                 return contentItem;
             }
@@ -73,9 +139,8 @@ namespace Cargo
         public override ICollection<ContentItem> GetAllContentForLocation(string location)
         {
             ValidateLocation(location);
-            string redisKey = $"loc:{location}";
 
-            CacheItem<ICollection<ContentItem>> r = AsyncContext.Run(() => _cache.TryItemRestoreAsync<ICollection<ContentItem>>(redisKey));
+            CacheItem<ICollection<ContentItem>> r = GetCacheLocationItem(location);
             if (r.Success)
             {
                 return r.Item;
@@ -86,8 +151,7 @@ namespace Cargo
                                     .Select(AddIds)
                                     .Where(x => x.Location == location && x.OriginalContent != null)
                                     .ToList();
-
-                AsyncContext.Run(() => _cache.ItemSaveAsync(redisKey, locationItems, TimeSpan.MaxValue));
+                SetCacheLocationItem(location, locationItems);
 
                 return locationItems;
             }
@@ -96,9 +160,7 @@ namespace Cargo
         /// <inheritdoc />
         public override ICollection<string> GetAllLocations()
         {
-            string redisKey = $"all:loc";
-
-            CacheItem<ICollection<string>> r = AsyncContext.Run(() => _cache.TryItemRestoreAsync<ICollection<string>>(redisKey));
+            CacheItem<ICollection<string>> r = GetCacheAllLocations();
             if (r.Success)
             {
                 return r.Item;
@@ -110,7 +172,7 @@ namespace Cargo
                                     .Distinct()
                                     .ToList();
 
-                AsyncContext.Run(() => _cache.ItemSaveAsync(redisKey, locationItems, TimeSpan.MaxValue));
+                SetCacheAllLocations(locationItems);
 
                 return locationItems;
             }
@@ -121,8 +183,7 @@ namespace Cargo
         {
             ValidateId(id);
 
-            CacheItem<ContentItem> r = AsyncContext.Run(() => _cache.TryItemRestoreAsync<ContentItem>(id));
-
+            CacheItem<ContentItem> r = GetCacheContentItem(id);
             if (r.Success)
             {
                 return r.Item;
@@ -135,7 +196,7 @@ namespace Cargo
                 ValidateKey(key);
                 
                 ContentItem contentItem = AddIds(ContentItems.Find(location, key));
-                AsyncContext.Run(() => _cache.ItemSaveAsync(contentItem.Id, contentItem, TimeSpan.MaxValue));
+                SetCacheContentItem(contentItem);
 
                 return contentItem;
             }
@@ -148,7 +209,7 @@ namespace Cargo
             {
                 if(item != null)
                 {
-                    AsyncContext.Run(() => _cache.ItemDeleteAsync(item.Id));
+                    RemoveCacheContentItem(item);
                     ContentItems.Remove(item);
                 }
             }
@@ -166,7 +227,7 @@ namespace Cargo
             defaultContent = defaultContent ?? "";
 
             //Try to find in cache
-            CacheItem<ContentItem> r = AsyncContext.Run(() => _cache.TryItemRestoreAsync<ContentItem>(GetId(location, key)));
+            CacheItem<ContentItem> r = GetCacheContentItem(location, key);
             if (r.Success)
             {
                 item = r.Item;
@@ -189,15 +250,16 @@ namespace Cargo
                     Id = GetId(location, key),
                     OriginalContent = defaultContent
                 });
-
-                AsyncContext.Run(() => _cache.ItemSaveAsync(item.Id, item, TimeSpan.MaxValue));
+                
+                SetCacheContentItem(item);
                 _dataContext.SaveChanges();
             }
 
             if(item.OriginalContent != defaultContent)
             {
                 item.OriginalContent = defaultContent;
-                AsyncContext.Run(() => _cache.ItemSaveAsync(item.Id, item, TimeSpan.MaxValue));
+
+                SetCacheContentItem(item);
                 _dataContext.SaveChanges();
             }
 
@@ -207,17 +269,14 @@ namespace Cargo
         /// <inheritdoc />
         public override void Set(IEnumerable<ContentItem> contentItems)
         {
-            string redisAllKey = $"all:loc";
-            AsyncContext.Run(() => _cache.ItemDeleteAsync(redisAllKey));
+            RemoveCacheAllLocations();
 
             bool anyset = false;
             foreach(var item in contentItems)
             {
                 ValidateKey(item.Key);
                 ValidateLocation(item.Location);
-
-                string redisKey = $"loc:{item.Location}";
-                AsyncContext.Run(() => _cache.ItemDeleteAsync(redisKey));
+                RemoveCacheContentItem(item);
 
 
                 var contentItem = ContentItems.Find(item.Location, item.Key);
@@ -232,7 +291,7 @@ namespace Cargo
                         OriginalContent = item.OriginalContent
                     });
 
-                    AsyncContext.Run(() => _cache.ItemSaveAsync(contentItem.Id, contentItem, TimeSpan.MaxValue));
+                    SetCacheContentItem(contentItem);
                     anyset = true;
                 }
                 else
@@ -242,7 +301,7 @@ namespace Cargo
                         contentItem.Content = item.Content;
                         contentItem.OriginalContent = item.OriginalContent;
 
-                        AsyncContext.Run(() => _cache.ItemSaveAsync(contentItem.Id, contentItem, TimeSpan.MaxValue));
+                        SetCacheContentItem(contentItem);
                         anyset = true;
                     }
                 }
@@ -271,8 +330,7 @@ namespace Cargo
                 ValidateKey(key);
 
                 //Delete the location if edited and existing
-                string redisKey = $"loc:{location}";
-                if (AsyncContext.Run(() => _cache.TryItemRestoreAsync<ICollection<ContentItem>>(redisKey)).Success)
+                if (GetCacheLocationItem(location).Success)
                 {
                     editedExistingLocations.Add(location);
                 }
@@ -285,22 +343,20 @@ namespace Cargo
                 if (contentItem != null)
                 {
                     contentItem.Content = item.Value;
-                    AsyncContext.Run(() => _cache.ItemSaveAsync(contentItem.Id, contentItem, TimeSpan.MaxValue));
+                    SetCacheContentItem(contentItem);
                 }
             }
 
             //Delete All Locations if a location was added
             if (editedNonExistingLocations.Count > 0)
             {
-                string redisKey = $"all:loc";
-                AsyncContext.Run(() => _cache.ItemDeleteAsync(redisKey));
+                RemoveCacheAllLocations();
             }
 
             //Delete locations edited. These caches no longer valid
             foreach (var location in editedExistingLocations)
             {
-                string redisKey = $"loc:{location}";
-                AsyncContext.Run(() => _cache.ItemDeleteAsync(redisKey));
+                RemoveCacheLocationItem(location);
             }
 
             _dataContext.SaveChanges();
@@ -327,7 +383,7 @@ namespace Cargo
                 ContentItem contentItem = null;
 
                 //Try to find in cache otherwise DB
-                CacheItem<ContentItem> r = AsyncContext.Run(() => _cache.TryItemRestoreAsync<ContentItem>(GetId(location, key)));
+                CacheItem<ContentItem> r = GetCacheContentItem(location, key);
                 if (r.Success)
                 {
                     contentItem = r.Item;
