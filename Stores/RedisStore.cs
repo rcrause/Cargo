@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stores
+namespace Cargo
 {
     public class RedisStore : IStore
     {

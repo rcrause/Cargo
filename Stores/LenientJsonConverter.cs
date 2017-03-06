@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Stores
+namespace Cargo
 {
     public class LenientJsonConverter : JsonConverter
     {

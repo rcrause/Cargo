@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CargoExample", "CargoExampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cargo.EntityFramework", "Cargo.EntityFramework\Cargo.EntityFramework.csproj", "{4F1AE28F-3B55-473A-915F-7B016DAB141C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stores", "Stores\Stores.csproj", "{B4BFB147-4112-4475-89B8-51F70904F6C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cargo.Stores", "Stores\Cargo.Stores.csproj", "{B4BFB147-4112-4475-89B8-51F70904F6C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

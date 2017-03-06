@@ -1,5 +1,4 @@
 ﻿using Nito.AsyncEx;
-using Stores;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -276,6 +275,9 @@ namespace Cargo
             {
                 ValidateKey(item.Key);
                 ValidateLocation(item.Location);
+
+                //All cache in the particular location will be invalid as well as the item
+                RemoveCacheLocationItem(item.Location); 
                 RemoveCacheContentItem(item);
 
 
@@ -316,8 +318,7 @@ namespace Cargo
         /// <inheritdoc />
         public override void SetById(IEnumerable<KeyValuePair<string, string>> idContentPairs)
         {
-            List<string> editedNonExistingLocations = new List<string>();
-            List<string> editedExistingLocations = new List<string>();
+            RemoveCacheAllLocations();
 
             foreach (var item in idContentPairs)
             {
@@ -329,15 +330,9 @@ namespace Cargo
                 ValidateLocation(location);
                 ValidateKey(key);
 
-                //Delete the location if edited and existing
-                if (GetCacheLocationItem(location).Success)
-                {
-                    editedExistingLocations.Add(location);
-                }
-                else
-                {
-                    editedNonExistingLocations.Add(location);
-                }
+                //All cache in the particular location will be invalid
+                RemoveCacheLocationItem(location);
+                
 
                 var contentItem = AddIds(ContentItems.Find(location, key));
                 if (contentItem != null)
@@ -345,18 +340,6 @@ namespace Cargo
                     contentItem.Content = item.Value;
                     SetCacheContentItem(contentItem);
                 }
-            }
-
-            //Delete All Locations if a location was added
-            if (editedNonExistingLocations.Count > 0)
-            {
-                RemoveCacheAllLocations();
-            }
-
-            //Delete locations edited. These caches no longer valid
-            foreach (var location in editedExistingLocations)
-            {
-                RemoveCacheLocationItem(location);
             }
 
             _dataContext.SaveChanges();

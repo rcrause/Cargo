@@ -250,9 +250,9 @@
       <Project>{ea3518c2-6d8e-4502-969f-0d385edddcf9}</Project>
       <Name>Cargo</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Stores\Stores.csproj">
+    <ProjectReference Include="..\Stores\Cargo.Stores.csproj">
       <Project>{B4BFB147-4112-4475-89B8-51F70904F6C9}</Project>
-      <Name>Stores</Name>
+      <Name>Cargo.Stores</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
